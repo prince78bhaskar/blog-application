@@ -7,7 +7,7 @@ import approch from "../assets/approch.png";
 import team from "../assets/team.png";
 import logo from "../assets/logo.png";
 import { Link } from "react-router-dom";
-
+import about from "../assets/about.png";
 function About() {
 
   useEffect(() => {
@@ -67,7 +67,10 @@ function About() {
         </div>
       </header>
 
-      <section className="bg-gradient-to-r from-blue-600 via-black-500 to-blue-400 text-white py-24">
+      <section className="text-white py-24 bg-cover bg-center"
+  style={{
+    backgroundImage: `linear-gradient(rgba(50,0,0,0.6), rgba(0,0,50,0.6)), url(${about})`,
+  }}>
 
         <div className="max-w-7xl mx-auto px-6 text-center">
 
@@ -303,8 +306,8 @@ function About() {
               <div
                 key={index}
                 data-aos="zoom-in"
-                data-aos-delay={index * 100}
-                className="bg-white rounded-2xl shadow-lg p-6 hover:-translate-y-3 hover:shadow-2xl duration-500"
+                data-aos-delay={index * 100} 
+                className="bg-white rounded-2xl shadow-lg p-6 hover:-translate-y-3 hover:shadow-2xl duration-500  border border-gray-700"
               >
                 <div className="text-4xl mb-4">✅</div>
 
@@ -364,7 +367,7 @@ function About() {
                 key={index}
                 data-aos="flip-left"
                 data-aos-delay={index * 50}
-                className="bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl p-6 shadow-xl hover:scale-105 duration-500"
+                className="bg-gradient-to-br from-blue-400 to-indigo-500 text-white rounded-2xl p-6 shadow-xl hover:scale-105 duration-500  border border-gray-700"
               >
                 <div className="text-4xl mb-4">⭐</div>
 
@@ -390,7 +393,7 @@ function About() {
 
           <div
             data-aos="fade-right"
-            className="bg-white rounded-3xl shadow-xl p-10"
+            className="bg-white rounded-3xl shadow-xl p-10  border border-gray-700"
           >
 
             <div className="text-5xl mb-5">
@@ -411,7 +414,7 @@ function About() {
 
           <div
             data-aos="fade-left"
-            className="bg-white rounded-3xl shadow-xl p-10"
+            className="bg-white rounded-3xl shadow-xl p-10  border border-gray-700"
           >
 
             <div className="text-5xl mb-5">
@@ -462,7 +465,7 @@ function About() {
 
             <div
               data-aos="fade-up"
-              className="bg-white rounded-3xl shadow-xl p-8 border-t-4 border-blue-600 hover:-translate-y-3 duration-500"
+              className="bg-white rounded-3xl shadow-xl p-8 border-t-4 border-blue-600 hover:-translate-y-3 duration-500  border border-gray-700"
             >
               <h3 className="text-2xl font-bold mb-5">
                 Registered Branch
@@ -481,7 +484,7 @@ function About() {
             <div
               data-aos="fade-up"
               data-aos-delay="150"
-              className="bg-white rounded-3xl shadow-xl p-8 border-t-4 border-green-600 hover:-translate-y-3 duration-500"
+              className="bg-white rounded-3xl shadow-xl p-8 border-t-4 border-green-600 hover:-translate-y-3 duration-500  border border-gray-700"
             >
 
               <h3 className="text-2xl font-bold mb-5">
@@ -492,7 +495,7 @@ function About() {
               <p className="mb-3">📧 tech.in.dcs@gmail.com</p>
 
               <p className="text-gray-600">
-                Near DIG Bunglow, Bilandpur,
+                Near DIG Bunglow, Bilandpur,      
                 Gorakhpur - 273001
               </p>
 
@@ -501,7 +504,7 @@ function About() {
             <div
               data-aos="fade-up"
               data-aos-delay="300"
-              className="bg-white rounded-3xl shadow-xl p-8 border-t-4 border-red-600 hover:-translate-y-3 duration-500"
+              className="bg-white rounded-3xl shadow-xl p-8 border-t-4 border-red-600 hover:-translate-y-3 duration-500  border border-gray-700 "
             >
 
               <h3 className="text-2xl font-bold mb-5">
@@ -526,90 +529,310 @@ function About() {
 
       {/* ================= Achievement Section ================= */}
 
-      <section className="py-24 bg-gradient-to-r from-blue-700 via-indigo-700 to-blue-800 text-white">
+         <section className="py-24 bg-slate-950 text-white overflow-hidden relative">
 
-        <div className="max-w-7xl mx-auto px-6">
+  {/* Background Blur */}
+  <div className="absolute top-0 left-0 w-72 h-72 bg-blue-500/20 blur-[120px] rounded-full"></div>
+  <div className="absolute bottom-0 right-0 w-80 h-80 bg-indigo-500/20 blur-[120px] rounded-full"></div>
 
-          <div className="text-center mb-16" data-aos="fade-up">
+  <div className="relative max-w-7xl mx-auto px-6">
 
-            <h2 className="text-5xl font-bold">
-              Our Commitment to Excellence
-            </h2>
+    <div
+      data-aos="fade-up"
+      className="text-center mb-20"
+    >
+      <span className="px-5 py-2 bg-blue-500/20 rounded-full text-blue-300 font-semibold">
+        WHY CHOOSE US
+      </span>
 
-            <p className="mt-5 text-blue-100 text-lg">
-              Helping students build successful careers through quality education,
-              innovation and industry-focused training.
-            </p>
+      <h2 className="text-5xl font-bold mt-6">
+        Our Commitment
+      </h2>
 
-          </div>
+      <p className="text-gray-300 mt-5 max-w-2xl mx-auto text-lg">
+        We believe in practical education, industry exposure and
+        guaranteed career growth through quality training.
+      </p>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+    </div>
 
-            <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-10 text-center hover:scale-105 duration-500">
-              <div className="text-5xl">👨‍🎓</div>
-              <h1 className="text-5xl font-bold mt-5">1000+</h1>
-              <p className="mt-3 text-blue-100">Students Trained</p>
-            </div>
+    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
 
-            <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-10 text-center hover:scale-105 duration-500">
-              <div className="text-5xl">🏢</div>
-              <h1 className="text-5xl font-bold mt-5">200+</h1>
-              <p className="mt-3 text-blue-100">Hiring Partners</p>
-            </div>
+      <div
+        data-aos="zoom-in"
+        className="group bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 hover:border-blue-500 hover:-translate-y-4 duration-500"
+      >
 
-            <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-10 text-center hover:scale-105 duration-500">
-              <div className="text-5xl">💼</div>
-              <h1 className="text-5xl font-bold mt-5">95%</h1>
-              <p className="mt-3 text-blue-100">Placement Rate</p>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-10 text-center hover:scale-105 duration-500">
-              <div className="text-5xl">💰</div>
-              <h1 className="text-5xl font-bold mt-5">₹5LPA+</h1>
-              <p className="mt-3 text-blue-100">Average Package</p>
-            </div>
-
-          </div>
-
+        <div className="text-6xl group-hover:scale-125 duration-500">
+          👨‍🎓
         </div>
 
-      </section>
+        <h2 className="text-5xl font-bold mt-6 text-blue-400">
+          1000+
+        </h2>
+
+        <p className="mt-4 text-gray-300">
+          Students Successfully Trained
+        </p>
+
+      </div>
+
+      <div
+        data-aos="zoom-in"
+        data-aos-delay="150"
+        className="group bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 hover:border-green-500 hover:-translate-y-4 duration-500"
+      >
+
+        <div className="text-6xl group-hover:rotate-12 duration-500">
+          🎯
+        </div>
+
+        <h2 className="text-5xl font-bold mt-6 text-green-400">
+          95%
+        </h2>
+
+        <p className="mt-4 text-gray-300">
+          Placement Success Rate
+        </p>
+
+      </div>
+
+      <div
+        data-aos="zoom-in"
+        data-aos-delay="300"
+        className="group bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 hover:border-yellow-500 hover:-translate-y-4 duration-500"
+      >
+
+        <div className="text-6xl group-hover:scale-125 duration-500">
+          🏢
+        </div>
+
+        <h2 className="text-5xl font-bold mt-6 text-yellow-400">
+          200+
+        </h2>
+
+        <p className="mt-4 text-gray-300">
+          Hiring Partner Companies
+        </p>
+
+      </div>
+
+      <div
+        data-aos="zoom-in"
+        data-aos-delay="450"
+        className="group bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 hover:border-pink-500 hover:-translate-y-4 duration-500"
+      >
+
+        <div className="text-6xl group-hover:scale-125 duration-500">
+          💰
+        </div>
+
+        <h2 className="text-5xl font-bold mt-6 text-pink-400">
+          ₹5LPA+
+        </h2>
+
+        <p className="mt-4 text-gray-300">
+          Average Package
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
 
       {/* ================= Call To Action ================= */}
 
-      <section className="py-24 bg-white">
+      <section className="relative overflow-hidden py-24 bg-gradient-to-br from-blue-700 via-indigo-700 to-slate-900 text-white"
+         style={{
+    backgroundImage: `linear-gradient(rgba(50,0,0,0.6), rgba(0,0,50,0.6)), url(${about})`,
+  }} >
+    
+           
+  {/* Background Blur Effects */}
+  <div className="absolute -top-20 -left-20 w-72 h-72 bg-cyan-400/20 rounded-full blur-3xl animate-pulse"></div>
+  <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
 
-        <div
-          data-aos="zoom-in"
-          className="max-w-5xl mx-auto bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl text-white text-center px-10 py-20 shadow-2xl"
-        >
+  <div
+    data-aos="zoom-in"
+    className="relative z-10 max-w-5xl mx-auto px-6"
+  >
+    <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[35px] p-12 shadow-2xl text-center">
+{/* 
+      <span className="inline-block px-5 py-2 rounded-full bg-white/20 text-blue-100 font-semibold">
+        🚀 Join DigiQuestPC
+      </span> */}
 
-          <h2 className="text-5xl font-bold">
-            Start Your Tech Career Today
-          </h2>
+      <h2 className="text-5xl font-extrabold mt-6 leading-tight">
+        Start Your Learning
+        <span className="block text-cyan-300">
+          Journey Today
+        </span>
+      </h2>
 
-          <p className="mt-8 text-xl leading-8 text-blue-100">
-            Join DigiQuestPC and learn from experienced mentors,
-            work on live projects, earn industry-recognized certifications,
-            and get dedicated placement assistance.
+      <p className="mt-6 text-lg text-blue-100 max-w-2xl mx-auto leading-8">
+        Learn from industry experts, build real-world projects,
+        earn certification, and get dedicated placement support
+        to launch your career.
+      </p>
+
+      {/* Stats */}
+      {/* <div className="grid grid-cols-3 gap-6 mt-10">
+
+        <div>
+          <h3 className="text-3xl font-bold text-cyan-300">
+            500+
+          </h3>
+          <p className="text-blue-100 mt-2">
+            Students
           </p>
-
-          <div className="flex flex-col sm:flex-row justify-center gap-6 mt-10">
-
-            <Link to='/Course'>
-              <button className="bg-white text-blue-700 font-semibold px-8 py-4 rounded-xl hover:scale-105 duration-300">
-                Explore Courses
-              </button>
-            </Link>
-            <button className="border-2 border-white px-8 py-4 rounded-xl hover:bg-white hover:text-blue-700 duration-300">
-              Contact Us
-            </button>
-
-          </div>
-
         </div>
 
-      </section>
+        <div>
+          <h3 className="text-3xl font-bold text-cyan-300">
+            20+
+          </h3>
+          <p className="text-blue-100 mt-2">
+            Courses
+          </p>
+        </div>
+
+        <div>
+          <h3 className="text-3xl font-bold text-cyan-300">
+            100%
+          </h3>
+          <p className="text-blue-100 mt-2">
+            Support
+          </p>
+        </div> */}
+
+      {/* </div> */}
+
+      {/* Buttons */}
+      <div className="flex flex-col sm:flex-row justify-center gap-5 mt-12">
+
+        <Link to="/Enroll">
+          <button className="px-10 py-4 rounded-xl bg-white text-blue-700 font-bold text-lg shadow-lg hover:bg-cyan-300 hover:text-slate-900 hover:scale-105 transition-all duration-300">
+            Enroll Now →
+          </button>
+        </Link>
+
+        <Link to="/Course">
+          <button className="px-10 py-4 rounded-xl border-2 border-white font-semibold hover:bg-white hover:text-blue-700 transition-all duration-300">
+            Explore Courses
+          </button>
+        </Link>
+
+      </div>
+
+    </div>
+  </div>
+
+</section>
+
+        <footer className="bg-slate-900 text-white mt-24">
+       
+         <div className="max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-4 gap-12 py-16 px-6">
+       
+           {/* ================= COLUMN 1 ================= */}
+           <div data-aos="fade-up">
+             <h2 className="text-3xl font-bold">
+               DigiQuestPC
+             </h2>
+       
+             <p className="mt-5 text-gray-300 leading-8">
+               Upskill with practical training, mentorship and placement support.
+             </p>
+       
+             <p className="mt-8 text-gray-400">
+               © 2026 DigiQuestPC. All Rights Reserved.
+             </p>
+           </div>
+       
+           {/* ================= QUICK LINKS ================= */}
+           <div data-aos="fade-up" data-aos-delay="200">
+       
+             <h2 className="text-2xl font-bold mb-6">
+               Quick Links
+             </h2>
+       
+             <ul className="space-y-4 text-gray-300">
+       
+               <li className="hover:text-blue-400 cursor-pointer">Home</li>
+               <li className="hover:text-blue-400 cursor-pointer">About Us</li>
+               <li className="hover:text-blue-400 cursor-pointer">Placement</li>
+               <li className="hover:text-blue-400 cursor-pointer">Contact</li>
+       
+             </ul>
+       
+           </div>
+       
+           {/* ================= COURSES ================= */}
+           <div data-aos="fade-up" data-aos-delay="300">
+       
+             <h2 className="text-2xl font-bold mb-6">
+               Courses
+             </h2>
+       
+             <ul className="space-y-4 text-gray-300">
+       
+               <li className="hover:text-blue-400 cursor-pointer">
+                 Full Stack Development
+               </li>
+       
+               <li className="hover:text-blue-400 cursor-pointer">
+                 Python Programming
+               </li>
+       
+               <li className="hover:text-blue-400 cursor-pointer">
+                 Java Programming
+               </li>
+       
+               <li className="hover:text-blue-400 cursor-pointer">
+                 Data Analytics
+               </li>
+       
+               <li className="hover:text-blue-400 cursor-pointer">
+                 Cloud Computing
+               </li>
+       
+               <li className="hover:text-blue-400 cursor-pointer">
+                 Digital Marketing
+               </li>
+       
+             </ul>
+       
+           </div>
+       
+           {/* ================= CONTACT ================= */}
+           <div data-aos="fade-up" data-aos-delay="400">
+       
+             <h2 className="text-2xl font-bold">
+               Contact
+             </h2>
+       
+             <p className="mt-6 text-gray-300">
+               📞 +91 92363 98129
+             </p>
+       
+             <p className="mt-4 text-gray-300">
+               📧 digiquestpc@gmail.com
+             </p>
+       
+             <Link to='/Enroll'>
+               <div className="mt-6 inline-block text-blue-400 hover:text-blue-300 transition cursor-pointer">
+                 → Enroll Now
+               </div>
+             </Link>
+       
+           </div>
+       
+         </div>
+       
+       </footer>
+      
 
     </div>
   );

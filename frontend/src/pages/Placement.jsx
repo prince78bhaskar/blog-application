@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
+import placementBg from "../assets/placement.png";
 function Placement() {
 
     useEffect(() => {
@@ -71,7 +72,10 @@ function Placement() {
 
             <section >
 
-                <div className="bg-gradient-to-r from-blue-600 via-black-500 to-blue-400 text-white py-18">
+                <div className="text-white py-24 bg-cover bg-center"
+                  style={{
+                    backgroundImage: `linear-gradient(rgba(50,0,0,0.6), rgba(0,0,50,0.6)), url(${placementBg})`,
+                  }}>
 
                     <div className="max-w-7xl mx-auto px-6 text-center" >
 
@@ -93,42 +97,72 @@ function Placement() {
                 </div>
 
 
-                <div className="grid lg:grid-cols-2 gap-12 mt-16 items-center">
+                <div className="grid lg:grid-cols-2 gap-14 items-center mt-20">
 
-                    <div>
+  {/* Image */}
 
-                        <img
-                            src={placement}
-                            alt=""
-                            className="rounded-3xl shadow-2xl hover:scale-105 duration-500"
-                        />
+  <div
+  data-aos="fade-right"
+  className="overflow-hidden rounded-3xl lg:pl-8"
+>
+  <img
+    src={placement}
+    alt="Placement Support"
+    className="w-full rounded-3xl shadow-2xl transition-transform duration-500 hover:scale-105"
+  />
+</div>
 
-                    </div>
+  {/* Content */}
+  <div data-aos="fade-left">
 
-                    <div>
+    <span className="inline-block px-4 py-2 bg-blue-100 text-blue-700 rounded-full font-semibold text-sm">
+      Career Support
+    </span>
 
-                        <h3 className="text-3xl font-bold text-gray-800">
-                            Building Careers, Not Just Skills
-                        </h3>
+    <h2 className="text-4xl font-bold text-gray-900 mt-5 leading-tight">
+      Building Careers,
+      <span className="text-blue-600"> Not Just Skills</span>
+    </h2>
 
-                        <p className="mt-6 text-gray-600 leading-8">
+    <p className="mt-6 text-gray-600 text-lg leading-8">
+      We prepare every student for today's competitive job market through
+      practical training, live projects, and expert career guidance.
+    </p>
 
-                            Our goal is to prepare every student for today's job
-                            market with practical learning and career guidance.
+    <p className="mt-5 text-gray-600 text-lg leading-8">
+      From resume building and mock interviews to communication skills and
+      placement assistance, we support you at every step of your career journey.
+    </p>
 
-                        </p>
+    {/* Highlights */}
+    <div className="grid grid-cols-2 gap-4 mt-8">
 
-                        <p className="mt-5 text-gray-600 leading-8">
+      <div className="flex items-center gap-3 bg-gray-50 p-4 rounded-xl shadow-sm hover:shadow-md transition">
+        <span className="text-green-500 text-2xl">✔</span>
+        <span className="font-medium text-gray-700">Resume Building</span>
+      </div>
 
-                            We provide resume building, mock interviews,
-                            communication skill development and continuous support
-                            throughout the placement process.
+      <div className="flex items-center gap-3 bg-gray-50 p-4 rounded-xl shadow-sm hover:shadow-md transition">
+        <span className="text-green-500 text-2xl">✔</span>
+        <span className="font-medium text-gray-700">Mock Interviews</span>
+      </div>
 
-                        </p>
+      <div className="flex items-center gap-3 bg-gray-50 p-4 rounded-xl shadow-sm hover:shadow-md transition">
+        <span className="text-green-500 text-2xl">✔</span>
+        <span className="font-medium text-gray-700">Soft Skills</span>
+      </div>
 
-                    </div>
+      <div className="flex items-center gap-3 bg-gray-50 p-4 rounded-xl shadow-sm hover:shadow-md transition">
+        <span className="text-green-500 text-2xl">✔</span>
+        <span className="font-medium text-gray-700">Placement Support</span>
+      </div>
 
-                </div>
+    </div>
+
+  </div>
+
+</div>
+
             </section>
 
             {/* Why Choose */}
@@ -137,7 +171,7 @@ function Placement() {
 
                 <div className="max-w-7xl mx-auto px-6">
 
-                    <div className="text-center">
+                    <div data-aos="fade-up" className="text-center">
 
                         <h2 className="text-4xl font-bold">
                             Why Our Placement Program?
@@ -151,7 +185,7 @@ function Placement() {
 
                     <div  data-aos="fade-up" className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-16">
 
-                        <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg duration-500 hover:-translate-y-6">
+                        <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg duration-500 hover:-translate-y-6 border border-gray-700">
 
                             <div className="text-5xl">📄</div>
 
@@ -165,7 +199,7 @@ function Placement() {
 
                         </div>
 
-                        <div className="bg-white rounded-xl shadow-md p-6 hover:-translate-y-6 hover:shadow-2xl duration-500">
+                        <div className="bg-white rounded-xl shadow-md p-6 hover:-translate-y-6 hover:shadow-2xl duration-500 border border-gray-700">
 
                             <div className="text-5xl">🎤</div>
 
@@ -179,7 +213,7 @@ function Placement() {
 
                         </div>
 
-                        <div className="bg-white rounded-xl shadow-md p-6 hover: shadow-2xl duration-500 hover:-translate-y-6 ">
+                        <div className="bg-white rounded-xl shadow-md p-6 hover: shadow-2xl duration-500 hover:-translate-y-6 border border-gray-700">
 
                             <div className="text-5xl">💬</div>
 
@@ -193,7 +227,7 @@ function Placement() {
 
                         </div>
 
-                        <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-2xl duration-500 hover:-translate-y-6">
+                        <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-2xl duration-500 hover:-translate-y-6 border border-gray-700">
 
                             <div className="text-5xl">💼</div>
 
@@ -214,301 +248,589 @@ function Placement() {
             </section>
             {/* Placement Process */}
 
-            <section className="py-20">
+          <section className="py-18 bg-gradient-to-b from-gray-50 to-white">
 
-                <div className="max-w-7xl mx-auto px-6">
+  <div className="max-w-7xl mx-auto px-6">
 
-                    <div className="text-center">
+    {/* Heading */}
+    <div className="text-center" data-aos="fade-up">
 
-                        <h2 className="text-4xl font-bold text-gray-800">
-                            Our Placement Process
-                        </h2>
+      <span className="inline-block px-4 py-2 bg-blue-100 text-blue-700 rounded-full font-semibold text-sm">
+        PLACEMENT JOURNEY
+      </span>
 
-                        <p className="mt-4 text-gray-600">
-                            A simple step-by-step journey from learning to getting hired.
-                        </p>
+      <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-5">
+        Our Placement Process
+      </h2>
 
-                    </div>
+      <p className="mt-5 text-gray-600 max-w-2xl mx-auto text-lg">
+        Follow our structured learning path that transforms students into
+        industry-ready professionals.
+      </p>
 
-                    <div  data-aos="fade-up" className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-14">
+    </div>
 
-                        <div className="bg-white shadow-md rounded-xl p-6 text-center hover:shadow-lg duration-500 hover:-translate-y-6">
-                            <div className="w-14 h-14 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto text-xl font-bold">
-                                1
-                            </div>
+    {/* Cards */}
+    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-16">
 
-                            <h3 className="mt-5 text-xl font-semibold">
-                                Learn Skills
-                            </h3>
+      {/* Card 1 */}
+      <div
+        data-aos="fade-up"
+        className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:-translate-y-3 hover:shadow-2xl transition-all duration-500 border-gray-700"
+      >
+        <div className="w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center text-2xl font-bold mx-auto group-hover:scale-110 transition">
+          1
+        </div>
 
-                            <p className="mt-3 text-gray-600">
-                                Practical classroom and lab-based training.
-                            </p>
-                        </div>
+        <h3 className="mt-6 text-2xl font-bold text-center">
+          Learn Skills
+        </h3>
 
-                        <div  className="bg-white shadow-md rounded-xl p-6 text-center hover:shadow-lg duration-500 hover:-translate-y-6">
-                            <div className="w-14 h-14 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto text-xl font-bold">
-                                2
-                            </div>
+        <p className="mt-4 text-gray-600 text-center leading-7">
+          Master industry-relevant technologies through practical classroom
+          and lab-based learning.
+        </p>
+      </div>
 
-                            <h3 className="mt-5 text-xl font-semibold">
-                                Live Projects
-                            </h3>
+      {/* Card 2 */}
+      <div
+        data-aos="fade-up"
+        data-aos-delay="100"
+        className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:-translate-y-3 hover:shadow-2xl transition-all duration-500 border-gray-700"
+      >
+        <div className="w-16 h-16 rounded-full bg-indigo-600 text-white flex items-center justify-center text-2xl font-bold mx-auto group-hover:scale-110 transition">
+          2
+        </div>
 
-                            <p className="mt-3 text-gray-600">
-                                Work on real projects to gain practical experience.
-                            </p>
-                        </div>
+        <h3 className="mt-6 text-2xl font-bold text-center">
+          Live Projects
+        </h3>
 
-                        <div className="bg-white shadow-md rounded-xl p-6 text-center hover:shadow-lg duration-500 hover:-translate-y-6">
-                            <div className="w-14 h-14 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto text-xl font-bold">
-                                3
-                            </div>
+        <p className="mt-4 text-gray-600 text-center leading-7">
+          Build real-world projects to strengthen your portfolio and gain
+          hands-on experience.
+        </p>
+      </div>
 
-                            <h3 className="mt-5 text-xl font-semibold">
-                                Interview Prep
-                            </h3>
+      {/* Card 3 */}
+      <div
+        data-aos="fade-up"
+        data-aos-delay="200"
+        className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:-translate-y-3 hover:shadow-2xl transition-all duration-500 border-gray-700"
+      >
+        <div className="w-16 h-16 rounded-full bg-orange-500 text-white flex items-center justify-center text-2xl font-bold mx-auto group-hover:scale-110 transition">
+          3
+        </div>
 
-                            <p className="mt-3 text-gray-600">
-                                Resume building, aptitude and mock interviews.
-                            </p>
-                        </div>
+        <h3 className="mt-6 text-2xl font-bold text-center">
+          Interview Prep
+        </h3>
 
-                        <div className="bg-white shadow-md rounded-xl p-6 text-center hover:shadow-lg duration-500 hover:-translate-y-6">
-                            <div className="w-14 h-14 bg-green-600 text-white rounded-full flex items-center justify-center mx-auto text-xl font-bold">
-                                4
-                            </div>
+        <p className="mt-4 text-gray-600 text-center leading-7">
+          Resume building, aptitude practice, mock interviews and
+          communication skill training.
+        </p>
+      </div>
 
-                            <h3 className="mt-5 text-xl font-semibold">
-                                Get Placed
-                            </h3>
+      {/* Card 4 */}
+      <div
+        data-aos="fade-up"
+        data-aos-delay="300"
+        className="group bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:-translate-y-3 hover:shadow-2xl transition-all duration-500 border-gray-700"
+      >
+        <div className="w-16 h-16 rounded-full bg-green-600 text-white flex items-center justify-center text-2xl font-bold mx-auto group-hover:scale-110 transition">
+          4
+        </div>
 
-                            <p className="mt-3 text-gray-600">
-                                Attend interviews and start your professional career.
-                            </p>
-                        </div>
+        <h3 className="mt-6 text-2xl font-bold text-center">
+          Get Placed
+        </h3>
 
-                    </div>
+        <p className="mt-4 text-gray-600 text-center leading-7">
+          Attend company interviews with confidence and launch your
+          professional career.
+        </p>
+      </div>
 
-                </div>
+    </div>
 
-            </section>
+  </div>
+
+</section>
 
             {/* Placement Highlights */}
 
-            <section className="bg-blue-700 py-20 text-white">
+       <section className="py-24 bg-gradient-to-r from-blue-900 via-indigo-800 to-blue-700 text-white overflow-hidden">
 
-                <div className="max-w-7xl mx-auto px-6">
+  <div className="max-w-7xl mx-auto px-6">
 
-                    <div className="text-center">
+    {/* Heading */}
+    <div className="text-center" data-aos="fade-up">
 
-                        <h2 className="text-4xl font-bold">
-                            Placement Highlights
-                        </h2>
+      <span className="inline-block px-4 py-2 bg-white/10 border border-white/20 rounded-full text-blue-100 font-semibold">
+        OUR ACHIEVEMENTS
+      </span>
 
-                    </div>
+      <h2 className="text-4xl md:text-5xl font-bold mt-5">
+        Placement Highlights
+      </h2>
 
-                    <div  data-aos="fade-up" className="grid lg:grid-cols-4 gap-8 mt-14">
+      <p className="mt-5 text-blue-100 max-w-2xl mx-auto text-lg">
+        Our students have successfully launched their careers through
+        industry-focused training and dedicated placement support.
+      </p>
 
-                        <div className="bg-white/10 rounded-xl p-8 text-center hover:shadow-lg duration-500 hover:-translate-y-6">
-                            <h1 className="text-5xl font-bold">500+</h1>
-                            <p className="mt-3">Students Trained</p>
-                        </div>
+    </div>
 
-                        <div className="bg-white/10 rounded-xl p-8 text-center hover:shadow-lg duration-500 hover:-translate-y-6">
-                            <h1 className="text-5xl font-bold">90%</h1>
-                            <p className="mt-3">Placement Support</p>
-                        </div>
+    {/* Stats */}
+    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-16">
 
-                        <div className="bg-white/10 rounded-xl p-8 text-center hover:shadow-lg duration-500 hover:-translate-y-6">
-                            <h1 className="text-5xl font-bold">50+</h1>
-                            <p className="mt-3">Hiring Partners</p>
-                        </div>
+      {/* Card 1 */}
+      <div
+        data-aos="zoom-in"
+        className="group bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-8 text-center hover:-translate-y-3 hover:bg-white/20 transition-all duration-500"
+      >
+        <h1 className="text-5xl font-extrabold text-cyan-300 group-hover:scale-110 transition">
+          500+
+        </h1>
 
-                        <div className="bg-white/10 rounded-xl p-8 text-center hover:shadow-lg duration-500 hover:-translate-y-6">
-                            <h1 className="text-5xl font-bold">₹3LPA+</h1>
-                            <p className="mt-3">Average Package</p>
-                        </div>
+        <p className="mt-4 text-lg text-blue-100">
+          Students Trained
+        </p>
+      </div>
 
-                    </div>
+      {/* Card 2 */}
+      <div
+        data-aos="zoom-in"
+        data-aos-delay="100"
+        className="group bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-8 text-center hover:-translate-y-3 hover:bg-white/20 transition-all duration-500"
+      >
+        <h1 className="text-5xl font-extrabold text-green-300 group-hover:scale-110 transition">
+          90%
+        </h1>
 
-                </div>
+        <p className="mt-4 text-lg text-blue-100">
+          Placement Support
+        </p>
+      </div>
 
-            </section>
+      {/* Card 3 */}
+      <div
+        data-aos="zoom-in"
+        data-aos-delay="200"
+        className="group bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-8 text-center hover:-translate-y-3 hover:bg-white/20 transition-all duration-500"
+      >
+        <h1 className="text-5xl font-extrabold text-yellow-300 group-hover:scale-110 transition">
+          50+
+        </h1>
 
-            {/* Hiring Partners */}
+        <p className="mt-4 text-lg text-blue-100">
+          Hiring Partners
+        </p>
+      </div>
 
-            <section className="py-20">
+      {/* Card 4 */}
+      <div
+        data-aos="zoom-in"
+        data-aos-delay="300"
+        className="group bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-8 text-center hover:-translate-y-3 hover:bg-white/20 transition-all duration-500"
+      >
+        <h1 className="text-5xl font-extrabold text-pink-300 group-hover:scale-110 transition">
+          ₹3LPA+
+        </h1>
 
-                <div className="max-w-7xl mx-auto px-6">
+        <p className="mt-4 text-lg text-blue-100">
+          Average Package
+        </p>
+      </div>
 
-                    <div className="text-center">
+    </div>
 
-                        <h2 className="text-4xl font-bold text-gray-800">
-                            Hiring Partners
-                        </h2>
+  </div>
 
-                        <p className="mt-4 text-gray-600">
-                            We connect students with growing IT companies and startups.
-                        </p>
+</section>
 
-                    </div>
-
-                    <div  data-aos="fade-up"
-                     className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mt-14">
-
-                        <div className="bg-white shadow rounded-lg p-5 text-center font-semibold hover:shadow-lg duration-500 hover:-translate-y-6">
-                            Tech Solutions
-                        </div>
-
-                        <div className="bg-white shadow rounded-lg p-5 text-center font-semibold hover:shadow-lg duration-500 hover:-translate-y-6">
-                            WebNest
-                        </div>
-
-                        <div className="bg-white shadow rounded-lg p-5 text-center font-semibold hover:shadow-lg duration-500 hover:-translate-y-6">
-                            SoftTech
-                        </div>
-
-                        <div className="bg-white shadow rounded-lg p-5 text-center font-semibold hover:shadow-lg duration-500 hover:-translate-y-6">
-                            CodeCraft
-                        </div>
-
-                        <div className="bg-white shadow rounded-lg p-5 text-center font-semibold hover:shadow-lg duration-500 hover:-translate-y-6">
-                            NextGen IT
-                        </div>
-
-                        <div className="bg-white shadow rounded-lg p-5 text-center font-semibold hover:shadow-lg duration-500 hover:-translate-y-6">
-                            Digital Works
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
+          
             {/* Student Success */}
 
-            <section className="bg-gray-100 py-20">
+    <section className="py-24 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
 
-                <div className="max-w-7xl mx-auto px-6">
+  <div className="max-w-7xl mx-auto px-6 lg:px-10">
 
-                    <div className="text-center">
+    {/* Heading */}
+    <div className="text-center mb-16" data-aos="fade-up">
 
-                        <h2 className="text-4xl font-bold text-gray-800">
-                            Student Success Stories
-                        </h2>
+      <span className="inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-700 font-semibold text-sm">
+        SUCCESS STORIES
+      </span>
 
-                        <p className="mt-4 text-gray-600">
-                            Our students are building successful careers after completing their training.
-                        </p>
+      <h2 className="text-4xl md:text-5xl font-bold mt-5 text-gray-900">
+        👨‍💻 Developer Stories
+      </h2>
 
-                    </div>
+      <p className="mt-5 text-lg text-gray-600 max-w-3xl mx-auto">
+        Real experiences from developers who transformed their careers
+        with our practical training, live projects and placement support.
+      </p>
 
-                    <div    data-aos="fade-up"
-                    className="grid md:grid-cols-3 gap-8 mt-14 ">
+    </div>
 
-                        <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-lg duration-500 hover:-translate-y-6 ">
+    {/* Cards */}
 
-                            <div className="w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center text-2xl font-bold">
-                                R
-                            </div>
+    <div
+      data-aos="fade-up"
+      className="grid lg:grid-cols-3 md:grid-cols-2 gap-8"
+    >
 
-                            <h3 className="mt-5 text-xl font-semibold">
-                                Rahul Singh
-                            </h3>
+      {/* Card 1 */}
 
-                            <p className="text-gray-500">
-                                Full Stack Development
-                            </p>
+      <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-8 hover:-translate-y-3 hover:shadow-2xl transition-all duration-500">
 
-                            <p className="mt-4 text-gray-600">
-                                "The practical training and mock interviews helped me
-                                crack my first job interview with confidence."
-                            </p>
+        <div className="flex items-center gap-4">
 
-                        </div>
+          <div className="w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center text-3xl">
+            👨‍💻
+          </div>
 
-                        <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-lg duration-500 hover:-translate-y-6">
+          <div>
+            <h3 className="text-xl font-bold text-gray-900">
+              Sagar Patel
+            </h3>
 
-                            <div className="w-16 h-16 rounded-full bg-green-600 text-white flex items-center justify-center text-2xl font-bold">
-                                    P   
-                            </div>
+            <p className="text-blue-600 font-medium">
+              Full Stack Developer
+            </p>
 
-                            <h3 className="mt-5 text-xl font-semibold">
-                                Priya Sharma
-                            </h3>
+            <span className="text-sm text-gray-500">
+              Joined: Sept 2024
+            </span>
+          </div>
 
-                            <p className="text-gray-500">
-                                Data Analytics
-                            </p>
+        </div>
 
-                            <p className="mt-4 text-gray-600">
-                                "Excellent mentors, live projects and placement guidance.
-                                I learned skills that are useful in real companies."
-                            </p>
+        <p className="mt-6 text-gray-600 leading-8 italic">
+          "The MERN Stack training was comprehensive and practical.
+          Our instructors explained every concept with real-world
+          examples. Within 3 months I secured a placement at a
+          startup with excellent career growth."
+        </p>
 
-                        </div>
+        <div className="border-t mt-8 pt-6 flex justify-between items-center">
 
-                        <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-lg duration-500 hover:-translate-y-6">
+          <div>
+            <p className="text-sm text-gray-500">Placed At</p>
+            <h4 className="font-bold text-gray-900">
+              TechStartup Inc
+            </h4>
+          </div>
 
-                            <div className="w-16 h-16 rounded-full bg-purple-600 text-white flex items-center justify-center text-2xl font-bold">
-                                A
-                            </div>
+          <div className="text-right">
+            <p className="text-sm text-gray-500">Package</p>
+            <h4 className="text-2xl font-bold text-green-600">
+              ₹8.5 LPA
+            </h4>
+          </div>
 
-                            <h3 className="mt-5 text-xl font-semibold">
-                                Aman Verma
-                            </h3>
+        </div>
 
-                            <p className="text-gray-500">
-                                Networking
-                            </p>
+      </div>
 
-                            <p className="mt-4 text-gray-600">
-                                "The placement support team guided me throughout the
-                                interview process and helped me start my career."
-                            </p>
+      {/* Card 2 */}
 
-                        </div>
+      <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-8 hover:-translate-y-3 hover:shadow-2xl transition-all duration-500">
 
-                    </div>
+        <div className="flex items-center gap-4">
 
-                </div>
+          <div className="w-16 h-16 rounded-full bg-pink-600 text-white flex items-center justify-center text-3xl">
+            👩‍💻
+          </div>
 
-            </section>
+          <div>
+            <h3 className="text-xl font-bold text-gray-900">
+              Neha Sharma
+            </h3>
+
+            <p className="text-pink-600 font-medium">
+              Python Full Stack Developer
+            </p>
+
+            <span className="text-sm text-gray-500">
+              Joined: Aug 2024
+            </span>
+          </div>
+
+        </div>
+
+        <p className="mt-6 text-gray-600 leading-8 italic">
+          "The hands-on projects and one-to-one mentorship completely
+          transformed my learning journey. The placement team
+          supported me until I received my dream offer."
+        </p>
+
+        <div className="border-t mt-8 pt-6 flex justify-between items-center">
+
+          <div>
+            <p className="text-sm text-gray-500">Placed At</p>
+            <h4 className="font-bold text-gray-900">
+              Tech Solutions
+            </h4>
+          </div>
+
+          <div className="text-right">
+            <p className="text-sm text-gray-500">Package</p>
+            <h4 className="text-2xl font-bold text-green-600">
+              ₹10 LPA
+            </h4>
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* Card 3 */}
+
+      <div className="bg-white rounded-3xl shadow-lg border border-gray-200 p-8 hover:-translate-y-3 hover:shadow-2xl transition-all duration-500">
+
+        <div className="flex items-center gap-4">
+
+          <div className="w-16 h-16 rounded-full bg-purple-600 text-white flex items-center justify-center text-3xl">
+            🎨
+          </div>
+
+          <div>
+            <h3 className="text-xl font-bold text-gray-900">
+              Vikram Singh
+            </h3>
+
+            <p className="text-purple-600 font-medium">
+              UI/UX Designer
+            </p>
+
+            <span className="text-sm text-gray-500">
+              Joined: Oct 2024
+            </span>
+          </div>
+
+        </div>
+
+        <p className="mt-6 text-gray-600 leading-8 italic">
+          "Amazing learning experience with industry mentors.
+          The portfolio projects we built helped me secure
+          a design role at a leading company."
+        </p>
+
+        <div className="border-t mt-8 pt-6 flex justify-between items-center">
+
+          <div>
+            <p className="text-sm text-gray-500">Placed At</p>
+            <h4 className="font-bold text-gray-900">
+              Design Studio
+            </h4>
+          </div>
+
+          <div className="text-right">
+            <p className="text-sm text-gray-500">Package</p>
+            <h4 className="text-2xl font-bold text-green-600">
+              ₹7.5 LPA
+            </h4>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
 
             {/* Call To Action */}
 
-            <section className="bg-gradient-to-r from-blue-700 to-indigo-700 text-white py-20">
+          <section className="relative overflow-hidden py-24 bg-gradient-to-br from-blue-700 via-indigo-700 to-slate-900 text-white">
 
-                <div  data-aos="zoom-in"
-    className="max-w-5xl mx-auto bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl text-white text-center px-10 py-20 shadow-2xl">
+  {/* Background Blur Effects */}
+  <div className="absolute -top-20 -left-20 w-72 h-72 bg-cyan-400/20 rounded-full blur-3xl animate-pulse"></div>
+  <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
 
-                    <h2 className="text-4xl font-bold">
-                        Ready to Start Your Career?
-                    </h2>
+  <div
+    data-aos="zoom-in"
+    className="relative z-10 max-w-5xl mx-auto px-6"
+  >
+    <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[35px] p-12 shadow-2xl text-center">
 
-                    <p className="mt-6 text-lg leading-8 text-blue-100">
-                        Join DigiQuestPC and learn from experienced mentors,
-                        work on practical projects, improve your skills,
-                        and get placement support to build your future.
-                    </p>
+      <span className="inline-block px-5 py-2 rounded-full bg-white/20 text-blue-100 font-semibold">
+        🚀 Join DigiQuestPC
+      </span>
 
-                    <div className="mt-8 flex justify-center gap-4">
+      <h2 className="text-5xl font-extrabold mt-6 leading-tight">
+        Start Your Learning
+        <span className="block text-cyan-300">
+          Journey Today
+        </span>
+      </h2>
 
-                          <Link to='/Enroll'>
-                            <li className="cursor-pointer hover:text-blue-600 hover:-translate-y-1 transition duration-300">
-                                Enroll
-                            </li>
-                        </Link>
-                        <button className="border border-white px-6 py-3 rounded-lg hover:bg-white hover:text-blue-700 duration-300">
-                            Contact Us
-                        </button>
+      <p className="mt-6 text-lg text-blue-100 max-w-2xl mx-auto leading-8">
+        Learn from industry experts, build real-world projects,
+        earn certification, and get dedicated placement support
+        to launch your career.
+      </p>
 
-                    </div>
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-6 mt-10">
 
-                </div>
+        <div>
+          <h3 className="text-3xl font-bold text-cyan-300">
+            500+
+          </h3>
+          <p className="text-blue-100 mt-2">
+            Students
+          </p>
+        </div>
 
-            </section>
+        <div>
+          <h3 className="text-3xl font-bold text-cyan-300">
+            20+
+          </h3>
+          <p className="text-blue-100 mt-2">
+            Courses
+          </p>
+        </div>
+
+        <div>
+          <h3 className="text-3xl font-bold text-cyan-300">
+            100%
+          </h3>
+          <p className="text-blue-100 mt-2">
+            Support
+          </p>
+        </div>
+
+      </div>
+
+      {/* Buttons */}
+      <div className="flex flex-col sm:flex-row justify-center gap-5 mt-12">
+
+        <Link to="/Enroll">
+          <button className="px-10 py-4 rounded-xl bg-white text-blue-700 font-bold text-lg shadow-lg hover:bg-cyan-300 hover:text-slate-900 hover:scale-105 transition-all duration-300">
+            Enroll Now →
+          </button>
+        </Link>
+
+        <Link to="/Course">
+          <button className="px-10 py-4 rounded-xl border-2 border-white font-semibold hover:bg-white hover:text-blue-700 transition-all duration-300">
+            Explore Courses
+          </button>
+        </Link>
+
+      </div>
+
+    </div>
+  </div>
+
+</section>
+
+          <footer className="bg-slate-900 text-white mt-24">
+         
+           <div className="max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-4 gap-12 py-16 px-6">
+         
+             {/* ================= COLUMN 1 ================= */}
+             <div data-aos="fade-up">
+               <h2 className="text-3xl font-bold">
+                 DigiQuestPC
+               </h2>
+         
+               <p className="mt-5 text-gray-300 leading-8">
+                 Upskill with practical training, mentorship and placement support.
+               </p>
+         
+               <p className="mt-8 text-gray-400">
+                 © 2026 DigiQuestPC. All Rights Reserved.
+               </p>
+             </div>
+         
+             {/* ================= QUICK LINKS ================= */}
+             <div data-aos="fade-up" data-aos-delay="200">
+         
+               <h2 className="text-2xl font-bold mb-6">
+                 Quick Links
+               </h2>
+         
+               <ul className="space-y-4 text-gray-300">
+         
+                 <li className="hover:text-blue-400 cursor-pointer">Home</li>
+                 <li className="hover:text-blue-400 cursor-pointer">About Us</li>
+                 <li className="hover:text-blue-400 cursor-pointer">Placement</li>
+                 <li className="hover:text-blue-400 cursor-pointer">Contact</li>
+         
+               </ul>
+         
+             </div>
+         
+             {/* ================= COURSES ================= */}
+             <div data-aos="fade-up" data-aos-delay="300">
+         
+               <h2 className="text-2xl font-bold mb-6">
+                 Courses
+               </h2>
+         
+               <ul className="space-y-4 text-gray-300">
+         
+                 <li className="hover:text-blue-400 cursor-pointer">
+                   Full Stack Development
+                 </li>
+         
+                 <li className="hover:text-blue-400 cursor-pointer">
+                   Python Programming
+                 </li>
+         
+                 <li className="hover:text-blue-400 cursor-pointer">
+                   Java Programming
+                 </li>
+         
+                 <li className="hover:text-blue-400 cursor-pointer">
+                   Data Analytics
+                 </li>
+         
+                 <li className="hover:text-blue-400 cursor-pointer">
+                   Cloud Computing
+                 </li>
+         
+                 <li className="hover:text-blue-400 cursor-pointer">
+                   Digital Marketing
+                 </li>
+         
+               </ul>
+         
+             </div>
+         
+             {/* ================= CONTACT ================= */}
+             <div data-aos="fade-up" data-aos-delay="400">
+         
+               <h2 className="text-2xl font-bold">
+                 Contact
+               </h2>
+         
+               <p className="mt-6 text-gray-300">
+                 📞 +91 92363 98129
+               </p>
+         
+               <p className="mt-4 text-gray-300">
+                 📧 digiquestpc@gmail.com
+               </p>
+         
+               <Link to='/Enroll'>
+                 <div className="mt-6 inline-block text-blue-400 hover:text-blue-300 transition cursor-pointer">
+                   → Enroll Now
+                 </div>
+               </Link>
+         
+             </div>
+         
+           </div>
+         
+         </footer>
+            
 
         </div>
     );

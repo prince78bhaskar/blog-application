@@ -110,7 +110,7 @@ function Home() {
             </div>
 
             {/* Right Image */}
-            <div
+            {/* <div
               data-aos="fade-left"
               className="flex justify-center"
             >
@@ -119,7 +119,17 @@ function Home() {
                 alt="Training"
                 className="w-full max-w-lg hover:scale-105 transition duration-500 drop-shadow-2xl"
               />
-            </div>
+            </div> */}
+            <div
+  data-aos="fade-left"
+  className="flex justify-center items-center w-full"
+>
+  <img
+    src={tp}
+    alt="Training"
+    className="w-full max-w-2xl h-auto object-contain hover:scale-105 transition duration-500"
+  />
+</div>
 
           </div>
         </section>
@@ -153,7 +163,7 @@ function Home() {
 
               <div
                 data-aos="zoom-in"
-                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-500"
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-500 border border-gray-700"
               >
                 <div className="text-5xl">🚀</div>
                 <h3 className="text-xl font-bold mt-5">
@@ -168,7 +178,7 @@ function Home() {
               <div
                 data-aos="zoom-in"
                 data-aos-delay="100"
-                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-500"
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-500  border border-gray-700"
               >
                 <div className="text-5xl">👨‍🏫</div>
                 <h3 className="text-xl font-bold mt-5">
@@ -183,7 +193,7 @@ function Home() {
               <div
                 data-aos="zoom-in"
                 data-aos-delay="200"
-                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-500"
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-500  border border-gray-700"
               >
                 <div className="text-5xl">💼</div>
                 <h3 className="text-xl font-bold mt-5">
@@ -198,7 +208,7 @@ function Home() {
               <div
                 data-aos="zoom-in"
                 data-aos-delay="300"
-                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-500"
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-500  border border-gray-700"
               >
                 <div className="text-5xl">🎓</div>
                 <h3 className="text-xl font-bold mt-5">
@@ -213,7 +223,7 @@ function Home() {
               <div
                 data-aos="zoom-in"
                 data-aos-delay="400"
-                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-500"
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-500  border border-gray-700"
               >
                 <div className="text-5xl">🏢</div>
                 <h3 className="text-xl font-bold mt-5">
@@ -228,7 +238,7 @@ function Home() {
               <div
                 data-aos="zoom-in"
                 data-aos-delay="500"
-                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-500"
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-500  border border-gray-700"
               >
                 <div className="text-5xl">🤝</div>
                 <h3 className="text-xl font-bold mt-5">
@@ -243,7 +253,7 @@ function Home() {
               <div
                 data-aos="zoom-in"
                 data-aos-delay="600"
-                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-500"
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-500  border border-gray-700"
               >
                 <div className="text-5xl">💰</div>
                 <h3 className="text-xl font-bold mt-5">
@@ -258,7 +268,7 @@ function Home() {
               <div
                 data-aos="zoom-in"
                 data-aos-delay="700"
-                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-500"
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all duration-500  border border-gray-700"
               >
                 <div className="text-5xl">🌍</div>
                 <h3 className="text-xl font-bold mt-5">
@@ -277,235 +287,322 @@ function Home() {
         </section>
 
         {/* ===================== Commitment  Section ===================== */}
+        <section className="py-24 bg-slate-950 text-white overflow-hidden relative">
 
-        <section className="py-20 bg-gradient-to-r from-blue-300 to-indigo-700 text-white">
+  {/* Background Blur */}
+  <div className="absolute top-0 left-0 w-72 h-72 bg-blue-500/20 blur-[120px] rounded-full"></div>
+  <div className="absolute bottom-0 right-0 w-80 h-80 bg-indigo-500/20 blur-[120px] rounded-full"></div>
 
-          <div className="max-w-7xl mx-auto px-6">
+  <div className="relative max-w-7xl mx-auto px-6">
 
-            {/* Heading */}
-            <div className="text-center mb-16" data-aos="fade-up">
+    <div
+      data-aos="fade-up"
+      className="text-center mb-20"
+    >
+      <span className="px-5 py-2 bg-blue-500/20 rounded-full text-blue-300 font-semibold">
+        WHY CHOOSE US
+      </span>
 
-              <h2 className="text-4xl md:text-5xl font-bold">
-                Our Commitment to Excellence
-              </h2>
+      <h2 className="text-5xl font-bold mt-6">
+        Our Commitment
+      </h2>
 
-              <p className="mt-4 text-blue-100 text-lg">
-                We are committed to providing world-class training,
-                practical learning, and outstanding career opportunities.
-              </p>
+      <p className="text-gray-300 mt-5 max-w-2xl mx-auto text-lg">
+        We believe in practical education, industry exposure and
+        guaranteed career growth through quality training.
+      </p>
 
-            </div>
+    </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
+    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
 
-              <div
-                data-aos="zoom-in"
-                className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 text-center hover:scale-105 transition duration-500"
-              >
-                <div className="text-5xl">👨‍🎓</div>
+      <div
+        data-aos="zoom-in"
+        className="group bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 hover:border-blue-500 hover:-translate-y-4 duration-500"
+      >
 
-                <h1 className="text-4xl font-bold mt-4">1000+</h1>
+        <div className="text-6xl group-hover:scale-125 duration-500">
+          👨‍🎓
+        </div>
 
-                <p className="mt-3 text-blue-100">
-                  Students Already Enrolled
-                </p>
+        <h2 className="text-5xl font-bold mt-6 text-blue-400">
+          1000+
+        </h2>
 
-              </div>
+        <p className="mt-4 text-gray-300">
+          Students Successfully Trained
+        </p>
 
-              <div
-                data-aos="zoom-in"
-                data-aos-delay="100"
-                className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 text-center hover:scale-105 transition duration-500"
-              >
-                <div className="text-5xl">🎯</div>
+      </div>
 
-                <h1 className="text-4xl font-bold mt-4">95%</h1>
+      <div
+        data-aos="zoom-in"
+        data-aos-delay="150"
+        className="group bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 hover:border-green-500 hover:-translate-y-4 duration-500"
+      >
 
-                <p className="mt-3 text-blue-100">
-                  Placement Success Rate
-                </p>
+        <div className="text-6xl group-hover:rotate-12 duration-500">
+          🎯
+        </div>
 
-              </div>
+        <h2 className="text-5xl font-bold mt-6 text-green-400">
+          95%
+        </h2>
 
-              <div
-                data-aos="zoom-in"
-                data-aos-delay="200"
-                className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 text-center hover:scale-105 transition duration-500"
-              >
-                <div className="text-5xl">🏢</div>
+        <p className="mt-4 text-gray-300">
+          Placement Success Rate
+        </p>
 
-                <h1 className="text-4xl font-bold mt-4">200+</h1>
+      </div>
 
-                <p className="mt-3 text-blue-100">
-                  Partner Companies
-                </p>
+      <div
+        data-aos="zoom-in"
+        data-aos-delay="300"
+        className="group bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 hover:border-yellow-500 hover:-translate-y-4 duration-500"
+      >
 
-              </div>
+        <div className="text-6xl group-hover:scale-125 duration-500">
+          🏢
+        </div>
 
-              <div
-                data-aos="zoom-in"
-                data-aos-delay="300"
-                className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 text-center hover:scale-105 transition duration-500"
-              >
-                <div className="text-5xl">💰</div>
+        <h2 className="text-5xl font-bold mt-6 text-yellow-400">
+          200+
+        </h2>
 
-                <h1 className="text-4xl font-bold mt-4">₹5LPA+</h1>
+        <p className="mt-4 text-gray-300">
+          Hiring Partner Companies
+        </p>
 
-                <p className="mt-3 text-blue-100">
-                  Average Starting Salary
-                </p>
+      </div>
 
-              </div>
+      <div
+        data-aos="zoom-in"
+        data-aos-delay="450"
+        className="group bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 hover:border-pink-500 hover:-translate-y-4 duration-500"
+      >
 
-            </div>
+        <div className="text-6xl group-hover:scale-125 duration-500">
+          💰
+        </div>
 
-            {/* Campus Features */}
+        <h2 className="text-5xl font-bold mt-6 text-pink-400">
+          ₹5LPA+
+        </h2>
 
-            <div className="text-center mb-12" data-aos="fade-up">
+        <p className="mt-4 text-gray-300">
+          Average Package
+        </p>
 
-              <h2 className="text-4xl font-bold">
-                ✨ Brand New Campus Features ✨
-              </h2>
+      </div>
 
-            </div>
+    </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
+  </div>
 
-              <div
-                data-aos="fade-up"
-                className="bg-white text-gray-800 rounded-2xl shadow-xl p-8 text-center hover:-translate-y-3 transition duration-500"
-              >
+</section>
 
-                <div className="text-5xl">💻</div>
+      
 
-                <h3 className="text-2xl font-bold mt-5">
-                  High-Speed Internet
-                </h3>
+        {/* ===================== Features Section ===================== */}
 
-                <p className="text-gray-600 mt-4">
-                  1Gbps dedicated fiber connection for uninterrupted learning.
-                </p>
+        <section className="py-24 bg-gradient-to-br from-blue-50 via-white to-indigo-100">
 
-              </div>
+  <div className="max-w-7xl mx-auto px-6">
 
-              <div
-                data-aos="fade-up"
-                data-aos-delay="150"
-                className="bg-white text-gray-800 rounded-2xl shadow-xl p-8 text-center hover:-translate-y-3 transition duration-500"
-              >
+    <div
+      data-aos="fade-up"
+      className="text-center mb-20"
+    >
 
-                <div className="text-5xl">🖥️</div>
+      <span className="bg-blue-100 text-blue-700 px-5 py-2 rounded-full font-semibold">
+        OUR CAMPUS
+      </span>
 
-                <h3 className="text-2xl font-bold mt-5">
-                  Latest Computers
-                </h3>
+      <h2 className="text-5xl font-bold mt-6 text-gray-900">
+        World-Class Learning Environment
+      </h2>
 
-                <p className="text-gray-600 mt-4">
-                  Modern i5/i7 systems with 16GB RAM for hands-on practical training.
-                </p>
+      <p className="text-gray-600 mt-5 max-w-3xl mx-auto text-lg">
+        Learn with modern infrastructure, advanced computer labs,
+        smart classrooms and high-speed internet.
+      </p>
 
-              </div>
+    </div>
 
-              <div
-                data-aos="fade-up"
-                data-aos-delay="300"
-                className="bg-white text-gray-800 rounded-2xl shadow-xl p-8 text-center hover:-translate-y-3 transition duration-500"
-              >
+    <div className="grid md:grid-cols-3 gap-10">
 
-                <div className="text-5xl">🎧</div>
+      <div
+        data-aos="fade-up"
+        className="group bg-white rounded-3xl p-10 shadow-xl hover:shadow-blue-400/40 hover:-translate-y-5 duration-500 border border-gray-700"
+      >
 
-                <h3 className="text-2xl font-bold mt-5">
-                  Audio-Visual Rooms
-                </h3>
+        <div className="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center text-5xl mx-auto group-hover:rotate-12 duration-500">
+          💻
+        </div>
 
-                <p className="text-gray-600 mt-4">
-                  Smart classrooms with projectors and recording facilities.
-                </p>
+        <h3 className="text-3xl font-bold text-center mt-8">
+          High-Speed Internet
+        </h3>
 
-              </div>
+        <p className="text-gray-600 mt-5 text-center">
+          Dedicated 1Gbps Fiber Internet for seamless coding,
+          live classes and project work.
+        </p>
 
-            </div>
+      </div>
 
-          </div>
+      <div
+        data-aos="fade-up"
+        data-aos-delay="150"
+        className="group bg-white rounded-3xl p-10 shadow-xl hover:shadow-green-400/40 hover:-translate-y-5 duration-500 border border-gray-700"
+      >
 
-        </section>
+        <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center text-5xl mx-auto group-hover:scale-110 duration-500">
+          🖥️
+        </div>
+
+        <h3 className="text-3xl font-bold text-center mt-8">
+          Modern Computer Labs
+        </h3>
+
+        <p className="text-gray-600 mt-5 text-center">
+          Latest Core i5/i7 systems with SSD and 16GB RAM for
+          industry-level practical training.
+        </p>
+
+      </div>
+
+      <div
+        data-aos="fade-up"
+        data-aos-delay="300"
+        className="group bg-white rounded-3xl p-10 shadow-xl hover:shadow-pink-400/40 hover:-translate-y-5 duration-500 border border-gray-700"
+      >
+
+        <div className="w-24 h-24 rounded-full bg-pink-100 flex items-center justify-center text-5xl mx-auto group-hover:animate-bounce">
+          🎧
+        </div>
+
+        <h3 className="text-3xl font-bold text-center mt-8">
+          Smart Classrooms
+        </h3>
+
+        <p className="text-gray-600 mt-5 text-center">
+          Interactive projector-based classrooms with premium
+          audio and video facilities.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>  
 
       </main>
 
-      <footer className="bg-slate-900 text-white mt-24">
+      
 
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-12 py-16">
+     <footer className="bg-slate-900 text-white mt-24">
 
-          <div data-aos="fade-up">
-            <h2 className="text-3xl font-bold">
-              DigiQuestPC
-            </h2>
+  <div className="max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-4 gap-12 py-16 px-6">
 
-            <p className="mt-5 text-gray-300 leading-8">
-              Upskill with practical training, mentorship and placement support.
-            </p>
+    {/* ================= COLUMN 1 ================= */}
+    <div data-aos="fade-up">
+      <h2 className="text-3xl font-bold">
+        DigiQuestPC
+      </h2>
 
-            <p className="mt-8 text-gray-400">
-              © 2026 DigiQuestPC. All Rights Reserved.
-            </p>
+      <p className="mt-5 text-gray-300 leading-8">
+        Upskill with practical training, mentorship and placement support.
+      </p>
 
-          </div>
+      <p className="mt-8 text-gray-400">
+        © 2026 DigiQuestPC. All Rights Reserved.
+      </p>
+    </div>
 
-          <div data-aos="fade-up" data-aos-delay="200">
+    {/* ================= QUICK LINKS ================= */}
+    <div data-aos="fade-up" data-aos-delay="200">
 
-            <h2 className="text-2xl font-bold mb-6">
-              Quick Links
-            </h2>
+      <h2 className="text-2xl font-bold mb-6">
+        Quick Links
+      </h2>
 
-            <ul className="space-y-4">
+      <ul className="space-y-4 text-gray-300">
 
-              <li className="hover:text-blue-400 duration-300 cursor-pointer">
-                Home
-              </li>
+        <li className="hover:text-blue-400 cursor-pointer">Home</li>
+        <li className="hover:text-blue-400 cursor-pointer">About Us</li>
+        <li className="hover:text-blue-400 cursor-pointer">Placement</li>
+        <li className="hover:text-blue-400 cursor-pointer">Contact</li>
 
-              <li className="hover:text-blue-400 duration-300 cursor-pointer">
-                Why Us
-              </li>
+      </ul>
 
-              <li className="hover:text-blue-400 duration-300 cursor-pointer">
-                Courses
-              </li>
+    </div>
 
-              <li className="hover:text-blue-400 duration-300 cursor-pointer">
-                Contact
-              </li>
+    {/* ================= COURSES ================= */}
+    <div data-aos="fade-up" data-aos-delay="300">
 
-            </ul>
+      <h2 className="text-2xl font-bold mb-6">
+        Courses
+      </h2>
 
-          </div>
+      <ul className="space-y-4 text-gray-300">
 
-          <div data-aos="fade-up" data-aos-delay="400">
+        <li className="hover:text-blue-400 cursor-pointer">
+          Full Stack Development
+        </li>
 
-            <h2 className="text-2xl font-bold">
-              Contact
-            </h2>
+        <li className="hover:text-blue-400 cursor-pointer">
+          Python Programming
+        </li>
 
-            <p className="mt-6">
-              📞 +91 92363 98129
-            </p>
+        <li className="hover:text-blue-400 cursor-pointer">
+          Java Programming
+        </li>
 
-            <p className="mt-4">
-              📧 digiquestpc@gmail.com
-            </p>
+        <li className="hover:text-blue-400 cursor-pointer">
+          Data Analytics
+        </li>
 
-            <Link to='/Enroll'>
-              <li className="cursor-pointer hover:text-blue-600 hover:-translate-y-1 transition duration-300">
-                Enroll
-              </li>
-            </Link>
+        <li className="hover:text-blue-400 cursor-pointer">
+          Cloud Computing
+        </li>
 
-          </div>
+        <li className="hover:text-blue-400 cursor-pointer">
+          Digital Marketing
+        </li>
 
+      </ul>
+
+    </div>
+
+    {/* ================= CONTACT ================= */}
+    <div data-aos="fade-up" data-aos-delay="400">
+
+      <h2 className="text-2xl font-bold">
+        Contact
+      </h2>
+
+      <p className="mt-6 text-gray-300">
+        📞 +91 92363 98129
+      </p>
+
+      <p className="mt-4 text-gray-300">
+        📧 digiquestpc@gmail.com
+      </p>
+
+      <Link to='/Enroll'>
+        <div className="mt-6 inline-block text-blue-400 hover:text-blue-300 transition cursor-pointer">
+          → Enroll Now
         </div>
+      </Link>
 
-      </footer>
+    </div>
 
+  </div>
+
+</footer>
     </div>
   );
 }
