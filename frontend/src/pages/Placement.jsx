@@ -441,30 +441,27 @@ function Placement() {
 </section>
 
             {/* Placement Highlights */}
-
-       <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-r from-blue-900 via-indigo-800 to-blue-700 text-white overflow-hidden">
-
+<section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-r from-blue-900 via-indigo-800 to-blue-700 text-white overflow-hidden">
   <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
     {/* Heading */}
     <div className="text-center" data-aos="fade-up">
-
       <span className="inline-block px-3 sm:px-4 py-1 sm:py-2 bg-white/10 border border-white/20 rounded-full text-blue-100 font-semibold text-xs sm:text-sm">
-        OUR ACHIEVEMENTS
+        WHY CHOOSE DIGIQUEST PC
       </span>
 
       <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mt-3 sm:mt-5">
-        Placement Highlights
+        Learn. Build. Grow.
       </h2>
 
-      <p className="mt-4 sm:mt-5 md:mt-5 text-blue-100 max-w-2xl mx-auto text-sm sm:text-base md:text-lg leading-6 sm:leading-7">
-        Our students have successfully launched their careers through
-        industry-focused training and dedicated placement support.
+      <p className="mt-4 sm:mt-5 text-blue-100 max-w-2xl mx-auto text-sm sm:text-base md:text-lg leading-6 sm:leading-7">
+        We focus on practical learning, real-world projects, career guidance,
+        and interview preparation to help students become industry-ready
+        professionals.
       </p>
-
     </div>
 
-    {/* Stats */}
+    {/* Cards */}
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7 md:gap-8 mt-12 sm:mt-14 md:mt-16">
 
       {/* Card 1 */}
@@ -473,11 +470,15 @@ function Placement() {
         className="group bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl sm:rounded-3xl p-6 sm:p-7 md:p-8 text-center hover:-translate-y-3 hover:bg-white/20 transition-all duration-500"
       >
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-cyan-300 group-hover:scale-110 transition">
-          50+
+          💻
         </h1>
 
-        <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-blue-100">
-          Students Trained
+        <p className="mt-4 text-sm sm:text-base md:text-lg font-semibold">
+          Practical Learning
+        </p>
+
+        <p className="mt-2 text-sm text-blue-100">
+          Learn by building real projects instead of only studying theory.
         </p>
       </div>
 
@@ -488,48 +489,58 @@ function Placement() {
         className="group bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl sm:rounded-3xl p-6 sm:p-7 md:p-8 text-center hover:-translate-y-3 hover:bg-white/20 transition-all duration-500"
       >
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-green-300 group-hover:scale-110 transition">
-          90%
+          🚀
         </h1>
 
-        <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-blue-100">
-          Placement Assistance
+        <p className="mt-4 text-sm sm:text-base md:text-lg font-semibold">
+          Live Projects
+        </p>
+
+        <p className="mt-2 text-sm text-blue-100">
+          Gain hands-on experience through practical assignments and projects.
         </p>
       </div>
 
       {/* Card 3 */}
-      {/* <div
+      <div
         data-aos="zoom-in"
         data-aos-delay="200"
         className="group bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl sm:rounded-3xl p-6 sm:p-7 md:p-8 text-center hover:-translate-y-3 hover:bg-white/20 transition-all duration-500"
       >
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-yellow-300 group-hover:scale-110 transition">
-          50+
+          🎯
         </h1>
 
-        <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-blue-100">
-          Hiring Partners
+        <p className="mt-4 text-sm sm:text-base md:text-lg font-semibold">
+          Interview Preparation
         </p>
-      </div> */}
+
+        <p className="mt-2 text-sm text-blue-100">
+          Resume building, mock interviews, and career guidance for students.
+        </p>
+      </div>
 
       {/* Card 4 */}
-      {/* <div
+      <div
         data-aos="zoom-in"
         data-aos-delay="300"
         className="group bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl sm:rounded-3xl p-6 sm:p-7 md:p-8 text-center hover:-translate-y-3 hover:bg-white/20 transition-all duration-500"
       >
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-pink-300 group-hover:scale-110 transition">
-          ₹3LPA+
+          🤝
         </h1>
 
-        <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-blue-100">
-          Average Package
+        <p className="mt-4 text-sm sm:text-base md:text-lg font-semibold">
+          Career Support
         </p>
-      </div> */}
+
+        <p className="mt-2 text-sm text-blue-100">
+          Continuous mentorship and support to help you achieve your career goals.
+        </p>
+      </div>
 
     </div>
-
   </div>
-
 </section>
 
           
