@@ -3,39 +3,47 @@ import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import coursebanner from '../assets/coursebg.jpg'
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from 'react-toastify';
+import { courseAPI } from '../services/api';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 function Course() {
+
+    const [courses, setCourses] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [selectedCourse, setSelectedCourse] = useState(null);
+
+    // Sample static course descriptions for the featured static cards
+    const python = "Learn Python programming from basics to advanced with hands-on projects, real-world examples, and interview prep.";
+    const java = "Comprehensive Java programming course covering OOP, data structures, and backend development with practical projects.";
+    const cAndCpp = "C & C++ fundamentals including memory management, pointers, and object-oriented concepts for system-level programming.";
+    const digitalMarketing = "Digital Marketing course covering SEO, social media marketing, ads, analytics, and campaign optimization.";
+    const dataAnalytics = "Data Analytics course covering statistics, pandas, SQL, visualization and project-based learning to analyze real datasets.";
 
     useEffect(() => {
         AOS.init({
             duration: 1000,
             once: true,
         });
+        fetchCourses();
     }, []);
 
+    const fetchCourses = async () => {
+        try {
+            const response = await courseAPI.getAllCourses();
+            setCourses(response.data.courses);
+            setLoading(false);
+        } catch (error) {
+            toast.error('Failed to load courses');
+            setLoading(false);
+        }
+    };
+    if (loading) return <LoadingSpinner />;
 
-    
-      const fullstack = " Learn to build complete web applications from scratch using HTML, CSS, JavaScript, React, Node.js, Express, and MongoDB. Gain hands-on experience through real-world projects, APIs, authentication, and database integration. Develop responsive, scalable, and industry-ready applications while mastering both frontend and backend development."
-
-      const python = "Master Python programming from basics to advanced concepts. Learn object-oriented programming, data structures, and algorithms. Build real-world projects using Django, Flask, and APIs. Gain practical experience in web development, data analysis, and automation with Python."
-
-      const dataAnalytics = "Learn to analyze and visualize data using Excel, SQL, and Power BI. Gain skills in data cleaning, transformation, and dashboard creation. Understand statistical analysis, data modeling, and reporting techniques. Develop the ability to derive insights from data and make informed business decisions."
-
-      const java = "Learn Core Java programming, object-oriented concepts, and advanced features. Build desktop and web applications using Java, JDBC, Servlets, and JSP. Gain hands-on experience with real-world projects, data structures, and algorithms. Develop problem-solving skills and become proficient in Java development."
-
-      const cAndCpp = "Build a strong programming foundation with C and C++. Learn data structures, algorithms, and object-oriented programming. Gain hands-on experience through practical coding exercises and projects. Develop problem-solving skills and become proficient in C and C++ programming for software development."
-
-      const digitalMarketing = "Master digital marketing strategies including SEO, social media marketing, Google Ads, and branding. Learn to create effective campaigns, analyze performance metrics, and optimize online presence. Gain practical skills in content marketing, email marketing, and digital advertising to drive business growth."
-
-
-    
-
-    const [selectedCourse, setSelectedCourse] = useState(null);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     return (
         <div className="bg-gray-50">
 
@@ -216,20 +224,20 @@ function Course() {
                         data-aos="fade-up"
                         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 md:gap-8 mt-10 sm:mt-12 lg:mt-14"
                     >
-
-                        {/* Full Stack */}
-                        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-lg border border-gray-200 p-4 sm:p-5 md:p-6 hover:-translate-y-3 hover:shadow-2xl transition-all duration-500">
-
-                            <div className="text-4xl sm:text-5xl">💻</div>
-
-                            <h3 className="text-lg sm:text-xl font-bold mt-4 sm:mt-5">
-                                Full Stack Development
-                            </h3>
-
-                            <p className="mt-3 sm:mt-4 text-sm sm:text-base text-gray-600 line-clamp-3">
-                                HTML, CSS, JavaScript, React, Node.js, Express and MongoDB.
-                                  {fullstack.slice(0, 10)}...
-                            </p>
+                        {courses.length > 0 ? (
+                          courses.map((course) => (
+                            <div key={course._id} className="bg-white rounded-2xl sm:rounded-3xl shadow-lg border border-gray-200 p-4 sm:p-5 md:p-6 hover:-translate-y-3 hover:shadow-2xl transition-all duration-500">
+                                    <img 
+                                        src={course.image} 
+                                        alt={course.title}
+                                        className="w-full h-40 object-cover rounded-lg mb-4"
+                                    />
+                                    <h3 className="text-lg sm:text-xl font-bold mt-4 sm:mt-5">
+                                        {course.title}
+                                    </h3>
+                                    <p className="mt-3 sm:mt-4 text-sm sm:text-base text-gray-600 line-clamp-3">
+                                        {course.description}
+                                    </p>
                         
                             <div className="flex justify-between text-xs sm:text-sm text-gray-500 mt-4 sm:mt-6">
                                 <span>⏳ 6 Months</span>
@@ -238,23 +246,16 @@ function Course() {
 
                             <div className="flex gap-2 sm:gap-3 mt-6 sm:mt-8">
 
-                                <button
-                                    onClick={() =>
-                                        setSelectedCourse({
-                                            title: "Full Stack Development",
-                                            icon: "💻",
-                                            duration: "6 Months",
-                                            level: "Beginner",
-                                            description: fullstack
-                                        })
-                                    }
-                                    className="flex-1 border-2 border-blue-600 text-blue-600 rounded-lg sm:rounded-xl py-2 sm:py-2 text-sm sm:text-base hover:bg-blue-600 hover:text-white transition"
-                                >
-                                    View
-                                </button>
+                                <Link to={`/course/${course._id}`} className="flex-1">
+                                    <button
+                                        className="w-full border-2 border-blue-600 text-blue-600 rounded-lg sm:rounded-xl py-2 sm:py-2 text-sm sm:text-base hover:bg-blue-600 hover:text-white transition"
+                                    >
+                                        View
+                                    </button>
+                                </Link>
 
 
-                                <Link to='/Enroll' className="flex-1 ">
+                                <Link to={`/course/${course._id}`} className="flex-1">
                                     <li className="flex-1 border-2 border-blue-600 text-blue-600 py-2 sm:py-2 rounded-lg sm:rounded-xl hover:bg-blue-600 hover:text-white transition text-center text-sm sm:text-base">
                                         Enroll
                                     </li>
@@ -264,6 +265,7 @@ function Course() {
                             </div>
 
                         </div>
+                          ))) : null}
 
                         {/* Python */}
                         <div className="bg-white rounded-2xl sm:rounded-3xl shadow-lg border border-gray-200 p-4 sm:p-5 md:p-6 hover:-translate-y-3 hover:shadow-2xl transition-all duration-500">
@@ -283,24 +285,16 @@ function Course() {
                             </div>
                             <div className="flex gap-2 sm:gap-3 mt-6 sm:mt-8">
 
-                                <button
-                                    onClick={() =>
-                                        setSelectedCourse({
-                                            title: "Python Programming",
-                                            icon: "🐍",
-                                            duration: "4 Months",
-                                            level: "Beginner",
-                                            description:
-                                                python  
-                                        })
-                                    }
-                                    className="flex-1 border-2 border-blue-600 text-blue-600 rounded-lg sm:rounded-xl py-2 sm:py-2 text-sm sm:text-base hover:bg-blue-600 hover:text-white transition"
-                                >
-                                    View
-                                </button>
+                                <Link to='/Course' className="flex-1">
+                                    <button
+                                        className="w-full border-2 border-blue-600 text-blue-600 rounded-lg sm:rounded-xl py-2 sm:py-2 text-sm sm:text-base hover:bg-blue-600 hover:text-white transition"
+                                    >
+                                        View
+                                    </button>
+                                </Link>
 
 
-                                <Link to='/Enroll' className="flex-1 ">
+                                <Link to='/Enroll' className="flex-1">
                                     <li className="flex-1 border-2 border-blue-600 text-blue-600 py-2 sm:py-2 rounded-lg sm:rounded-xl hover:bg-blue-600 hover:text-white transition text-center text-sm sm:text-base">
                                         Enroll
                                     </li>
@@ -332,24 +326,16 @@ function Course() {
 
                             <div className="flex gap-2 sm:gap-3 mt-6 sm:mt-8">
 
-                                <button
-                                    onClick={() =>
-                                        setSelectedCourse({
-                                            title: "Data Analytics",
-                                            icon: "📊",
-                                            duration: "5 Months",
-                                            level: "Intermediate",
-                                            description:
-                                                dataAnalytics
-                                        })
-                                    }
-                                    className="flex-1 border-2 border-blue-600 text-blue-600 rounded-lg sm:rounded-xl py-2 sm:py-2 text-sm sm:text-base hover:bg-blue-600 hover:text-white transition"
-                                >
-                                    View
-                                </button>
+                                <Link to='/Course' className="flex-1">
+                                    <button
+                                        className="w-full border-2 border-blue-600 text-blue-600 rounded-lg sm:rounded-xl py-2 sm:py-2 text-sm sm:text-base hover:bg-blue-600 hover:text-white transition"
+                                    >
+                                        View
+                                    </button>
+                                </Link>
 
 
-                                <Link to='/Enroll' className="flex-1 ">
+                                <Link to='/Enroll' className="flex-1">
                                     <li className="flex-1 border-2 border-blue-600 text-blue-600 py-2 sm:py-2 rounded-lg sm:rounded-xl hover:bg-blue-600 hover:text-white transition text-center text-sm sm:text-base">
                                         Enroll
                                     </li>
@@ -492,7 +478,7 @@ function Course() {
                                 </button>
 
                                 <Link to='/Enroll' className="flex-1 ">
-                                    <li className="flex-1 border-2 border-blue-600 text-blue-600 py-2 sm:py-2 rounded-lg sm:rounded-xl hover:bg-blue-600 hover:text-white transition text-center text-sm sm:text-base">
+                                    <li className="flex-1 border-2 border-blue-600 text-blue-600 py-2 sm:py-2 rounded-lg sm:rounded-xl hover:bg-blue-600 hover:text-white transition text-center text-sm sm:text-base list-none">
                                         Enroll
                                     </li>
                                 </Link>

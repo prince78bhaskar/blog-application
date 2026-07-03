@@ -84,6 +84,16 @@ function Home() {
                Enroll
              </motion.li>
            </Link>
+
+            <Link to="/login">
+             <motion.li
+               whileHover={{ y: -3, color: "#2563eb" }}
+               transition={{ duration: 0.2 }}
+               className="cursor-pointer"
+             >
+               Login
+             </motion.li>
+           </Link>
      
          </ul>
      

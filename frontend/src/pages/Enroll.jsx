@@ -4,8 +4,10 @@ import { useState } from "react";
 import logo from "../assets/logo.png";
 import aos from "aos";
 import axios from "axios";
+import { courseAPI } from '../services/api';
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
+import { useEffect } from "react";
 function Enroll() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -17,15 +19,36 @@ function Enroll() {
     course: "",
   });
 
+  const [courses, setCourses] = useState([]);
+
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
 
+    // basic validation
+    if (!formData.name || !formData.email || !formData.phone || !formData.course) {
+      toast.error('Please fill all fields');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error('Invalid email format');
+      return;
+    }
+
+    const mobileRegex = /^[0-9]{10}$/;
+    if (!mobileRegex.test(formData.phone)) {
+      toast.error('Invalid mobile number (must be 10 digits)');
+      return;
+    }
+
     try {
       setLoading(true);
 
-      const response = await axios.post("http://localhost:3000/registerUser", formData);
+      const base = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      const response = await axios.post(`${base}/registerUser`, formData);
 
       setLoading(false);
       toast.success("Enrollment Successful 🎉");
@@ -41,6 +64,21 @@ function Enroll() {
     }
 
   }
+
+  // fetch courses for select
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      try {
+        const res = await courseAPI.getAllCourses();
+        if (mounted) setCourses(res.data.courses || []);
+      } catch (err) {
+        // ignore
+      }
+    };
+    load();
+    return () => { mounted = false; };
+  }, []);
 
   return (
 
@@ -281,23 +319,14 @@ function Enroll() {
                   value={formData.course}
                   onChange={(e) => setFormData({ ...formData, course: e.target.value })}
                 >
-
-                  <option>Select Course</option>
-
-                  <option>Full Stack Development</option>
-
-                  <option>Python Programming</option>
-
-                  <option>Java Programming</option>
-
-                  <option>Data Analytics</option>
-
-                  <option>Cloud Computing</option>
-
-                  <option>Networking</option>
-
-                  <option>Digital Marketing</option>
-
+                  <option value="">Select Course</option>
+                  {courses.length > 0 ? (
+                    courses.map((c) => (
+                      <option key={c._id} value={c._id}>{c.title}</option>
+                    ))
+                  ) : (
+                    <option disabled>Loading courses...</option>
+                  )}
                 </select>
 
               </div>
