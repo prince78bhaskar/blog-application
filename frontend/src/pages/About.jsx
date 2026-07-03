@@ -3,7 +3,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 
 import invation from "../assets/Innovative.png";
-import approch from "../assets/approch.png";
+import approch from "../assets/Approch.png";
 import team from "../assets/team.png";
 import logo from "../assets/logo.png";
 import { Link } from "react-router-dom";
