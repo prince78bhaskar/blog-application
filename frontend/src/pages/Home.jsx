@@ -20,139 +20,139 @@ function Home() {
   }, []);
   return (
     <div>
-          <header className="sticky top-0 z-50 bg-gray-100 shadow-md">
-       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-     
-         {/* Logo */}
-         <motion.img
-           src={logo}
-           alt="Logo"
-           className="w-24 sm:w-32 md:w-40 cursor-pointer"
-           whileHover={{ scale: 1.05 }}
-           transition={{ duration: 0.3 }}
-         />
-     
-         {/* Desktop Navigation */}
-         <ul className="hidden md:flex items-center justify-center gap-8 text-gray-700 font-semibold text-base">
-     
-           <Link to="/">
-             <motion.li
-               whileHover={{ y: -3, color: "#2563eb" }}
-               transition={{ duration: 0.2 }}
-               className="cursor-pointer"
-             >
-               Home
-             </motion.li>
-           </Link>
-     
-           <Link to="/About">
-             <motion.li
-               whileHover={{ y: -3, color: "#2563eb" }}
-               transition={{ duration: 0.2 }}
-               className="cursor-pointer"
-             >
-               About Us
-             </motion.li>
-           </Link>
-     
-           <Link to="/placement">
-             <motion.li
-               whileHover={{ y: -3, color: "#2563eb" }}
-               transition={{ duration: 0.2 }}
-               className="cursor-pointer"
-             >
-               Placement
-             </motion.li>
-           </Link>
-     
-           <Link to="/Course">
-             <motion.li
-               whileHover={{ y: -3, color: "#2563eb" }}
-               transition={{ duration: 0.2 }}
-               className="cursor-pointer"
-             >
-               Courses
-             </motion.li>
-           </Link>
-     
-           <Link to="/Enroll">
-             <motion.li
-               whileHover={{ y: -3, color: "#2563eb" }}
-               transition={{ duration: 0.2 }}
-               className="cursor-pointer"
-             >
-               Enroll
-             </motion.li>
-           </Link>
-
-            <Link to="/login">
-             <motion.li
-               whileHover={{ y: -3, color: "#2563eb" }}
-               transition={{ duration: 0.2 }}
-               className="cursor-pointer"
-             >
-               Login
-             </motion.li>
-           </Link>
-     
-         </ul>
-     
-         {/* Mobile Menu Button */}
-         <button
-           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-           className="md:hidden text-3xl"
-         >
-           {mobileMenuOpen ? "✕" : "☰"}
-         </button>
-       </div>
-     
-       {/* Mobile Menu Animation */}
-       <AnimatePresence>
-         {mobileMenuOpen && (
-           <motion.div
-             initial={{ opacity: 0, y: -20 }}
-             animate={{ opacity: 1, y: 0 }}
-             exit={{ opacity: 0, y: -20 }}
-             transition={{ duration: 0.3 }}
-             className="md:hidden bg-gray-200"
-           >
-             <ul className="flex flex-col items-center gap-5 py-6 font-semibold text-gray-700">
-     
-               <Link to="/" onClick={() => setMobileMenuOpen(false)}>
-                 <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
-                   Home
-                 </motion.li>
-               </Link>
-     
-               <Link to="/About" onClick={() => setMobileMenuOpen(false)}>
-                 <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
-                   About Us
-                 </motion.li>
-               </Link>
-     
-               <Link to="/placement" onClick={() => setMobileMenuOpen(false)}>
-                 <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
-                   Placement
-                 </motion.li>
-               </Link>
-     
-               <Link to="/Course" onClick={() => setMobileMenuOpen(false)}>
-                 <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
-                   Courses
-                 </motion.li>
-               </Link>
-     
-               <Link to="/Enroll" onClick={() => setMobileMenuOpen(false)}>
-                 <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
-                   Enroll
-                 </motion.li>
-               </Link>
-     
-             </ul>
-           </motion.div>
-         )}
-       </AnimatePresence>
-     </header>
+             <header className="sticky top-0 z-50 bg-gray-100 shadow-md">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+              
+                  {/* Logo */}
+                  <motion.img
+                    src={logo}
+                    alt="Logo"
+                    className="w-24 sm:w-32 md:w-40 cursor-pointer"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
+                  />
+              
+                  {/* Desktop Navigation */}
+                  <ul className="hidden md:flex items-center justify-center gap-8 text-gray-700 font-semibold text-base">
+              
+                    <Link to="/">
+                      <motion.li
+                        whileHover={{ y: -3, color: "#2563eb" }}
+                        transition={{ duration: 0.2 }}
+                        className="cursor-pointer"
+                      >
+                        Home
+                      </motion.li>
+                    </Link>
+              
+                    <Link to="/About">
+                      <motion.li
+                        whileHover={{ y: -3, color: "#2563eb" }}
+                        transition={{ duration: 0.2 }}
+                        className="cursor-pointer"
+                      >
+                        About Us
+                      </motion.li>
+                    </Link>
+              
+                    <Link to="/placement">
+                      <motion.li
+                        whileHover={{ y: -3, color: "#2563eb" }}
+                        transition={{ duration: 0.2 }}
+                        className="cursor-pointer"
+                      >
+                        Placement
+                      </motion.li>
+                    </Link>
+              
+                    <Link to="/Course">
+                      <motion.li
+                        whileHover={{ y: -3, color: "#2563eb" }}
+                        transition={{ duration: 0.2 }}
+                        className="cursor-pointer"
+                      >
+                        Courses
+                      </motion.li>
+                    </Link>
+              
+                    {/* <Link to="/Enroll">
+                      <motion.li
+                        whileHover={{ y: -3, color: "#2563eb" }}
+                        transition={{ duration: 0.2 }}
+                        className="cursor-pointer"
+                      >
+                        Enroll
+                      </motion.li>
+                    </Link> */}
+         
+                     <Link to="/login">
+                      <motion.li
+                        whileHover={{ y: -3, color: "#2563eb" }}
+                        transition={{ duration: 0.2 }}
+                        className="cursor-pointer"
+                      >
+                        Login
+                      </motion.li>
+                    </Link>
+              
+                  </ul>
+              
+                  {/* Mobile Menu Button */}
+                  <button
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    className="md:hidden text-3xl"
+                  >
+                    {mobileMenuOpen ? "✕" : "☰"}
+                  </button>
+                </div>
+              
+                {/* Mobile Menu Animation */}
+                <AnimatePresence>
+                  {mobileMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ duration: 0.3 }}
+                      className="md:hidden bg-gray-200"
+                    >
+                      <ul className="flex flex-col items-center gap-5 py-6 font-semibold text-gray-700">
+              
+                        <Link to="/" onClick={() => setMobileMenuOpen(false)}>
+                          <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
+                            Home
+                          </motion.li>
+                        </Link>
+              
+                        <Link to="/About" onClick={() => setMobileMenuOpen(false)}>
+                          <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
+                            About Us
+                          </motion.li>
+                        </Link>
+              
+                        <Link to="/placement" onClick={() => setMobileMenuOpen(false)}>
+                          <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
+                            Placement
+                          </motion.li>
+                        </Link>
+              
+                        <Link to="/Course" onClick={() => setMobileMenuOpen(false)}>
+                          <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
+                            Courses
+                          </motion.li>
+                        </Link>
+              
+                        {/* <Link to="/Enroll" onClick={() => setMobileMenuOpen(false)}>
+                          <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
+                            Enroll
+                          </motion.li>
+                        </Link> */}
+              
+                      </ul>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </header>
 
 
       <main>
@@ -726,12 +726,12 @@ function Home() {
                 📧 digiquestpc@gmail.com
               </a>
             </button>
-
+{/* 
             <Link to='/Enroll'>
               <div className="mt-4 sm:mt-6 inline-block text-blue-400 hover:text-blue-300 transition cursor-pointer text-sm sm:text-base">
                 → Enroll Now
               </div>
-            </Link>
+            </Link> */}
 
           </div>
 

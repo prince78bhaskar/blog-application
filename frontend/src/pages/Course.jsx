@@ -38,8 +38,7 @@ function Course() {
 
     return (
         <div className="bg-gray-50">
-
-              <header className="sticky top-0 z-50 bg-gray-100 shadow-md">
+    <header className="sticky top-0 z-50 bg-gray-100 shadow-md">
        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
      
          {/* Logo */}
@@ -94,13 +93,23 @@ function Course() {
              </motion.li>
            </Link>
      
-           <Link to="/Enroll">
+           {/* <Link to="/Enroll">
              <motion.li
                whileHover={{ y: -3, color: "#2563eb" }}
                transition={{ duration: 0.2 }}
                className="cursor-pointer"
              >
                Enroll
+             </motion.li>
+           </Link> */}
+
+            <Link to="/login">
+             <motion.li
+               whileHover={{ y: -3, color: "#2563eb" }}
+               transition={{ duration: 0.2 }}
+               className="cursor-pointer"
+             >
+               Login
              </motion.li>
            </Link>
      
@@ -151,11 +160,11 @@ function Course() {
                  </motion.li>
                </Link>
      
-               <Link to="/Enroll" onClick={() => setMobileMenuOpen(false)}>
+               {/* <Link to="/Enroll" onClick={() => setMobileMenuOpen(false)}>
                  <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
                    Enroll
                  </motion.li>
-               </Link>
+               </Link> */}
      
              </ul>
            </motion.div>
@@ -248,9 +257,9 @@ function Course() {
 
 
                                 <Link to={`/course/${course._id}`} className="flex-1">
-                                    <li className="flex-1 border-2 border-blue-600 text-blue-600 py-2 sm:py-2 rounded-lg sm:rounded-xl hover:bg-blue-600 hover:text-white transition text-center text-sm sm:text-base">
+                                    <button  className="w-full border-2 border-blue-600 text-blue-600 rounded-lg sm:rounded-xl py-2 sm:py-2 text-sm sm:text-base hover:bg-blue-600 hover:text-white transition">
                                         Enroll
-                                    </li>
+                                    </button>
                                 </Link>
 
 
@@ -569,7 +578,7 @@ function Course() {
             1
           </div>
 
-          <h3 className="text-lg sm:text-xl md:text-2xl font-bold mt-4 sm:mt-5 md:mt-6 text-gray-800">
+          <h3 className="text-lg sm:text-xl md:text-2xl font-bold mt-4 sm:mt-5 md:mt-6 text-gray-800 ">
             Enroll
           </h3>
 
@@ -871,12 +880,12 @@ function Course() {
                 📧 digiquestpc@gmail.com
               </a>
             </button>
-
+{/* 
             <Link to='/Enroll'>
               <div className="mt-4 sm:mt-6 inline-block text-blue-400 hover:text-blue-300 transition cursor-pointer text-sm sm:text-base">
                 → Enroll Now
               </div>
-            </Link>
+            </Link> */}
 
           </div>
 

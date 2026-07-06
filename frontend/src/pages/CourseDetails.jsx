@@ -18,6 +18,30 @@ const CourseDetails = () => {
     mobile: ''
   });
 
+  // Convert YouTube watch URL to embed URL
+  const convertToEmbedUrl = (url) => {
+    if (!url) return '';
+
+    // If already an embed URL, return as is
+    if (url.includes('embed/')) return url;
+
+    // Extract video ID from various YouTube URL formats
+    const patterns = [
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+      /youtube\.com\/watch\?.*v=([^&\n?#]+)/
+    ];
+
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match && match[1]) {
+        return `https://www.youtube.com/embed/${match[1]}`;
+      }
+    }
+
+    // If not a YouTube URL, return as is
+    return url;
+  };
+
   useEffect(() => {
     fetchCourseDetails();
   }, [courseId]);
@@ -44,9 +68,12 @@ const CourseDetails = () => {
     });
   };
 
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [orderData, setOrderData] = useState(null);
+
   const handleEnrollSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.name || !formData.email || !formData.mobile) {
       toast.error('Please fill all fields');
       return;
@@ -64,42 +91,83 @@ const CourseDetails = () => {
       return;
     }
 
+    setPaymentLoading(true);
+
     try {
+      console.log('=== Cashfree SDK Debug ===');
+      console.log('1. Creating payment order...');
+
       const response = await paymentAPI.createOrder({
         courseId,
         amount: course.price,
         email: formData.email,
-        mobile: formData.mobile
+        mobile: formData.mobile,
+        name: formData.name
       });
 
-      const orderData = response.data.order;
+      console.log('2. Order created successfully:', response.data);
+      console.log('3. Order Data:', response.data.order);
+      console.log('4. Payment Session ID:', response.data.order.payment_session_id);
 
-      const cashfree = new window.Cashfree(import.meta.env.VITE_CASHFREE_CLIENT_ID);
+      if (!response.data.success) {
+        throw new Error(response.data.message || 'Failed to create order');
+      }
+
+      const newOrderData = response.data.order;
+      setOrderData(newOrderData);
+
+      console.log('5. SDK Load Check:', typeof window.Cashfree);
+
+      if (!window.Cashfree) {
+        console.error('Cashfree SDK not loaded');
+        throw new Error('Cashfree SDK not loaded. Please refresh the page.');
+      }
+
+      console.log('6. SDK Version:', window.Cashfree.version ? window.Cashfree.version() : 'Unknown');
+      console.log('7. Session ID Format Check:', newOrderData.payment_session_id ? 'Valid' : 'Invalid/Empty');
+
+      const cashfree = window.Cashfree({
+        mode: import.meta.env.VITE_CASHFREE_MODE || 'sandbox'
+      });
+
+      console.log('8. SDK Initialized:', cashfree ? 'Success' : 'Failed');
 
       const checkoutOptions = {
-        orderToken: orderData.order_token,
-        orderAmount: orderData.order_amount,
-        orderId: orderData.order_id,
-        customerDetails: {
-          customerId: orderData.customer_details.customer_id,
-          customerEmail: formData.email,
-          customerPhone: formData.mobile,
-          customerName: formData.name
-        },
-        theme: {
-          color: '#2563eb'
-        },
-        onSuccess: async (data) => {
-          try {
-            const verifyResponse = await paymentAPI.verifyPayment({
-              order_id: data.orderId,
-              payment_id: data.paymentId,
-              signature: data.signature,
-              name: formData.name,
-              email: formData.email,
-              mobile: formData.mobile,
-              courseId
-            });
+        paymentSessionId: newOrderData.payment_session_id,
+        redirectTarget: '_modal'
+      };
+
+      console.log('9. Checkout Options:', checkoutOptions);
+      console.log('10. Opening checkout modal...');
+
+      cashfree.checkout(checkoutOptions).then((result) => {
+        console.log('11. Checkout Result:', result);
+
+        if (result.error) {
+          console.error('Checkout Error:', result.error);
+          setPaymentLoading(false);
+          toast.error(result.error.message || 'Payment failed. Please try again.');
+          return;
+        }
+
+        if (result.redirect) {
+          console.log('User will be redirected to return URL after payment');
+          setPaymentLoading(false);
+          return;
+        }
+
+        if (result.paymentDetails) {
+          console.log('Payment completed:', result.paymentDetails);
+          setPaymentLoading(false);
+
+          paymentAPI.verifyPayment({
+            order_id: newOrderData.order_id,
+            name: formData.name,
+            email: formData.email,
+            mobile: formData.mobile,
+            courseId
+          }).then((verifyResponse) => {
+            console.log('Payment verification response:', verifyResponse.data);
 
             if (verifyResponse.data.success) {
               toast.success(verifyResponse.data.message);
@@ -108,29 +176,24 @@ const CourseDetails = () => {
               }
               setShowEnrollForm(false);
               navigate('/login');
+            } else {
+              toast.error(verifyResponse.data.message || 'Payment verification failed');
             }
-          } catch (error) {
-            toast.error('Payment verification failed');
-          }
-        },
-        onFailure: (data) => {
-          toast.error('Payment failed. Please try again.');
-        },
-        style: {
-          base: {
-            backgroundColor: '#ffffff',
-            color: '#2563eb',
-            fontFamily: 'Arial, sans-serif',
-            fontSize: '16px',
-            fontSmoothing: 'antialiased'
-          }
+          }).catch((error) => {
+            console.error('Payment verification error:', error);
+            toast.error(error.response?.data?.message || 'Payment verification failed');
+          });
         }
-      };
+      }).catch((error) => {
+        console.error('Checkout Promise Error:', error);
+        setPaymentLoading(false);
+        toast.error(error.message || 'Failed to open payment modal');
+      });
 
-      cashfree.checkout(checkoutOptions);
     } catch (error) {
-      toast.error('Failed to initiate payment');
-      console.error('Payment error:', error);
+      console.error('Payment initiation error:', error);
+      setPaymentLoading(false);
+      toast.error(error.response?.data?.message || error.message || 'Failed to initiate payment');
     }
   };
 
@@ -196,7 +259,7 @@ const CourseDetails = () => {
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">Demo Video</h2>
                 <div className="aspect-video bg-gray-200 rounded-lg overflow-hidden">
                   <iframe
-                    src={course.demoVideo}
+                    src={convertToEmbedUrl(course.demoVideo)}
                     className="w-full h-full"
                     allowFullScreen
                     title="Demo Video"
@@ -282,6 +345,7 @@ const CourseDetails = () => {
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
+                    disabled={paymentLoading}
                   />
                 </div>
 
@@ -294,6 +358,7 @@ const CourseDetails = () => {
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
+                    disabled={paymentLoading}
                   />
                 </div>
 
@@ -306,6 +371,7 @@ const CourseDetails = () => {
                     onChange={handleInputChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
+                    disabled={paymentLoading}
                   />
                 </div>
 
@@ -313,15 +379,17 @@ const CourseDetails = () => {
                   <motion.button
                     type="submit"
                     whileHover={{ scale: 1.05 }}
-                    className="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition font-semibold"
+                    disabled={paymentLoading}
+                    className="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Proceed to Payment
+                    {paymentLoading ? 'Processing...' : 'Proceed to Payment'}
                   </motion.button>
                   <motion.button
                     type="button"
                     onClick={() => setShowEnrollForm(false)}
                     whileHover={{ scale: 1.05 }}
-                    className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition font-semibold"
+                    disabled={paymentLoading}
+                    className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Cancel
                   </motion.button>

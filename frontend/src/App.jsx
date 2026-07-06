@@ -5,7 +5,7 @@ import Home from "./pages/Home";
 import About from "./pages/About";
 import Placement from "./pages/Placement";
 import Course from "./pages/Course";
-import Enroll from "./pages/Enroll";
+// import Enroll from "./pages/Enroll";
 import CourseDetails from "./pages/CourseDetails";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -24,7 +24,7 @@ function App() {
         <Route path="/About" element={<About/>} />
         <Route path="/placement" element={<Placement/>} />
         <Route path="/Course" element={<Course/>} />
-        <Route path="/Enroll" element={<Enroll/>} />
+        {/* <Route path="/Enroll" element={<Enroll/>} /> */}
         <Route path="/course/:courseId" element={<CourseDetails/>} />
         <Route path="/login" element={<Login/>} />
         <Route path="/dashboard" element={
