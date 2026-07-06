@@ -19,10 +19,21 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
+      console.log('=== Dashboard Debug ===');
+      console.log('Fetching dashboard data...');
       const response = await dashboardAPI.getDashboardData();
-      setDashboardData(response.data);
+      console.log('Dashboard API Response:', response.data);
+      console.log('Response success:', response.data?.success);
+      console.log('Response data:', response.data?.data);
+      console.log('User purchasedCourses:', response.data?.data?.user?.purchasedCourses);
+      console.log('Total courses:', response.data?.data?.totalCourses);
+      console.log('Total spent:', response.data?.data?.totalSpent);
+      console.log('Enrollments:', response.data?.data?.enrollments);
+      setDashboardData(response.data?.data);
       setLoading(false);
     } catch (error) {
+      console.error('Dashboard fetch error:', error);
+      console.error('Error response:', error.response?.data);
       toast.error('Failed to load dashboard data');
       setLoading(false);
     }

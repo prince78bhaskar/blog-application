@@ -32,6 +32,9 @@ export const login = async (req, res) => {
     console.log('  role:', user.role);
     console.log('  password hash exists:', !!user.password);
     console.log('  password hash length:', user.password ? user.password.length : 0);
+    console.log('  purchasedCourses:', user.purchasedCourses);
+    console.log('  purchasedCourses length:', user.purchasedCourses ? user.purchasedCourses.length : 0);
+    console.log('  purchasedCourses details:', JSON.stringify(user.purchasedCourses, null, 2));
 
     const isMatch = await user.comparePassword(password);
 
@@ -95,9 +98,17 @@ export const login = async (req, res) => {
 
 export const getProfile = async (req, res) => {
   try {
+    console.log('=== GET PROFILE DEBUG ===');
+    console.log('Request user ID:', req.user.userId);
+
     const user = await User.findById(req.user.userId)
       .populate('purchasedCourses')
       .select('-password');
+
+    console.log('User found:', !!user);
+    console.log('User purchasedCourses:', user?.purchasedCourses);
+    console.log('User purchasedCourses length:', user?.purchasedCourses?.length || 0);
+    console.log('User full object:', JSON.stringify(user, null, 2));
 
     if (!user) {
       return res.status(404).json({
@@ -111,6 +122,8 @@ export const getProfile = async (req, res) => {
       user
     });
   } catch (error) {
+    console.error('Get profile error:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
       success: false,
       message: error.message

@@ -4,18 +4,33 @@ import Enrollment from '../model/Enrollment.js';
 
 export const getDashboardData = async (req, res) => {
   try {
+    console.log('=== DASHBOARD DATA DEBUG ===');
+    console.log('Request user ID:', req.user.userId);
+
     const user = await User.findById(req.user.userId)
       .populate('purchasedCourses')
       .select('-password');
+
+    console.log('User found:', !!user);
+    console.log('User purchasedCourses:', user?.purchasedCourses);
+    console.log('User purchasedCourses length:', user?.purchasedCourses?.length || 0);
+    console.log('User paymentDetails:', user?.paymentDetails);
+    console.log('User full object:', JSON.stringify(user, null, 2));
 
     const enrollments = await Enrollment.find({ userId: req.user.userId })
       .populate('courseId')
       .sort({ enrolledAt: -1 });
 
-    const totalCourses = user.purchasedCourses.length;
-    const totalSpent = user.paymentDetails.reduce((sum, payment) => sum + payment.amount, 0);
+    console.log('Enrollments found:', enrollments.length);
+    console.log('Enrollments:', JSON.stringify(enrollments, null, 2));
 
-    res.status(200).json({
+    const totalCourses = user.purchasedCourses ? user.purchasedCourses.length : 0;
+    const totalSpent = user.paymentDetails ? user.paymentDetails.reduce((sum, payment) => sum + (payment.amount || 0), 0) : 0;
+
+    console.log('Total Courses calculated:', totalCourses);
+    console.log('Total Spent calculated:', totalSpent);
+
+    const responseData = {
       success: true,
       data: {
         user,
@@ -23,8 +38,14 @@ export const getDashboardData = async (req, res) => {
         totalCourses,
         totalSpent
       }
-    });
+    };
+
+    console.log('Complete response being sent:', JSON.stringify(responseData, null, 2));
+
+    res.status(200).json(responseData);
   } catch (error) {
+    console.error('Dashboard data error:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
       success: false,
       message: error.message
@@ -34,8 +55,16 @@ export const getDashboardData = async (req, res) => {
 
 export const getMyCourses = async (req, res) => {
   try {
+    console.log('=== GET MY COURSES DEBUG ===');
+    console.log('Request user ID:', req.user.userId);
+
     const user = await User.findById(req.user.userId)
       .populate('purchasedCourses');
+
+    console.log('User found:', !!user);
+    console.log('User purchasedCourses:', user?.purchasedCourses);
+    console.log('User purchasedCourses length:', user?.purchasedCourses?.length || 0);
+    console.log('User full object:', JSON.stringify(user, null, 2));
 
     if (!user) {
       return res.status(404).json({
@@ -44,11 +73,17 @@ export const getMyCourses = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    const response = {
       success: true,
-      courses: user.purchasedCourses
-    });
+      courses: user.purchasedCourses || []
+    };
+
+    console.log('Response being sent:', JSON.stringify(response, null, 2));
+
+    res.status(200).json(response);
   } catch (error) {
+    console.error('Get my courses error:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
       success: false,
       message: error.message

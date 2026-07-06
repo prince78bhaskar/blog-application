@@ -106,15 +106,15 @@ export const createOrder = async (req, res) => {
     }
 
     // Generate unique customer ID
-    const customerId = `customer_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-    console.log('Generated customer ID:', customerId);
+    const uniqueCustomerId = `customer_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    console.log('Generated customer ID:', uniqueCustomerId);
 
     // Create order request with latest Cashfree API structure
     const orderRequest = {
       order_amount: amount,
       order_currency: 'INR',
       customer_details: {
-        customer_id: customerId,
+        customer_id: uniqueCustomerId,
         customer_email: email || '',
         customer_phone: mobile || '',
         customer_name: name || ''

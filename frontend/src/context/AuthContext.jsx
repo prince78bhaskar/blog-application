@@ -57,11 +57,34 @@ export const AuthProvider = ({ children }) => {
     window.location.href = '/login';
   };
 
+  const refreshUser = async () => {
+    try {
+      console.log('=== Refreshing User Data ===');
+      const response = await authAPI.getProfile();
+      console.log('Refreshed user data:', response.data);
+      console.log('Refreshed user data.user:', response.data?.user);
+      console.log('Refreshed user purchasedCourses:', response.data?.user?.purchasedCourses);
+
+      const updatedUser = response.data?.user;
+      if (updatedUser) {
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+      }
+
+      return { success: true, user: updatedUser };
+    } catch (error) {
+      console.error('Failed to refresh user data:', error);
+      console.error('Error response:', error.response?.data);
+      return { success: false, message: 'Failed to refresh user data' };
+    }
+  };
+
   const value = {
     user,
     loading,
     login,
     logout,
+    refreshUser,
     isAuthenticated: !!user
   };
 
