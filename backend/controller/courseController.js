@@ -43,7 +43,13 @@ export const getCourseById = async (req, res) => {
 
 export const createCourse = async (req, res) => {
   try {
+    console.log('========== CREATE COURSE REQUEST ==========');
+    console.log('Request body:', req.body);
+    console.log('Request user (from auth middleware):', req.user);
+
     const course = await Course.create(req.body);
+
+    console.log('Course created successfully:', course);
 
     res.status(201).json({
       success: true,
@@ -51,6 +57,20 @@ export const createCourse = async (req, res) => {
       course
     });
   } catch (error) {
+    console.error('========== CREATE COURSE ERROR ==========');
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+
+    if (error.name === 'ValidationError') {
+      console.error('Validation errors:', Object.values(error.errors).map(e => e.message));
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: Object.values(error.errors).map(e => ({ field: e.path, message: e.message }))
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: error.message
@@ -98,7 +118,7 @@ export const deleteCourse = async (req, res) => {
     }
 
     res.status(200).json({
-      success: false,
+      success: true,
       message: 'Course deleted successfully'
     });
   } catch (error) {

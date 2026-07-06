@@ -11,7 +11,6 @@ const Navbar = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
   };
 
   return (
@@ -79,6 +78,17 @@ const Navbar = () => {
                   Dashboard
                 </motion.li>
               </Link>
+              {user?.role === 'admin' && (
+                <Link to="/admin">
+                  <motion.li
+                    whileHover={{ y: -3, color: '#2563eb' }}
+                    transition={{ duration: 0.2 }}
+                    className="cursor-pointer"
+                  >
+                    Admin Panel
+                  </motion.li>
+                </Link>
+              )}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 onClick={handleLogout}
@@ -120,6 +130,9 @@ const Navbar = () => {
             {isAuthenticated ? (
               <>
                 <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)}>Dashboard</Link>
+                {user?.role === 'admin' && (
+                  <Link to="/admin" onClick={() => setMobileMenuOpen(false)}>Admin Panel</Link>
+                )}
                 <button onClick={handleLogout} className="text-left text-red-500">Logout</button>
               </>
             ) : (

@@ -1,4 +1,4 @@
-import react from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import logo from "../assets/logo.png";
@@ -334,8 +334,7 @@ function Enroll() {
               <button
                 type="submit"
                 className="w-full bg-blue-700 text-white py-2 sm:py-3 rounded-lg hover:bg-blue-800 duration-300 font-semibold text-sm sm:text-base"
-                onClick={handleSubmit}
-
+                disabled={loading}
               >
                 {
                   loading

@@ -19,24 +19,24 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-      alert("Submit Called");
-
-  console.log("Handle Submit Called");
-
-
-  console.log("Handle Submit Called");
+    console.log("Handle Submit Called");
     setLoading(true);
- console.log("Username:", username);
+    console.log("Username:", username);
     console.log("Password:", password);
     const result = await login(username, password);
 
     if (result.success) {
       toast.success('Login successful');
       setLoading(false);
-      navigate('/dashboard', { replace: true });
+      // Redirect based on user role
+      if (result.user.role === 'admin') {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
       return;
     }
-    console.log("data which is coming from ",result.response.data);
+    console.log("data which is coming from ",result.response?.data);
     toast.error(result.message);
     setLoading(false);
   };

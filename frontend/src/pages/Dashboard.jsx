@@ -30,7 +30,6 @@ const Dashboard = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
   };
 
   if (loading) {

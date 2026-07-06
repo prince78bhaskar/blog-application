@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (username, password) => {
 
     console.log('AuthContext.login payload:', { username, password });
-    
+
     try {
       const response = await authAPI.login({ username, password });
        console.log("Full Response:", response);
@@ -54,6 +54,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
+    window.location.href = '/login';
   };
 
   const value = {

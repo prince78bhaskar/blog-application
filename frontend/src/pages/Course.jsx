@@ -15,14 +15,6 @@ function Course() {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [selectedCourse, setSelectedCourse] = useState(null);
-
-    // Sample static course descriptions for the featured static cards
-    const python = "Learn Python programming from basics to advanced with hands-on projects, real-world examples, and interview prep.";
-    const java = "Comprehensive Java programming course covering OOP, data structures, and backend development with practical projects.";
-    const cAndCpp = "C & C++ fundamentals including memory management, pointers, and object-oriented concepts for system-level programming.";
-    const digitalMarketing = "Digital Marketing course covering SEO, social media marketing, ads, analytics, and campaign optimization.";
-    const dataAnalytics = "Data Analytics course covering statistics, pandas, SQL, visualization and project-based learning to analyze real datasets.";
 
     useEffect(() => {
         AOS.init({
@@ -227,8 +219,8 @@ function Course() {
                         {courses.length > 0 ? (
                           courses.map((course) => (
                             <div key={course._id} className="bg-white rounded-2xl sm:rounded-3xl shadow-lg border border-gray-200 p-4 sm:p-5 md:p-6 hover:-translate-y-3 hover:shadow-2xl transition-all duration-500">
-                                    <img 
-                                        src={course.image} 
+                                    <img
+                                        src={course.image}
                                         alt={course.title}
                                         className="w-full h-40 object-cover rounded-lg mb-4"
                                     />
@@ -238,10 +230,10 @@ function Course() {
                                     <p className="mt-3 sm:mt-4 text-sm sm:text-base text-gray-600 line-clamp-3">
                                         {course.description}
                                     </p>
-                        
+
                             <div className="flex justify-between text-xs sm:text-sm text-gray-500 mt-4 sm:mt-6">
-                                <span>⏳ 6 Months</span>
-                                <span>📘 Beginner</span>
+                                <span>⏳ {course.duration}</span>
+                                <span>📘 {course.level}</span>
                             </div>
 
                             <div className="flex gap-2 sm:gap-3 mt-6 sm:mt-8">
@@ -265,286 +257,15 @@ function Course() {
                             </div>
 
                         </div>
-                          ))) : null}
-
-                        {/* Python */}
-                        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-lg border border-gray-200 p-4 sm:p-5 md:p-6 hover:-translate-y-3 hover:shadow-2xl transition-all duration-500">
-
-                            <div className="text-4xl sm:text-5xl">🐍</div>
-
-                            <h3 className="text-lg sm:text-xl font-bold mt-4 sm:mt-5">
-                                Python Programming
-                            </h3>
-
-                            <p className="mt-3 sm:mt-4 text-sm sm:text-base text-gray-600 line-clamp-3">
-                                {python.slice(0, 50)}...
-                            </p>
-                            <div className="flex justify-between text-xs sm:text-sm text-gray-500 mt-4 sm:mt-6">
-                                <span>⏳ 4 Months</span>
-                                <span>📘 Beginner</span>
+                          ))) : (
+                            <div className="col-span-full text-center py-12">
+                                <p className="text-gray-500 text-lg">No courses available at the moment.</p>
                             </div>
-                            <div className="flex gap-2 sm:gap-3 mt-6 sm:mt-8">
-
-                                <Link to='/Course' className="flex-1">
-                                    <button
-                                        className="w-full border-2 border-blue-600 text-blue-600 rounded-lg sm:rounded-xl py-2 sm:py-2 text-sm sm:text-base hover:bg-blue-600 hover:text-white transition"
-                                    >
-                                        View
-                                    </button>
-                                </Link>
-
-
-                                <Link to='/Enroll' className="flex-1">
-                                    <li className="flex-1 border-2 border-blue-600 text-blue-600 py-2 sm:py-2 rounded-lg sm:rounded-xl hover:bg-blue-600 hover:text-white transition text-center text-sm sm:text-base">
-                                        Enroll
-                                    </li>
-                                </Link>
-
-
-
-                            </div>
-
-                        </div>
-
-                        {/* Data Analytics */}
-                        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-lg border border-gray-200 p-4 sm:p-5 md:p-6 hover:-translate-y-3 hover:shadow-2xl transition-all duration-500">
-
-                            <div className="text-4xl sm:text-5xl">📊</div>
-
-                            <h3 className="text-lg sm:text-xl font-bold mt-4 sm:mt-5">
-                                Data Analytics
-                            </h3>
-
-                            <p className="mt-3 sm:mt-4 text-sm sm:text-base text-gray-600 line-clamp-3">
-                                {dataAnalytics.slice(0, 50)}...
-                            </p>
-
-                            <div className="flex justify-between text-xs sm:text-sm text-gray-500 mt-4 sm:mt-6">
-                                <span>⏳ 5 Months</span>
-                                <span>📘 Beginner</span>
-                            </div>
-
-                            <div className="flex gap-2 sm:gap-3 mt-6 sm:mt-8">
-
-                                <Link to='/Course' className="flex-1">
-                                    <button
-                                        className="w-full border-2 border-blue-600 text-blue-600 rounded-lg sm:rounded-xl py-2 sm:py-2 text-sm sm:text-base hover:bg-blue-600 hover:text-white transition"
-                                    >
-                                        View
-                                    </button>
-                                </Link>
-
-
-                                <Link to='/Enroll' className="flex-1">
-                                    <li className="flex-1 border-2 border-blue-600 text-blue-600 py-2 sm:py-2 rounded-lg sm:rounded-xl hover:bg-blue-600 hover:text-white transition text-center text-sm sm:text-base">
-                                        Enroll
-                                    </li>
-                                </Link>
-
-
-
-                            </div>
-                      
-                      
-
-                        </div>
-
-                        {/* Java */}
-                        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-lg border border-gray-200 p-4 sm:p-5 md:p-6 hover:-translate-y-3 hover:shadow-2xl transition-all duration-500">
-
-                            <div className="text-4xl sm:text-5xl">☕</div>
-
-                            <h3 className="text-lg sm:text-xl font-bold mt-4 sm:mt-5">
-                                Java Programming
-                            </h3>
-
-                            <p className="mt-3 sm:mt-4 text-sm sm:text-base text-gray-600 leading-6 sm:leading-7 line-clamp-3">
-                                {java.slice(0, 50)}...
-                            </p>
-
-                            <div className="flex justify-between text-xs sm:text-sm text-gray-500 mt-4 sm:mt-6">
-                                <span>⏳ 4 Months</span>
-                                <span>📘 Beginner</span>
-                            </div>
-
-                            <div className="flex gap-2 sm:gap-3 mt-6 sm:mt-8">
-
-                                <button
-                                    onClick={() =>
-                                        setSelectedCourse({
-                                            icon: "☕",
-                                            title: "Java Programming",
-                                            duration: "4 Months",
-                                            level: "Beginner",
-                                            description:
-                                                java
-                                        })
-                                    }
-                                    className="flex-1 border-2 border-blue-600 text-blue-600 py-2 sm:py-2 rounded-lg sm:rounded-xl hover:bg-blue-600 hover:text-white transition text-sm sm:text-base"
-                                >
-                                    View
-                                </button>
-
-                                <Link to='/Enroll' className="flex-1 ">
-                                    <li className="flex-1 border-2 border-blue-600 text-blue-600 py-2 sm:py-2 rounded-lg sm:rounded-xl hover:bg-blue-600 hover:text-white transition text-center text-sm sm:text-base">
-                                        Enroll
-                                    </li>
-                                </Link>
-
-                            </div>
-
-                        </div>
-
-                           {/* C & C++ */}
-                        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-lg border border-gray-200 p-4 sm:p-5 md:p-6 hover:-translate-y-3 hover:shadow-2xl transition-all duration-500">
-
-                            <div className="text-4xl sm:text-5xl">💻</div>
-
-                            <h3 className="text-lg sm:text-xl font-bold mt-4 sm:mt-5">
-                                C & C++
-                            </h3>
-
-                            <p className="mt-3 sm:mt-4 text-sm sm:text-base text-gray-600 leading-6 sm:leading-7 line-clamp-3">
-                                {cAndCpp.slice(0, 50)}...
-                            </p>
-
-                            <div className="flex justify-between text-xs sm:text-sm text-gray-500 mt-4 sm:mt-6">
-                                <span>⏳ 3 Months</span>
-                                <span>📘 Beginner</span>
-                            </div>
-
-                            <div className="flex gap-2 sm:gap-3 mt-6 sm:mt-8">
-
-                                <button
-                                    onClick={() =>
-                                        setSelectedCourse({
-                                            icon: "💻",
-                                            title: "C & C++",
-                                            duration: "3 Months",
-                                            level: "Beginner",
-                                            description:
-                                                cAndCpp
-                                        })
-                                    }
-                                    className="flex-1 border-2 border-blue-600 text-blue-600 py-2 sm:py-2 rounded-lg sm:rounded-xl hover:bg-blue-600 hover:text-white transition text-sm sm:text-base"
-                                >
-                                    View
-                                </button>
-                                <Link to='/Enroll' className="flex-1 ">
-                                    <li className="flex-1 border-2 border-blue-600 text-blue-600 py-2 sm:py-2 rounded-lg sm:rounded-xl hover:bg-blue-600 hover:text-white transition text-center text-sm sm:text-base">
-                                        Enroll
-                                    </li>
-                                </Link>
-
-
-                            </div>
-
-                        </div>
-
-                          {/* Digital Marketing */}
-                        <div className="bg-white rounded-2xl sm:rounded-3xl shadow-lg border border-gray-200 p-4 sm:p-5 md:p-6 hover:-translate-y-3 hover:shadow-2xl transition-all duration-500">
-
-                            <div className="text-4xl sm:text-5xl">📱</div>
-
-                            <h3 className="text-lg sm:text-xl font-bold mt-4 sm:mt-5">
-                                Digital Marketing
-                            </h3>
-
-                            <p className="mt-3 sm:mt-4 text-sm sm:text-base text-gray-600 leading-6 sm:leading-7 line-clamp-3">
-                                {digitalMarketing.slice(0, 50)}...
-                            </p>
-
-                            <div className="flex justify-between text-xs sm:text-sm text-gray-500 mt-4 sm:mt-6">
-                                <span>⏳ 3 Months</span>
-                                <span>📘 Beginner</span>
-                            </div>
-
-                            <div className="flex gap-2 sm:gap-3 mt-6 sm:mt-8">
-
-                                <button
-                                    onClick={() =>
-                                        setSelectedCourse({
-                                            icon: "📱",
-                                            title: "Digital Marketing",
-                                            duration: "3 Months",
-                                            level: "Beginner",
-                                            description:
-                                                digitalMarketing
-                                        })
-                                    }
-                                    className="flex-1 border-2 border-blue-600 text-blue-600 py-2 sm:py-2 rounded-lg sm:rounded-xl hover:bg-blue-600 hover:text-white transition text-sm sm:text-base"
-                                >
-                                    View
-                                </button>
-
-                                <Link to='/Enroll' className="flex-1 ">
-                                    <li className="flex-1 border-2 border-blue-600 text-blue-600 py-2 sm:py-2 rounded-lg sm:rounded-xl hover:bg-blue-600 hover:text-white transition text-center text-sm sm:text-base list-none">
-                                        Enroll
-                                    </li>
-                                </Link>
-
-                            </div>
-
-                        </div>
-
-                       
+                          )}
                     </div>
 
                 </div>
 
-                {/* Popup */}
-                {selectedCourse && (
-                    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-
-                        <div className="bg-white rounded-2xl sm:rounded-3xl max-w-lg w-full p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto">
-
-                            <button
-                                onClick={() => setSelectedCourse(null)}
-                                className="absolute top-3 sm:top-4 right-4 sm:right-5 text-2xl sm:text-3xl"
-                            >
-                                &times;
-                            </button>
-
-                            <div className="text-5xl sm:text-6xl">{selectedCourse.icon}</div>
-
-                            <h2 className="text-2xl sm:text-3xl font-bold mt-3 sm:mt-4">
-                                {selectedCourse.title}
-                            </h2>
-
-                            <p className="mt-3 sm:mt-5 text-sm sm:text-base">
-                                <strong>Duration:</strong> {selectedCourse.duration}
-                            </p>
-
-                            <p className="mt-2 text-sm sm:text-base">
-                                <strong>Level:</strong> {selectedCourse.level}
-                            </p>
-
-                            <p className="mt-5 sm:mt-6 text-gray-600 leading-7 sm:leading-8 text-sm sm:text-base">
-                                {selectedCourse.description}
-                            </p>
-
-                            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-6 sm:mt-8">
-
-                                <Link to='/Enroll' className="flex-1 ">
-                                    <li className="flex-1 border-2 border-blue-600 text-blue-600 py-2 sm:py-2 rounded-lg sm:rounded-xl hover:bg-blue-600 hover:text-white transition text-center text-sm sm:text-base">
-                                        Enroll
-                                    </li>
-                                </Link>
-
-                                <button
-                                    onClick={() => setSelectedCourse(null)}
-                                    className="flex-1 border rounded-lg sm:rounded-xl py-2 sm:py-3 hover:bg-gray-100 text-sm sm:text-base"
-                                >
-                                    Close
-                                </button>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                )}
-                 
             </section>        
 
              {/* Why Learn With Us */}

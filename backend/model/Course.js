@@ -117,12 +117,6 @@ const courseSchema = new mongoose.Schema({
   timestamps: true
 });
 
-courseSchema.pre('save', function(next) {
-  if (this.videos) {
-    this.numberOfVideos = this.videos.length;
-  }
-  next();
-});
 
 const Course = mongoose.model('Course', courseSchema);
 

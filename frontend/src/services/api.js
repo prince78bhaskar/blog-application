@@ -47,7 +47,19 @@ export const courseAPI = {
   getAllCourses: () => api.get('/courses'),
   getCourseById: (id) => api.get(`/courses/${id}`),
   getCourseVideos: (id) => api.get(`/courses/${id}/videos`),
-  getCourseNotes: (id) => api.get(`/courses/${id}/notes`)
+  getCourseNotes: (id) => api.get(`/courses/${id}/notes`),
+  createCourse: (data) => {
+    console.log('courseAPI.createCourse called with:', data);
+    return api.post('/courses', data);
+  },
+  updateCourse: (id, data) => {
+    console.log('courseAPI.updateCourse called with ID:', id, 'data:', data);
+    return api.put(`/courses/${id}`, data);
+  },
+  deleteCourse: (id) => {
+    console.log('courseAPI.deleteCourse called with ID:', id);
+    return api.delete(`/courses/${id}`);
+  }
 };
 
 export const paymentAPI = {

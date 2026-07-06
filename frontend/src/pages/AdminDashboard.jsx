@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
-import { adminAPI } from '../services/api';
+import { adminAPI, courseAPI } from '../services/api';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -14,6 +14,24 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
   const [searchTerm, setSearchTerm] = useState('');
+  const [showCourseForm, setShowCourseForm] = useState(false);
+  const [editingCourse, setEditingCourse] = useState(null);
+  const [courseForm, setCourseForm] = useState({
+    title: '',
+    description: '',
+    image: '',
+    banner: '',
+    instructor: '',
+    duration: '',
+    level: 'Beginner',
+    price: '',
+    category: '',
+    isActive: true,
+    features: [],
+    syllabus: [],
+    faqs: [],
+    demoVideo: ''
+  });
 
   useEffect(() => {
     if (user?.role !== 'admin') {
@@ -69,6 +87,141 @@ const AdminDashboard = () => {
     } catch (error) {
       toast.error('Failed to delete student');
     }
+  };
+
+  const handleAddCourse = () => {
+    setEditingCourse(null);
+    setCourseForm({
+      title: '',
+      description: '',
+      image: '',
+      banner: '',
+      instructor: '',
+      duration: '',
+      level: 'Beginner',
+      price: '',
+      category: '',
+      isActive: true,
+      features: [],
+      syllabus: [],
+      faqs: [],
+      demoVideo: ''
+    });
+    setShowCourseForm(true);
+  };
+
+  const handleEditCourse = (course) => {
+    setEditingCourse(course);
+    setCourseForm({
+      title: course.title,
+      description: course.description,
+      image: course.image,
+      banner: course.banner,
+      instructor: course.instructor,
+      duration: course.duration,
+      level: course.level,
+      price: course.price,
+      category: course.category,
+      isActive: course.isActive,
+      features: course.features || [],
+      syllabus: course.syllabus || [],
+      faqs: course.faqs || [],
+      demoVideo: course.demoVideo || ''
+    });
+    setShowCourseForm(true);
+  };
+
+  const handleDeleteCourse = async (courseId) => {
+    if (!window.confirm('Are you sure you want to delete this course?')) return;
+
+    try {
+      await courseAPI.deleteCourse(courseId);
+      toast.success('Course deleted successfully');
+      fetchAdminData();
+    } catch (error) {
+      toast.error('Failed to delete course');
+    }
+  };
+
+  const handleCourseFormSubmit = async (e) => {
+    e.preventDefault();
+
+    console.log('========== COURSE FORM SUBMISSION ==========');
+    console.log('Form data:', courseForm);
+
+    if (!courseForm.title || !courseForm.description || !courseForm.price || !courseForm.category) {
+      console.log('Validation failed: Missing required fields');
+      toast.error('Please fill all required fields');
+      return;
+    }
+
+    try {
+      const courseData = {
+        ...courseForm,
+        price: Number(courseForm.price),
+        language: courseForm.language || 'English',
+        features: courseForm.features.filter(f => f.trim() !== ''),
+        syllabus: courseForm.syllabus.filter(s => s.module && s.module.trim() !== ''),
+        faqs: courseForm.faqs.filter(f => f.question && f.question.trim() !== '')
+      };
+
+      console.log('Course data to be sent:', JSON.stringify(courseData, null, 2));
+
+      if (editingCourse) {
+        console.log('Updating course with ID:', editingCourse._id);
+        const response = await courseAPI.updateCourse(editingCourse._id, courseData);
+        console.log('Update response:', response.data);
+        toast.success('Course updated successfully');
+      } else {
+        console.log('Creating new course');
+        const response = await courseAPI.createCourse(courseData);
+        console.log('Create response:', response.data);
+        toast.success('Course created successfully');
+      }
+
+      setShowCourseForm(false);
+      fetchAdminData();
+    } catch (error) {
+      console.error('========== COURSE SAVE ERROR ==========');
+      console.error('Error object:', error);
+      console.error('Error response:', error.response);
+      console.error('Error response data:', error.response?.data);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      toast.error(error.response?.data?.message || 'Failed to save course');
+    }
+  };
+
+  const handleCourseFormChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setCourseForm({
+      ...courseForm,
+      [name]: type === 'checkbox' ? checked : value
+    });
+  };
+
+  const handleArrayFieldChange = (field, index, value) => {
+    const newArray = [...courseForm[field]];
+    newArray[index] = value;
+    setCourseForm({
+      ...courseForm,
+      [field]: newArray
+    });
+  };
+
+  const addArrayField = (field) => {
+    setCourseForm({
+      ...courseForm,
+      [field]: [...courseForm[field], '']
+    });
+  };
+
+  const removeArrayField = (field, index) => {
+    const newArray = courseForm[field].filter((_, i) => i !== index);
+    setCourseForm({
+      ...courseForm,
+      [field]: newArray
+    });
   };
 
   if (loading) {
@@ -287,6 +440,13 @@ const AdminDashboard = () => {
                   >
                     Search
                   </motion.button>
+                  <motion.button
+                    onClick={handleAddCourse}
+                    whileHover={{ scale: 1.02 }}
+                    className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
+                  >
+                    + Add Course
+                  </motion.button>
                 </div>
               </div>
 
@@ -306,7 +466,7 @@ const AdminDashboard = () => {
                       <h3 className="text-xl font-bold text-gray-800 mb-2">{course.title}</h3>
                       <p className="text-gray-600 mb-2">{course.instructor}</p>
                       <p className="text-gray-600 mb-4">₹{course.price}</p>
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between items-center mb-4">
                         <span className="text-sm text-gray-500">
                           {course.enrolledCount || 0} enrolled
                         </span>
@@ -314,11 +474,236 @@ const AdminDashboard = () => {
                           {course.isActive ? 'Active' : 'Inactive'}
                         </span>
                       </div>
+                      <div className="flex gap-2">
+                        <motion.button
+                          onClick={() => handleEditCourse(course)}
+                          whileHover={{ scale: 1.05 }}
+                          className="flex-1 bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 transition text-sm"
+                        >
+                          Edit
+                        </motion.button>
+                        <motion.button
+                          onClick={() => handleDeleteCourse(course._id)}
+                          whileHover={{ scale: 1.05 }}
+                          className="flex-1 bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition text-sm"
+                        >
+                          Delete
+                        </motion.button>
+                      </div>
                     </div>
                   </motion.div>
                 ))}
               </div>
             </motion.div>
+          )}
+
+          {showCourseForm && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="bg-white rounded-xl p-8 max-w-4xl w-full mx-4 my-8 max-h-[90vh] overflow-y-auto"
+              >
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    {editingCourse ? 'Edit Course' : 'Add New Course'}
+                  </h2>
+                  <button
+                    onClick={() => setShowCourseForm(false)}
+                    className="text-2xl text-gray-500 hover:text-gray-700"
+                  >
+                    &times;
+                  </button>
+                </div>
+
+                <form onSubmit={handleCourseFormSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">Course Title *</label>
+                      <input
+                        type="text"
+                        name="title"
+                        value={courseForm.title}
+                        onChange={handleCourseFormChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">Category *</label>
+                      <input
+                        type="text"
+                        name="category"
+                        value={courseForm.category}
+                        onChange={handleCourseFormChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">Instructor *</label>
+                      <input
+                        type="text"
+                        name="instructor"
+                        value={courseForm.instructor}
+                        onChange={handleCourseFormChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">Duration *</label>
+                      <input
+                        type="text"
+                        name="duration"
+                        value={courseForm.duration}
+                        onChange={handleCourseFormChange}
+                        placeholder="e.g., 6 Months"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">Level *</label>
+                      <select
+                        name="level"
+                        value={courseForm.level}
+                        onChange={handleCourseFormChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        required
+                      >
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">Price (₹) *</label>
+                      <input
+                        type="number"
+                        name="price"
+                        value={courseForm.price}
+                        onChange={handleCourseFormChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">Image URL *</label>
+                      <input
+                        type="url"
+                        name="image"
+                        value={courseForm.image}
+                        onChange={handleCourseFormChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">Banner URL *</label>
+                      <input
+                        type="url"
+                        name="banner"
+                        value={courseForm.banner}
+                        onChange={handleCourseFormChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        required
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-gray-700 font-semibold mb-2">Description *</label>
+                      <textarea
+                        name="description"
+                        value={courseForm.description}
+                        onChange={handleCourseFormChange}
+                        rows="4"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        required
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-gray-700 font-semibold mb-2">Demo Video URL</label>
+                      <input
+                        type="url"
+                        name="demoVideo"
+                        value={courseForm.demoVideo}
+                        onChange={handleCourseFormChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          name="isActive"
+                          checked={courseForm.isActive}
+                          onChange={handleCourseFormChange}
+                          className="w-5 h-5"
+                        />
+                        <span className="text-gray-700 font-semibold">Active (Visible to users)</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2">Features</label>
+                    {courseForm.features.map((feature, index) => (
+                      <div key={index} className="flex gap-2 mb-2">
+                        <input
+                          type="text"
+                          value={feature}
+                          onChange={(e) => handleArrayFieldChange('features', index, e.target.value)}
+                          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          placeholder="Feature"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeArrayField('features', index)}
+                          className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => addArrayField('features')}
+                      className="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
+                    >
+                      + Add Feature
+                    </button>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <motion.button
+                      type="submit"
+                      whileHover={{ scale: 1.02 }}
+                      className="flex-1 bg-purple-500 text-white py-3 rounded-lg hover:bg-purple-600 transition font-semibold"
+                    >
+                      {editingCourse ? 'Update Course' : 'Create Course'}
+                    </motion.button>
+                    <motion.button
+                      type="button"
+                      onClick={() => setShowCourseForm(false)}
+                      whileHover={{ scale: 1.02 }}
+                      className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition font-semibold"
+                    >
+                      Cancel
+                    </motion.button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
           )}
         </main>
       </div>

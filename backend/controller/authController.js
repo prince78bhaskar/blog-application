@@ -3,54 +3,64 @@ import User from '../model/User.js';
 import { response } from 'express';
 
 export const login = async (req, res) => {
-
   try {
-     console.log('authController.login body:', req.body);
+    console.log('========== LOGIN ATTEMPT ==========');
+    console.log('Request body:', req.body);
+    console.log('Request headers:', req.headers);
 
     const { username, password } = req.body;
 
+    console.log('Extracted username:', username);
+    console.log('Extract password length:', password ? password.length : 'undefined');
+
     const user = await User.findOne({ username }).populate('purchasedCourses');
 
-    console.log("DB Password Hash:", user?.password);
-
-console.log("DB User:", user);
-
-    console.log("USER:", user ? "FOUND" : "NOT FOUND");
-
+    console.log('Database query result:', user ? 'USER FOUND' : 'USER NOT FOUND');
 
     if (!user) {
+      console.log('Login failed: User not found in database');
       return res.status(401).json({
         success: false,
         message: 'Invalid credentials'
       });
     }
 
+    console.log('User details from database:');
+    console.log('  _id:', user._id);
+    console.log('  username:', user.username);
+    console.log('  email:', user.email);
+    console.log('  role:', user.role);
+    console.log('  password hash exists:', !!user.password);
+    console.log('  password hash length:', user.password ? user.password.length : 0);
+
     const isMatch = await user.comparePassword(password);
 
-   if (!isMatch) {
-  return res.status(401).json({
-    success: false,
-    message: "Invalid credentials",
-    debug: {
-      username,
-      enteredPassword: password,
-      dbPasswordHash: user.password,
-      isMatch
+    console.log('Password comparison result:', isMatch ? 'MATCH' : 'NO MATCH');
+
+    if (!isMatch) {
+      console.log('Login failed: Password does not match');
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials"
+      });
     }
-  });
-}
+
+    console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
+    console.log('JWT_SECRET length:', process.env.JWT_SECRET ? process.env.JWT_SECRET.length : 0);
 
     const token = jwt.sign(
-      { 
-        userId: user._id, 
-        username: user.username, 
-        role: user.role 
+      {
+        userId: user._id,
+        username: user.username,
+        role: user.role
       },
       process.env.JWT_SECRET,
       { expiresIn: '30d' }
     );
 
-    res.status(200).json({
+    console.log('JWT generated successfully');
+
+    const response = {
       success: true,
       message: 'Login successful',
       token,
@@ -62,8 +72,20 @@ console.log("DB User:", user);
         role: user.role,
         purchasedCourses: user.purchasedCourses
       }
+    };
+
+    console.log('Sending response:', {
+      success: response.success,
+      message: response.message,
+      userRole: response.user.role
     });
+
+    res.status(200).json(response);
   } catch (error) {
+    console.error('========== LOGIN ERROR ==========');
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
       success: false,
       message: error.message
