@@ -12,7 +12,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Managing from '../assets/Managing.jpg'
 import Anurag from '../assets/anurag.webp'
-import CoDirector from '../assets/CoDirector.png'
+import CoDirector from '../assets/coDirector.png'
 import ceo from '../assets/shailesh.webp'
 function About() {
 
