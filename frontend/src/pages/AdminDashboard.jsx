@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
-import { adminAPI, courseAPI } from '../services/api';
+import { adminAPI, courseAPI, learningContentAPI } from '../services/api';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -31,6 +31,21 @@ const AdminDashboard = () => {
     syllabus: [],
     faqs: [],
     demoVideo: ''
+  });
+  const [selectedCourseForContent, setSelectedCourseForContent] = useState(null);
+  const [learningContent, setLearningContent] = useState([]);
+  const [showContentForm, setShowContentForm] = useState(false);
+  const [editingContent, setEditingContent] = useState(null);
+  const [contentForm, setContentForm] = useState({
+    courseId: '',
+    title: '',
+    type: 'video',
+    videoUrl: '',
+    pdfUrl: '',
+    thumbnail: '',
+    description: '',
+    duration: '',
+    sequence: 0
   });
 
   useEffect(() => {
@@ -224,6 +239,122 @@ const AdminDashboard = () => {
     });
   };
 
+  const handleManageContent = async (course) => {
+    setSelectedCourseForContent(course);
+    try {
+      const response = await learningContentAPI.getLearningContentByCourse(course._id);
+      setLearningContent(response.data.learningContent);
+      setActiveTab('course-content');
+    } catch (error) {
+      toast.error('Failed to load course content');
+    }
+  };
+
+  const handleAddContent = () => {
+    setEditingContent(null);
+    setContentForm({
+      courseId: selectedCourseForContent?._id || '',
+      title: '',
+      type: 'video',
+      videoUrl: '',
+      pdfUrl: '',
+      thumbnail: '',
+      description: '',
+      duration: '',
+      sequence: learningContent.filter(c => c.type === 'video').length
+    });
+    setShowContentForm(true);
+  };
+
+  const handleEditContent = (content) => {
+    setEditingContent(content);
+    setContentForm({
+      courseId: content.courseId._id || content.courseId,
+      title: content.title,
+      type: content.type,
+      videoUrl: content.videoUrl || '',
+      pdfUrl: content.pdfUrl || '',
+      thumbnail: content.thumbnail || '',
+      description: content.description || '',
+      duration: content.duration || '',
+      sequence: content.sequence
+    });
+    setShowContentForm(true);
+  };
+
+  const handleDeleteContent = async (contentId) => {
+    if (!window.confirm('Are you sure you want to delete this content?')) return;
+
+    try {
+      await learningContentAPI.deleteLearningContent(contentId);
+      toast.success('Content deleted successfully');
+      if (selectedCourseForContent) {
+        handleManageContent(selectedCourseForContent);
+      }
+    } catch (error) {
+      toast.error('Failed to delete content');
+    }
+  };
+
+  const handleContentFormSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!contentForm.title || !contentForm.courseId) {
+      toast.error('Please fill all required fields');
+      return;
+    }
+
+    if (contentForm.type === 'video' && !contentForm.videoUrl) {
+      toast.error('Video URL is required for video content');
+      return;
+    }
+
+    if (contentForm.type === 'note' && !contentForm.pdfUrl) {
+      toast.error('PDF URL is required for note content');
+      return;
+    }
+
+    try {
+      const contentData = {
+        ...contentForm,
+        sequence: Number(contentForm.sequence)
+      };
+
+      if (editingContent) {
+        await learningContentAPI.updateLearningContent(editingContent._id, contentData);
+        toast.success('Content updated successfully');
+      } else {
+        await learningContentAPI.addLearningContent(contentData);
+        toast.success('Content added successfully');
+      }
+
+      setShowContentForm(false);
+      if (selectedCourseForContent) {
+        handleManageContent(selectedCourseForContent);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to save content');
+    }
+  };
+
+  const handleContentFormChange = (e) => {
+    const { name, value, type } = e.target;
+    setContentForm({
+      ...contentForm,
+      [name]: type === 'number' ? Number(value) : value
+    });
+  };
+
+  const isYouTubeUrl = (url) => {
+    return url && (url.includes('youtube.com') || url.includes('youtu.be'));
+  };
+
+  const getYouTubeEmbedUrl = (url) => {
+    if (!url) return '';
+    const videoId = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+    return videoId ? `https://www.youtube.com/embed/${videoId[1]}` : url;
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -235,7 +366,8 @@ const AdminDashboard = () => {
   const sidebarItems = [
     { id: 'overview', label: 'Overview', icon: '📊' },
     { id: 'students', label: 'Students', icon: '👥' },
-    { id: 'courses', label: 'Courses', icon: '📚' }
+    { id: 'courses', label: 'Courses', icon: '📚' },
+    { id: 'course-content', label: 'Course Content', icon: '📖' }
   ];
 
   return (
@@ -483,6 +615,13 @@ const AdminDashboard = () => {
                           Edit
                         </motion.button>
                         <motion.button
+                          onClick={() => handleManageContent(course)}
+                          whileHover={{ scale: 1.05 }}
+                          className="flex-1 bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 transition text-sm"
+                        >
+                          Content
+                        </motion.button>
+                        <motion.button
                           onClick={() => handleDeleteCourse(course._id)}
                           whileHover={{ scale: 1.05 }}
                           className="flex-1 bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition text-sm"
@@ -494,6 +633,156 @@ const AdminDashboard = () => {
                   </motion.div>
                 ))}
               </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'course-content' && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              {!selectedCourseForContent ? (
+                <div className="bg-white rounded-xl shadow-lg p-8">
+                  <h2 className="text-2xl font-bold text-gray-800 mb-4">Select a Course</h2>
+                  <p className="text-gray-600 mb-6">Choose a course from the Courses tab to manage its learning content.</p>
+                  <motion.button
+                    onClick={() => setActiveTab('courses')}
+                    whileHover={{ scale: 1.02 }}
+                    className="bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600 transition"
+                  >
+                    Go to Courses
+                  </motion.button>
+                </div>
+              ) : (
+                <div>
+                  <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+                    <div className="flex justify-between items-center mb-4">
+                      <div>
+                        <h2 className="text-2xl font-bold text-gray-800">{selectedCourseForContent.title}</h2>
+                        <p className="text-gray-600">Manage learning content for this course</p>
+                      </div>
+                      <motion.button
+                        onClick={() => setActiveTab('courses')}
+                        whileHover={{ scale: 1.02 }}
+                        className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition"
+                      >
+                        ← Back to Courses
+                      </motion.button>
+                    </div>
+                    <motion.button
+                      onClick={handleAddContent}
+                      whileHover={{ scale: 1.02 }}
+                      className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
+                    >
+                      + Add Content
+                    </motion.button>
+                  </div>
+
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                      <h3 className="text-xl font-bold text-gray-800 mb-4">📹 Videos</h3>
+                      <div className="space-y-4">
+                        {learningContent.filter(c => c.type === 'video').map((content) => (
+                          <motion.div
+                            key={content._id}
+                            whileHover={{ scale: 1.02 }}
+                            className="border border-gray-200 rounded-lg p-4"
+                          >
+                            <div className="flex justify-between items-start mb-2">
+                              <h4 className="font-semibold text-gray-800">{content.title}</h4>
+                              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                Seq: {content.sequence}
+                              </span>
+                            </div>
+                            {content.thumbnail && (
+                              <img
+                                src={content.thumbnail}
+                                alt={content.title}
+                                className="w-full h-32 object-cover rounded mb-2"
+                              />
+                            )}
+                            <p className="text-sm text-gray-600 mb-2">{content.description}</p>
+                            {content.duration && (
+                              <p className="text-xs text-gray-500 mb-2">Duration: {content.duration}</p>
+                            )}
+                            <p className="text-xs text-gray-500 mb-3 truncate">
+                              {isYouTubeUrl(content.videoUrl) ? 'YouTube' : 'MP4'}: {content.videoUrl}
+                            </p>
+                            <div className="flex gap-2">
+                              <motion.button
+                                onClick={() => handleEditContent(content)}
+                                whileHover={{ scale: 1.05 }}
+                                className="flex-1 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition text-sm"
+                              >
+                                Edit
+                              </motion.button>
+                              <motion.button
+                                onClick={() => handleDeleteContent(content._id)}
+                                whileHover={{ scale: 1.05 }}
+                                className="flex-1 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition text-sm"
+                              >
+                                Delete
+                              </motion.button>
+                            </div>
+                          </motion.div>
+                        ))}
+                        {learningContent.filter(c => c.type === 'video').length === 0 && (
+                          <p className="text-gray-500 text-center py-4">No videos added yet</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6">
+                      <h3 className="text-xl font-bold text-gray-800 mb-4">📄 Notes (PDFs)</h3>
+                      <div className="space-y-4">
+                        {learningContent.filter(c => c.type === 'note').map((content) => (
+                          <motion.div
+                            key={content._id}
+                            whileHover={{ scale: 1.02 }}
+                            className="border border-gray-200 rounded-lg p-4"
+                          >
+                            <div className="flex justify-between items-start mb-2">
+                              <h4 className="font-semibold text-gray-800">{content.title}</h4>
+                              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                                PDF
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-2">{content.description}</p>
+                            <a
+                              href={content.pdfUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-blue-500 hover:underline mb-3 block truncate"
+                            >
+                              {content.pdfUrl}
+                            </a>
+                            <div className="flex gap-2">
+                              <motion.button
+                                onClick={() => handleEditContent(content)}
+                                whileHover={{ scale: 1.05 }}
+                                className="flex-1 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition text-sm"
+                              >
+                                Edit
+                              </motion.button>
+                              <motion.button
+                                onClick={() => handleDeleteContent(content._id)}
+                                whileHover={{ scale: 1.05 }}
+                                className="flex-1 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition text-sm"
+                              >
+                                Delete
+                              </motion.button>
+                            </div>
+                          </motion.div>
+                        ))}
+                        {learningContent.filter(c => c.type === 'note').length === 0 && (
+                          <p className="text-gray-500 text-center py-4">No notes added yet</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </motion.div>
           )}
 
@@ -695,6 +984,156 @@ const AdminDashboard = () => {
                     <motion.button
                       type="button"
                       onClick={() => setShowCourseForm(false)}
+                      whileHover={{ scale: 1.02 }}
+                      className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition font-semibold"
+                    >
+                      Cancel
+                    </motion.button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          )}
+
+          {showContentForm && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="bg-white rounded-xl p-8 max-w-2xl w-full mx-4 my-8 max-h-[90vh] overflow-y-auto"
+              >
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    {editingContent ? 'Edit Content' : 'Add New Content'}
+                  </h2>
+                  <button
+                    onClick={() => setShowContentForm(false)}
+                    className="text-2xl text-gray-500 hover:text-gray-700"
+                  >
+                    &times;
+                  </button>
+                </div>
+
+                <form onSubmit={handleContentFormSubmit} className="space-y-6">
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2">Content Type *</label>
+                    <select
+                      name="type"
+                      value={contentForm.type}
+                      onChange={handleContentFormChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      required
+                    >
+                      <option value="video">Video</option>
+                      <option value="note">Note (PDF)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2">Title *</label>
+                    <input
+                      type="text"
+                      name="title"
+                      value={contentForm.title}
+                      onChange={handleContentFormChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      required
+                    />
+                  </div>
+
+                  {contentForm.type === 'video' && (
+                    <>
+                      <div>
+                        <label className="block text-gray-700 font-semibold mb-2">Video URL *</label>
+                        <input
+                          type="url"
+                          name="videoUrl"
+                          value={contentForm.videoUrl}
+                          onChange={handleContentFormChange}
+                          placeholder="YouTube URL or MP4 URL"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          required
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Supports YouTube URLs and direct MP4 links</p>
+                      </div>
+
+                      <div>
+                        <label className="block text-gray-700 font-semibold mb-2">Thumbnail URL</label>
+                        <input
+                          type="url"
+                          name="thumbnail"
+                          value={contentForm.thumbnail}
+                          onChange={handleContentFormChange}
+                          placeholder="Image URL for video thumbnail"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-gray-700 font-semibold mb-2">Duration</label>
+                        <input
+                          type="text"
+                          name="duration"
+                          value={contentForm.duration}
+                          onChange={handleContentFormChange}
+                          placeholder="e.g., 10:30"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {contentForm.type === 'note' && (
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">PDF URL *</label>
+                      <input
+                        type="url"
+                        name="pdfUrl"
+                        value={contentForm.pdfUrl}
+                        onChange={handleContentFormChange}
+                        placeholder="Link to PDF file"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        required
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2">Description</label>
+                    <textarea
+                      name="description"
+                      value={contentForm.description}
+                      onChange={handleContentFormChange}
+                      rows="3"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      placeholder="Brief description of the content"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2">Sequence Order</label>
+                    <input
+                      type="number"
+                      name="sequence"
+                      value={contentForm.sequence}
+                      onChange={handleContentFormChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      min="0"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Lower numbers appear first</p>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <motion.button
+                      type="submit"
+                      whileHover={{ scale: 1.02 }}
+                      className="flex-1 bg-purple-500 text-white py-3 rounded-lg hover:bg-purple-600 transition font-semibold"
+                    >
+                      {editingContent ? 'Update Content' : 'Add Content'}
+                    </motion.button>
+                    <motion.button
+                      type="button"
+                      onClick={() => setShowContentForm(false)}
                       whileHover={{ scale: 1.02 }}
                       className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition font-semibold"
                     >

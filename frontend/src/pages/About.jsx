@@ -11,6 +11,9 @@ import about from "../assets/about.png";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Managing from '../assets/Managing.jpg'
+import Anurag from '../assets/anurag.webp'
+import CoDirector from '../assets/CoDirector.png'
+import ceo from '../assets/shailesh.webp'
 function About() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -576,13 +579,13 @@ function About() {
             {/* Card 1 */}
             <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-100 rounded-2xl shadow-md p-6 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
 
-             <div className="w-full aspect-[4/3] overflow-hidden rounded-xl mb-4 bg-gray-100">
-  <img
-    src={Managing}
-    alt="profile"
-    className="w-full h-full object-cover object-top"
-  />
-</div>
+              <div className="w-full aspect-[4/3] overflow-hidden rounded-xl mb-4 bg-gray-100">
+                <img
+                  src={Managing}
+                  alt="profile"
+                  className="w-full h-full object-cover object-top"
+                />
+              </div>
 
               <h3 className="text-xl font-bold text-gray-800">
                 Dr. Atul Kumar Singh
@@ -592,26 +595,27 @@ function About() {
                 Managing Director
               </p>
 
-              <p className="text-xs text-gray-500 mt-1">
-                BHMS, MD, PG London, FRCH London
+              <p className="text-xs text-red-900 mt-1">
+                <strong>BHMS, MD, PG London, FRCH London</strong>
               </p>
 
               <p className="text-sm text-gray-600 mt-3 leading-relaxed">
-                Healthcare Innovator with 15+ years of experience in digital healthcare transformation,
-                patient engagement, and workflow optimization.
+                🟠 With over 13 years of experience in healthcare and wellness, Dr. Atul Kumar Singh is a Homeopathy Doctor and Wellness Practitioner dedicated to promoting holistic well-being. <br></br><br></br>
+                🟠 He believes that good health comes from maintaining balance between the body, mind, and spirit. Through Niramaya Yoga, he works to make authentic yoga education accessible to everyone.<br></br><br></br>
+                🟠 By combining traditional yogic principles with modern wellness practices, he helps individuals build healthier habits, improve mindfulness, and enhance their overall quality of life.
               </p>
             </div>
 
             {/* Card 2 */}
             <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-100 rounded-2xl shadow-md p-6 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
 
-            <div className="w-full aspect-[4/3] overflow-hidden rounded-xl mb-4 bg-gray-100">
-  <img
-    src={Managing}
-    alt="profile"
-    className="w-full h-full object-cover object-top"
-  />
-</div>
+              <div className="w-full aspect-[4/3] overflow-hidden rounded-xl mb-4 bg-gray-100">
+                <img
+                  src={Anurag}
+                  alt="profile"
+                  className="w-full h-full object-cover object-top"
+                />
+              </div>
               <h3 className="text-xl font-bold text-gray-800">
                 Anurag Yadav
               </h3>
@@ -620,25 +624,31 @@ function About() {
                 Founder
               </p>
 
-              <p className="text-xs text-gray-500 mt-1">
-                B.Tech (ABES Ghaziabad), MBA (IIM Indore)
+
+            <p className="text-xs text-red-900 mt-1">
+                <strong> B.Tech (ABES Ghaziabad), MBA (IIM Indore)</strong>
               </p>
+              
 
               <p className="text-sm text-gray-600 mt-3 leading-relaxed">
-                Empowering medical practitioners with innovative marketing solutions that enhance visibility.
+               🟠 With a strong academic foundation, including a B.Tech from ABES Engineering College, Ghaziabad, and an MBA from IIM Indore, Anurag Yadav combines technical expertise with strategic leadership to build impactful learning experiences for students.<br></br><br></br>
+
+🟠 As the Founder of DigiQuest, he is committed to bridging the gap between academic education and industry requirements by promoting practical, skill-based learning, career mentorship, and hands-on training programs.<br></br><br></br>
+
+🟠 He believes that every student deserves the right guidance, real-world exposure, and continuous mentorship to achieve professional success, empowering learners to become confident, job-ready, and future-ready professionals.
               </p>
             </div>
 
             {/* Card 3 */}
             <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-100 rounded-2xl shadow-md p-6 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
 
-             <div className="w-full aspect-[4/3] overflow-hidden rounded-xl mb-4 bg-gray-100">
-  <img
-    src={Managing}
-    alt="profile"
-    className="w-full h-full object-cover object-top"
-  />
-</div>
+              <div className="w-full aspect-[4/3] overflow-hidden rounded-xl mb-4 bg-gray-100">
+                <img
+                  src={CoDirector}
+                  alt="profile"
+                  className="w-full h-full object-cover object-top"
+                />
+              </div>
               <h3 className="text-xl font-bold text-gray-800">
                 Rajnandani
               </h3>
@@ -647,20 +657,28 @@ function About() {
                 Co-Director
               </p>
 
+               <p className="text-xs text-red-900 mt-1">
+                <strong> BA ,MA</strong>
+              </p>
+
+              
+
               <p className="text-sm text-gray-600 mt-3 leading-relaxed">
-                Future of healthcare lies in blending technology with compassionate care.
+               🟠 With academic qualifications in BA and MA, Rajnandani brings strong communication, organizational, and leadership skills, contributing to the overall growth and vision of DigiQuest.<br></br><br></br>
+
+🟠 As the Co-Director of DigiQuest, she is committed to creating a supportive learning environment, ensuring quality education, student development, and effective academic management for long-term success.
               </p>
             </div>
 
             {/* Card 4 */}
             <div className="bg-gradient-to-br from-white to-gray-50 border border-gray-100 rounded-2xl shadow-md p-6 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-<div className="w-full aspect-[4/3] overflow-hidden rounded-xl mb-4 bg-gray-100">
-  <img
-    src={Managing}
-    alt="profile"
-    className="w-full h-full object-cover object-top"
-  />
-</div>
+              <div className="w-full aspect-[4/3] overflow-hidden rounded-xl mb-4 bg-gray-100">
+                <img
+                  src={ceo}
+                  alt="profile"
+                  className="w-full h-full object-cover object-top"
+                />
+              </div>
               <h3 className="text-xl font-bold text-gray-800">
                 Shailesh Kumar Yadav
               </h3>
@@ -669,12 +687,15 @@ function About() {
                 CEO
               </p>
 
-              <p className="text-xs text-gray-500 mt-1">
-                B.Sc, M.Sc, BCA, MBA
+               <p className="text-xs text-red-900 mt-1">
+                <strong> B.Sc, M.Sc, BCA, MBA</strong>
               </p>
 
+            
+
               <p className="text-sm text-gray-600 mt-3 leading-relaxed">
-                Combining technology with compassionate healthcare solutions for better patient outcomes.
+             🟠 With a diverse academic background including B.Sc, M.Sc, BCA, and MBA, Shailesh Kumar Yadav brings a unique combination of scientific knowledge, technical expertise, and business leadership to drive innovation and organizational growth.<br></br> <br></br>
+🟠 As the CEO of DigiQuest, he is dedicated to fostering excellence in education by empowering students with industry-relevant skills, strategic career guidance, and a strong focus on professional development and lifelong learning.
               </p>
             </div>
 
@@ -808,11 +829,11 @@ function About() {
             {/* Buttons */}
             <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-5 mt-8 sm:mt-10 md:mt-12">
 
-              <Link to="/Enroll">
+              {/* <Link to="/Enroll">
                 <button className="px-8 sm:px-10 py-3 sm:py-4 rounded-xl bg-white text-blue-700 font-bold text-sm sm:text-base md:text-lg shadow-lg hover:bg-cyan-300 hover:text-slate-900 hover:scale-105 transition-all duration-300 w-full sm:w-auto">
                   Enroll Now →
                 </button>
-              </Link>
+              </Link> */}
 
               <Link to="/Course">
                 <button className="px-8 sm:px-10 py-3 sm:py-4 rounded-xl border-2 border-white font-semibold hover:bg-white hover:text-blue-700 transition-all duration-300 text-sm sm:text-base md:text-lg w-full sm:w-auto">

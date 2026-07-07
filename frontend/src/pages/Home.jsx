@@ -20,6 +20,7 @@ function Home() {
   }, []);
   return (
     <div>
+
              <header className="sticky top-0 z-50 bg-gray-100 shadow-md">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
               
@@ -141,6 +142,14 @@ function Home() {
                             Courses
                           </motion.li>
                         </Link>
+
+                          <Link to="/Login" onClick={() => setMobileMenuOpen(false)}>
+                          <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
+                            Login
+                          </motion.li>
+                        </Link>
+
+                        
               
                         {/* <Link to="/Enroll" onClick={() => setMobileMenuOpen(false)}>
                           <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
@@ -154,6 +163,7 @@ function Home() {
                 </AnimatePresence>
               </header>
 
+        
 
       <main>
         {/* Introduction */}

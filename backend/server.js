@@ -17,6 +17,7 @@ import courseRoutes from './routes/courses.js';
 import paymentRoutes from './routes/payment.js';
 import dashboardRoutes from './routes/dashboard.js';
 import adminRoutes from './routes/admin.js';
+import learningContentRoutes from './routes/learningContent.js';
 
 const app = express();
 
@@ -68,6 +69,7 @@ app.use('/api/courses', courseRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api', learningContentRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

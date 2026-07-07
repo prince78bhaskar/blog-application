@@ -12,6 +12,8 @@ export const auth = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // JWT payload structure: { userId, username, role }
+    // Access user ID via req.user.userId (NOT req.user.id)
     req.user = decoded;
     next();
   } catch (error) {
@@ -42,6 +44,8 @@ export const adminAuth = async (req, res, next) => {
       });
     }
 
+    // JWT payload structure: { userId, username, role }
+    // Access user ID via req.user.userId (NOT req.user.id)
     req.user = decoded;
     next();
   } catch (error) {

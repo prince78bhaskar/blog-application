@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
@@ -9,6 +10,7 @@ const api = axios.create({
   }
 });
 
+// Request interceptor: Automatically attach JWT token to every request
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -22,14 +24,46 @@ api.interceptors.request.use(
   }
 );
 
+// Response interceptor: Handle authentication errors globally
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Handle 401 Unauthorized errors (expired/invalid token)
     if (error.response?.status === 401) {
+      const errorMessage = error.response?.data?.message || 'Your session has expired';
+      
+      // Clear invalid tokens
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/login';
+      
+      // Show toast notification
+      toast.error(errorMessage + '. Please login again.', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        theme: 'colored'
+      });
+      
+      // Redirect to login page (but avoid infinite loop if already on login)
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
     }
+    
+    // Handle 403 Forbidden errors (access denied)
+    if (error.response?.status === 403) {
+      toast.error(error.response?.data?.message || 'Access denied', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        theme: 'colored'
+      });
+    }
+    
     return Promise.reject(error);
   }
 );
@@ -78,6 +112,16 @@ export const adminAPI = {
   getAllStudents: (search) => api.get(`/admin/students${search ? `?search=${search}` : ''}`),
   getAllCourses: (search) => api.get(`/admin/courses${search ? `?search=${search}` : ''}`),
   deleteStudent: (id) => api.delete(`/admin/students/${id}`)
+};
+
+export const learningContentAPI = {
+  addLearningContent: (data) => api.post('/admin/course-content', data),
+  getLearningContentByCourse: (courseId, type) => 
+    api.get(`/course-content/${courseId}${type ? `?type=${type}` : ''}`),
+  getLearningContentById: (id) => api.get(`/course-content/content/${id}`),
+  updateLearningContent: (id, data) => api.put(`/admin/course-content/${id}`, data),
+  deleteLearningContent: (id) => api.delete(`/admin/course-content/${id}`),
+  getAllLearningContent: (filters) => api.get('/course-content', { params: filters })
 };
 
 export default api;
