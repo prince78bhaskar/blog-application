@@ -3,8 +3,10 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { courseAPI, learningContentAPI, dashboardAPI } from '../services/api';
+import { getEmbedVideoUrl, getVideoProvider } from '../utils/videoUtils';
 
-const CourseLearning = () => {
+
+  const CourseLearning = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
   const [course, setCourse] = useState(null);
@@ -16,11 +18,14 @@ const CourseLearning = () => {
   const [hasAccess, setHasAccess] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeContentType, setActiveContentType] = useState('video');
+  const [videoError, setVideoError] = useState(false);
+
 
   useEffect(() => {
     fetchCourseData();
   }, [courseId]);
 
+  
   const fetchCourseData = async () => {
     try {
       const [courseRes, videosRes, notesRes] = await Promise.all([
@@ -53,6 +58,7 @@ const CourseLearning = () => {
   const handleVideoSelect = (video) => {
     setCurrentVideo(video);
     setActiveContentType('video');
+    setVideoError(false); // Reset error when selecting new video
   };
 
   const handleNoteSelect = (note) => {
@@ -84,16 +90,6 @@ const CourseLearning = () => {
     if (currentIndex < videos.length - 1) {
       setCurrentVideo(videos[currentIndex + 1]);
     }
-  };
-
-  const isYouTubeUrl = (url) => {
-    return url && (url.includes('youtube.com') || url.includes('youtu.be'));
-  };
-
-  const getYouTubeEmbedUrl = (url) => {
-    if (!url) return '';
-    const videoId = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
-    return videoId ? `https://www.youtube.com/embed/${videoId[1]}` : url;
   };
 
   if (loading) {
@@ -150,30 +146,43 @@ const CourseLearning = () => {
             {activeContentType === 'video' && currentVideo && (
               <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
                 <div className="aspect-video bg-black">
-                  {isYouTubeUrl(currentVideo.videoUrl) ? (
+                  {videoError ? (
+                    <div className="w-full h-full flex items-center justify-center bg-gray-900">
+                      <div className="text-center p-8">
+                        <div className="text-6xl mb-4">⚠️</div>
+                        <h3 className="text-xl font-bold text-white mb-2">Video Unavailable</h3>
+                        <p className="text-gray-300 mb-4">This video cannot be embedded. It may be private or the link is invalid.</p>
+                        <a
+                          href={currentVideo.videoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-block bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600 transition font-semibold"
+                        >
+                          Open Video in New Tab
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
                     <iframe
                       key={currentVideo._id}
-                      src={getYouTubeEmbedUrl(currentVideo.videoUrl)}
+                      src={getEmbedVideoUrl(currentVideo.videoUrl)}
                       className="w-full h-full"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                       title={currentVideo.title}
+                      onError={() => setVideoError(true)}
                     />
-                  ) : (
-                    <video
-                      key={currentVideo._id}
-                      controls
-                      autoPlay
-                      className="w-full h-full"
-                    >
-                      <source src={currentVideo.videoUrl} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
                   )}
                 </div>
 
                 <div className="p-6">
-                  <h2 className="text-2xl font-bold text-gray-800 mb-2">{currentVideo.title}</h2>
+                  <div className="flex items-center gap-2 mb-2">
+                    <h2 className="text-2xl font-bold text-gray-800">{currentVideo.title}</h2>
+                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                      {getVideoProvider(currentVideo.videoUrl) === 'youtube' ? 'YouTube' : 
+                       getVideoProvider(currentVideo.videoUrl) === 'drive' ? 'Google Drive' : 'Video'}
+                    </span>
+                  </div>
                   {currentVideo.description && (
                     <p className="text-gray-600 mb-4">{currentVideo.description}</p>
                   )}

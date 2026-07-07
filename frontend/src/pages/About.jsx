@@ -5,18 +5,14 @@ import "aos/dist/aos.css";
 import invation from "../assets/Innovative.png";
 import approch from "../assets/Approch.png";
 import team from "../assets/team.png";
-import logo from "../assets/logo.png";
-import { Link } from "react-router-dom";
 import about from "../assets/about.png";
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import Managing from '../assets/Managing.jpg'
 import Anurag from '../assets/anurag.webp'
 import CoDirector from '../assets/coDirector.png'
 import ceo from '../assets/shailesh.webp'
-function About() {
+import {Link} from "react-router-dom";
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+function About() {
 
   useEffect(() => {
     AOS.init({
@@ -32,150 +28,6 @@ function About() {
     <div className="bg-slate-50">
 
       {/* Hero */}
-     
-                  <header className="sticky top-0 z-50 bg-gray-100 shadow-md">
-                     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-                   
-                       {/* Logo */}
-                       <motion.img
-                         src={logo}
-                         alt="Logo"
-                         className="w-24 sm:w-32 md:w-40 cursor-pointer"
-                         whileHover={{ scale: 1.05 }}
-                         transition={{ duration: 0.3 }}
-                       />
-                   
-                       {/* Desktop Navigation */}
-                       <ul className="hidden md:flex items-center justify-center gap-8 text-gray-700 font-semibold text-base">
-                   
-                         <Link to="/">
-                           <motion.li
-                             whileHover={{ y: -3, color: "#2563eb" }}
-                             transition={{ duration: 0.2 }}
-                             className="cursor-pointer"
-                           >
-                             Home
-                           </motion.li>
-                         </Link>
-                   
-                         <Link to="/About">
-                           <motion.li
-                             whileHover={{ y: -3, color: "#2563eb" }}
-                             transition={{ duration: 0.2 }}
-                             className="cursor-pointer"
-                           >
-                             About Us
-                           </motion.li>
-                         </Link>
-                   
-                         <Link to="/placement">
-                           <motion.li
-                             whileHover={{ y: -3, color: "#2563eb" }}
-                             transition={{ duration: 0.2 }}
-                             className="cursor-pointer"
-                           >
-                             Placement
-                           </motion.li>
-                         </Link>
-                   
-                         <Link to="/Course">
-                           <motion.li
-                             whileHover={{ y: -3, color: "#2563eb" }}
-                             transition={{ duration: 0.2 }}
-                             className="cursor-pointer"
-                           >
-                             Courses
-                           </motion.li>
-                         </Link>
-                   
-                         {/* <Link to="/Enroll">
-                           <motion.li
-                             whileHover={{ y: -3, color: "#2563eb" }}
-                             transition={{ duration: 0.2 }}
-                             className="cursor-pointer"
-                           >
-                             Enroll
-                           </motion.li>
-                         </Link> */}
-              
-                          <Link to="/login">
-                           <motion.li
-                             whileHover={{ y: -3, color: "#2563eb" }}
-                             transition={{ duration: 0.2 }}
-                             className="cursor-pointer"
-                           >
-                             Login
-                           </motion.li>
-                         </Link>
-                   
-                       </ul>
-                   
-                       {/* Mobile Menu Button */}
-                       <button
-                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                         className="md:hidden text-3xl"
-                       >
-                         {mobileMenuOpen ? "✕" : "☰"}
-                       </button>
-                     </div>
-                   
-                     {/* Mobile Menu Animation */}
-                     <AnimatePresence>
-                       {mobileMenuOpen && (
-                         <motion.div
-                           initial={{ opacity: 0, y: -20 }}
-                           animate={{ opacity: 1, y: 0 }}
-                           exit={{ opacity: 0, y: -20 }}
-                           transition={{ duration: 0.3 }}
-                           className="md:hidden bg-gray-200"
-                         >
-                           <ul className="flex flex-col items-center gap-5 py-6 font-semibold text-gray-700">
-                   
-                             <Link to="/" onClick={() => setMobileMenuOpen(false)}>
-                               <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
-                                 Home
-                               </motion.li>
-                             </Link>
-                   
-                             <Link to="/About" onClick={() => setMobileMenuOpen(false)}>
-                               <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
-                                 About Us
-                               </motion.li>
-                             </Link>
-                   
-                             <Link to="/placement" onClick={() => setMobileMenuOpen(false)}>
-                               <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
-                                 Placement
-                               </motion.li>
-                             </Link>
-                   
-                             <Link to="/Course" onClick={() => setMobileMenuOpen(false)}>
-                               <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
-                                 Courses
-                               </motion.li>
-                             </Link>
-     
-                               <Link to="/Login" onClick={() => setMobileMenuOpen(false)}>
-                               <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
-                                 Login
-                               </motion.li>
-                             </Link>
-     
-                             
-                   
-                             {/* <Link to="/Enroll" onClick={() => setMobileMenuOpen(false)}>
-                               <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
-                                 Enroll
-                               </motion.li>
-                             </Link> */}
-                   
-                           </ul>
-                         </motion.div>
-                       )}
-                     </AnimatePresence>
-                   </header>
-
-
       <section className="text-white py-12 sm:py-16 md:py-20 lg:py-24 bg-cover bg-center"
         style={{
           backgroundImage: `linear-gradient(rgba(50,0,0,0.6), rgba(0,0,50,0.6)), url(${about})`,
@@ -610,8 +462,8 @@ function About() {
 
               <p className="text-sm text-gray-600 mt-3 leading-relaxed">
                 🟠 With over 13 years of experience in healthcare and wellness, Dr. Atul Kumar Singh is a Homeopathy Doctor and Wellness Practitioner dedicated to promoting holistic well-being. <br></br><br></br>
-                🟠 He believes that good health comes from maintaining balance between the body, mind, and spirit. Through Niramaya Yoga, he works to make authentic yoga education accessible to everyone.<br></br><br></br>
-                🟠 By combining traditional yogic principles with modern wellness practices, he helps individuals build healthier habits, improve mindfulness, and enhance their overall quality of life.
+                🟠 He believes that good health comes from maintaining balance between the body, mind, and spirit. Through Niramaya Yoga, he works to make authentic yoga education accessible to everyone.
+               
               </p>
             </div>
 
@@ -642,9 +494,8 @@ function About() {
               <p className="text-sm text-gray-600 mt-3 leading-relaxed">
                🟠 With a strong academic foundation, including a B.Tech from ABES Engineering College, Ghaziabad, and an MBA from IIM Indore, Anurag Yadav combines technical expertise with strategic leadership to build impactful learning experiences for students.<br></br><br></br>
 
-🟠 As the Founder of DigiQuest, he is committed to bridging the gap between academic education and industry requirements by promoting practical, skill-based learning, career mentorship, and hands-on training programs.<br></br><br></br>
+🟠 As the Founder of DigiQuest, he is committed to bridging the gap between academic education and industry requirements by promoting practical, skill-based learning, career mentorship, and hands-on training programs.
 
-🟠 He believes that every student deserves the right guidance, real-world exposure, and continuous mentorship to achieve professional success, empowering learners to become confident, job-ready, and future-ready professionals.
               </p>
             </div>
 

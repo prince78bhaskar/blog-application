@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import { dashboardAPI } from '../services/api';
 
+
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -59,6 +60,8 @@ const Dashboard = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
+
+      
       <div className="flex">
         <aside className="hidden md:flex flex-col w-64 bg-white shadow-lg h-screen sticky top-0">
           <div className="p-6 border-b">

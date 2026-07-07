@@ -1,20 +1,17 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import logo from "../assets/logo.png";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useEffect, useState } from "react";
 import coursebanner from '../assets/coursebg.jpg'
-import { motion, AnimatePresence } from "framer-motion";
 import { toast } from 'react-toastify';
 import { courseAPI } from '../services/api';
 import LoadingSpinner from '../components/LoadingSpinner';
+import {Link} from "react-router-dom";
 
 function Course() {
 
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     useEffect(() => {
         AOS.init({
@@ -38,148 +35,7 @@ function Course() {
 
     return (
         <div className="bg-gray-50">
-  
-               <header className="sticky top-0 z-50 bg-gray-100 shadow-md">
-                  <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-                
-                    {/* Logo */}
-                    <motion.img
-                      src={logo}
-                      alt="Logo"
-                      className="w-24 sm:w-32 md:w-40 cursor-pointer"
-                      whileHover={{ scale: 1.05 }}
-                      transition={{ duration: 0.3 }}
-                    />
-                
-                    {/* Desktop Navigation */}
-                    <ul className="hidden md:flex items-center justify-center gap-8 text-gray-700 font-semibold text-base">
-                
-                      <Link to="/">
-                        <motion.li
-                          whileHover={{ y: -3, color: "#2563eb" }}
-                          transition={{ duration: 0.2 }}
-                          className="cursor-pointer"
-                        >
-                          Home
-                        </motion.li>
-                      </Link>
-                
-                      <Link to="/About">
-                        <motion.li
-                          whileHover={{ y: -3, color: "#2563eb" }}
-                          transition={{ duration: 0.2 }}
-                          className="cursor-pointer"
-                        >
-                          About Us
-                        </motion.li>
-                      </Link>
-                
-                      <Link to="/placement">
-                        <motion.li
-                          whileHover={{ y: -3, color: "#2563eb" }}
-                          transition={{ duration: 0.2 }}
-                          className="cursor-pointer"
-                        >
-                          Placement
-                        </motion.li>
-                      </Link>
-                
-                      <Link to="/Course">
-                        <motion.li
-                          whileHover={{ y: -3, color: "#2563eb" }}
-                          transition={{ duration: 0.2 }}
-                          className="cursor-pointer"
-                        >
-                          Courses
-                        </motion.li>
-                      </Link>
-                
-                      {/* <Link to="/Enroll">
-                        <motion.li
-                          whileHover={{ y: -3, color: "#2563eb" }}
-                          transition={{ duration: 0.2 }}
-                          className="cursor-pointer"
-                        >
-                          Enroll
-                        </motion.li>
-                      </Link> */}
-           
-                       <Link to="/login">
-                        <motion.li
-                          whileHover={{ y: -3, color: "#2563eb" }}
-                          transition={{ duration: 0.2 }}
-                          className="cursor-pointer"
-                        >
-                          Login
-                        </motion.li>
-                      </Link>
-                
-                    </ul>
-                
-                    {/* Mobile Menu Button */}
-                    <button
-                      onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                      className="md:hidden text-3xl"
-                    >
-                      {mobileMenuOpen ? "✕" : "☰"}
-                    </button>
-                  </div>
-                
-                  {/* Mobile Menu Animation */}
-                  <AnimatePresence>
-                    {mobileMenuOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3 }}
-                        className="md:hidden bg-gray-200"
-                      >
-                        <ul className="flex flex-col items-center gap-5 py-6 font-semibold text-gray-700">
-                
-                          <Link to="/" onClick={() => setMobileMenuOpen(false)}>
-                            <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
-                              Home
-                            </motion.li>
-                          </Link>
-                
-                          <Link to="/About" onClick={() => setMobileMenuOpen(false)}>
-                            <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
-                              About Us
-                            </motion.li>
-                          </Link>
-                
-                          <Link to="/placement" onClick={() => setMobileMenuOpen(false)}>
-                            <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
-                              Placement
-                            </motion.li>
-                          </Link>
-                
-                          <Link to="/Course" onClick={() => setMobileMenuOpen(false)}>
-                            <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
-                              Courses
-                            </motion.li>
-                          </Link>
-  
-                            <Link to="/Login" onClick={() => setMobileMenuOpen(false)}>
-                            <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
-                              Login
-                            </motion.li>
-                          </Link>
-  
-                          
-                
-                          {/* <Link to="/Enroll" onClick={() => setMobileMenuOpen(false)}>
-                            <motion.li whileHover={{ scale: 1.05, color: "#2563eb" }}>
-                              Enroll
-                            </motion.li>
-                          </Link> */}
-                
-                        </ul>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </header>
+
             {/* Hero Section */}
             <section>
                 <div
@@ -231,7 +87,6 @@ function Course() {
                     </div>
 
                     <div
-                        data-aos="fade-up"
                         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 md:gap-8 mt-10 sm:mt-12 lg:mt-14"
                     >
                         {courses.length > 0 ? (

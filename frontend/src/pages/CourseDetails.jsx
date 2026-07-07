@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
-import Navbar from '../components/Navbar';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { courseAPI, paymentAPI } from '../services/api';
+
 
 const CourseDetails = () => {
   const { courseId } = useParams();
@@ -209,8 +209,6 @@ const CourseDetails = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <Navbar />
-      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <motion.button
           onClick={() => navigate('/Course')}

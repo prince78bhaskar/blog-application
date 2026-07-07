@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import { adminAPI, courseAPI, learningContentAPI } from '../services/api';
+import { validateVideoUrl, getEmbedVideoUrl, getVideoProvider } from '../utils/videoUtils';
+import {Link} from "react-router-dom";
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -309,6 +311,15 @@ const AdminDashboard = () => {
       return;
     }
 
+    // Validate video URL for YouTube and Google Drive
+    if (contentForm.type === 'video' && contentForm.videoUrl) {
+      const validationError = validateVideoUrl(contentForm.videoUrl);
+      if (validationError) {
+        toast.error(validationError);
+        return;
+      }
+    }
+
     if (contentForm.type === 'note' && !contentForm.pdfUrl) {
       toast.error('PDF URL is required for note content');
       return;
@@ -345,15 +356,6 @@ const AdminDashboard = () => {
     });
   };
 
-  const isYouTubeUrl = (url) => {
-    return url && (url.includes('youtube.com') || url.includes('youtu.be'));
-  };
-
-  const getYouTubeEmbedUrl = (url) => {
-    if (!url) return '';
-    const videoId = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
-    return videoId ? `https://www.youtube.com/embed/${videoId[1]}` : url;
-  };
 
   if (loading) {
     return (
@@ -707,7 +709,8 @@ const AdminDashboard = () => {
                               <p className="text-xs text-gray-500 mb-2">Duration: {content.duration}</p>
                             )}
                             <p className="text-xs text-gray-500 mb-3 truncate">
-                              {isYouTubeUrl(content.videoUrl) ? 'YouTube' : 'MP4'}: {content.videoUrl}
+                              {getVideoProvider(content.videoUrl) === 'youtube' ? 'YouTube' : 
+                               getVideoProvider(content.videoUrl) === 'drive' ? 'Google Drive' : 'Video'}: {content.videoUrl}
                             </p>
                             <div className="flex gap-2">
                               <motion.button
@@ -1050,11 +1053,11 @@ const AdminDashboard = () => {
                           name="videoUrl"
                           value={contentForm.videoUrl}
                           onChange={handleContentFormChange}
-                          placeholder="YouTube URL or MP4 URL"
+                          placeholder="https://www.youtube.com/watch?v=... or https://drive.google.com/file/d/..."
                           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                           required
                         />
-                        <p className="text-xs text-gray-500 mt-1">Supports YouTube URLs and direct MP4 links</p>
+                        <p className="text-xs text-gray-500 mt-1">Supports YouTube and Google Drive video links</p>
                       </div>
 
                       <div>

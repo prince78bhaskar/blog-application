@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { authAPI } from '../services/api';
+import { toast } from 'react-toastify';
 
 const AuthContext = createContext(null);
 
@@ -54,7 +55,8 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setUser(null);
-    window.location.href = '/login';
+    toast.success('Logged out successfully');
+    window.location.href = '/';
   };
 
   const refreshUser = async () => {
