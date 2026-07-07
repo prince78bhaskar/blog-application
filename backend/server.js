@@ -18,6 +18,10 @@ import paymentRoutes from './routes/payment.js';
 import dashboardRoutes from './routes/dashboard.js';
 import adminRoutes from './routes/admin.js';
 import learningContentRoutes from './routes/learningContent.js';
+import lessonProgressRoutes from './routes/lessonProgress.js';
+
+console.log('=== ROUTES LOADED ===');
+console.log('lessonProgressRoutes loaded:', !!lessonProgressRoutes);
 
 const app = express();
 
@@ -63,6 +67,12 @@ app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Logging middleware - move BEFORE routes to see all requests
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.originalUrl}`);
+  next();
+});
+
 app.use('/', router);
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
@@ -70,14 +80,13 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api', learningContentRoutes);
+app.use('/api/lesson-progress', lessonProgressRoutes);
+
+console.log('=== ROUTES REGISTERED ===');
+console.log('/api/lesson-progress -> lessonProgressRoutes');
 
 app.use(notFound);
 app.use(errorHandler);
-
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.originalUrl}`);
-  next();
-});
 
 connectDB().then(() => {
     app.listen(process.env.PORT, () => {

@@ -124,4 +124,22 @@ export const learningContentAPI = {
   getAllLearningContent: (filters) => api.get('/course-content', { params: filters })
 };
 
+export const lessonProgressAPI = {
+  // Mark a lesson as completed
+  markLessonComplete: (data) => {
+    console.log('lessonProgressAPI.markLessonComplete called with:', data);
+    return api.post('/lesson-progress/complete', data);
+  },
+  // Get all lesson progress for a student in a course
+  getLessonProgress: (courseId) => {
+    console.log('lessonProgressAPI.getLessonProgress called for courseId:', courseId);
+    return api.get(`/lesson-progress/${courseId}`);
+  },
+  // Check if a specific lesson is completed
+  checkLessonComplete: (lessonId) => {
+    console.log('lessonProgressAPI.checkLessonComplete called for lessonId:', lessonId);
+    return api.get(`/lesson-progress/check/${lessonId}`);
+  }
+};
+
 export default api;

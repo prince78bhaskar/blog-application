@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
-import { courseAPI, learningContentAPI, dashboardAPI } from '../services/api';
+import { courseAPI, learningContentAPI, dashboardAPI, lessonProgressAPI } from '../services/api';
 import { getEmbedVideoUrl, getVideoProvider } from '../utils/videoUtils';
 
 
@@ -19,6 +19,10 @@ import { getEmbedVideoUrl, getVideoProvider } from '../utils/videoUtils';
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeContentType, setActiveContentType] = useState('video');
   const [videoError, setVideoError] = useState(false);
+  
+  // Lesson progress tracking state
+  const [completedLessonIds, setCompletedLessonIds] = useState([]);
+  const [markingComplete, setMarkingComplete] = useState(false);
 
 
   useEffect(() => {
@@ -28,6 +32,7 @@ import { getEmbedVideoUrl, getVideoProvider } from '../utils/videoUtils';
 
     const fetchCourseData = async () => {
       try {
+        // Fetch course data first (required)
         const [courseRes, videosRes, notesRes] = await Promise.all([
           courseAPI.getCourseById(courseId),
           learningContentAPI.getLearningContentByCourse(courseId, 'video'),
@@ -45,6 +50,18 @@ import { getEmbedVideoUrl, getVideoProvider } from '../utils/videoUtils';
           }
 
           setLoading(false);
+        }
+
+        // Fetch lesson progress separately (optional - doesn't block page load)
+        try {
+          const progressRes = await lessonProgressAPI.getLessonProgress(courseId);
+          if (isMounted && progressRes.data?.data?.completedLessonIds) {
+            setCompletedLessonIds(progressRes.data.data.completedLessonIds);
+          }
+        } catch (progressError) {
+          // Lesson progress API failure should not break the page
+          console.log('Lesson progress fetch failed (non-critical):', progressError.message);
+          // Continue without progress data - page still loads
         }
       } catch (error) {
         if (isMounted) {
@@ -91,6 +108,56 @@ import { getEmbedVideoUrl, getVideoProvider } from '../utils/videoUtils';
     }
   };
 
+  // NEW: Handle marking a lesson as complete
+  const handleMarkComplete = async (lessonId) => {
+    // Prevent duplicate submissions
+    if (markingComplete) {
+      console.log("Mark complete already in progress, ignoring duplicate submission");
+      return;
+    }
+
+    // Check if already completed
+    if (completedLessonIds.includes(lessonId)) {
+      console.log("Lesson already completed, skipping");
+      return;
+    }
+
+    setMarkingComplete(true);
+
+    try {
+      const response = await lessonProgressAPI.markLessonComplete({
+        lessonId,
+        courseId
+      });
+
+      if (response.data.success) {
+        // Add the lesson ID to completed lessons
+        setCompletedLessonIds(prev => [...prev, lessonId]);
+        toast.success('Lesson marked as completed!');
+      }
+    } catch (error) {
+      console.error('Failed to mark lesson complete:', error);
+      toast.error('Failed to mark lesson as completed');
+    } finally {
+      setMarkingComplete(false);
+    }
+  };
+
+  // Helper function to check if current lesson is completed
+  const isCurrentLessonCompleted = () => {
+    const currentLessonId = activeContentType === 'video' ? currentVideo?._id : currentNote?._id;
+    return currentLessonId && completedLessonIds.includes(currentLessonId);
+  };
+
+  // Helper function to check if previous lesson is completed (for Next button)
+  const isPreviousLessonCompleted = () => {
+    const currentIndex = videos.findIndex(v => v._id === currentVideo?._id);
+    if (currentIndex <= 0) return true; // First lesson or no previous lesson
+    
+    const previousVideo = videos[currentIndex - 1];
+    return completedLessonIds.includes(previousVideo._id);
+  };
+
   const handlePrevious = () => {
     const currentIndex = videos.findIndex(v => v._id === currentVideo?._id);
     if (currentIndex > 0) {
@@ -99,6 +166,12 @@ import { getEmbedVideoUrl, getVideoProvider } from '../utils/videoUtils';
   };
 
   const handleNext = () => {
+    // Prevent skipping lessons - only allow next if current lesson is completed
+    if (!isCurrentLessonCompleted()) {
+      toast.error('Please complete the current lesson before moving to the next one');
+      return;
+    }
+
     const currentIndex = videos.findIndex(v => v._id === currentVideo?._id);
     if (currentIndex < videos.length - 1) {
       setCurrentVideo(videos[currentIndex + 1]);
@@ -214,17 +287,22 @@ import { getEmbedVideoUrl, getVideoProvider } from '../utils/videoUtils';
                     </motion.button>
 
                     <motion.button
-                      onClick={() => handleProgressUpdate(currentVideo._id)}
+                      onClick={() => handleMarkComplete(currentVideo._id)}
                       whileHover={{ scale: 1.05 }}
-                      className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition font-semibold"
+                      disabled={isCurrentLessonCompleted() || markingComplete}
+                      className={`px-6 py-2 rounded-lg transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed ${
+                        isCurrentLessonCompleted()
+                          ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                          : 'bg-green-500 text-white hover:bg-green-600'
+                      }`}
                     >
-                      ✓ Mark as Completed
+                      {markingComplete ? 'Marking...' : isCurrentLessonCompleted() ? 'Completed ✓' : 'Mark as Read'}
                     </motion.button>
 
                     <motion.button
                       onClick={handleNext}
                       whileHover={{ scale: 1.05 }}
-                      disabled={videos.findIndex(v => v._id === currentVideo._id) === videos.length - 1}
+                      disabled={!isCurrentLessonCompleted() || videos.findIndex(v => v._id === currentVideo._id) === videos.length - 1}
                       className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
                     >
                       Next →
@@ -250,14 +328,29 @@ import { getEmbedVideoUrl, getVideoProvider } from '../utils/videoUtils';
                   />
                 </div>
                 <div className="p-6">
-                  <a
-                    href={currentNote.pdfUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600 transition font-semibold"
-                  >
-                    Open PDF in New Tab
-                  </a>
+                  <div className="flex gap-4">
+                    <motion.button
+                      onClick={() => handleMarkComplete(currentNote._id)}
+                      whileHover={{ scale: 1.05 }}
+                      disabled={isCurrentLessonCompleted() || markingComplete}
+                      className={`px-6 py-2 rounded-lg transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed ${
+                        isCurrentLessonCompleted()
+                          ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                          : 'bg-green-500 text-white hover:bg-green-600'
+                      }`}
+                    >
+                      {markingComplete ? 'Marking...' : isCurrentLessonCompleted() ? 'Completed ✓' : 'Mark as Read'}
+                    </motion.button>
+
+                    <a
+                      href={currentNote.pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600 transition font-semibold"
+                    >
+                      Open PDF in New Tab
+                    </a>
+                  </div>
                 </div>
               </div>
             )}
@@ -307,40 +400,65 @@ import { getEmbedVideoUrl, getVideoProvider } from '../utils/videoUtils';
               {activeContentType === 'video' && (
                 <div className="space-y-3">
                   <h3 className="text-lg font-bold text-gray-800 mb-4">Course Videos</h3>
-                  {videos.map((video, index) => (
-                    <motion.div
-                      key={video._id}
-                      whileHover={{ scale: 1.02 }}
-                      onClick={() => handleVideoSelect(video)}
-                      className={`p-4 rounded-lg cursor-pointer transition border-2 ${
-                        currentVideo?._id === video._id
-                          ? 'border-purple-500 bg-purple-50'
-                          : 'border-gray-200 hover:border-purple-300'
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        {video.thumbnail ? (
-                          <img
-                            src={video.thumbnail}
-                            alt={video.title}
-                            className="w-20 h-14 object-cover rounded"
-                          />
-                        ) : (
-                          <div className="w-20 h-14 bg-gray-200 rounded flex items-center justify-center">
-                            <span className="text-2xl">📹</span>
+                  {videos.map((video, index) => {
+                    const isCompleted = completedLessonIds.includes(video._id);
+                    const isCurrent = currentVideo?._id === video._id;
+                    const isLocked = index > 0 && !completedLessonIds.includes(videos[index - 1]._id);
+                    
+                    return (
+                      <motion.div
+                        key={video._id}
+                        whileHover={{ scale: isLocked ? 1 : 1.02 }}
+                        onClick={() => !isLocked && handleVideoSelect(video)}
+                        className={`p-4 rounded-lg cursor-pointer transition border-2 ${
+                          isCurrent
+                            ? 'border-purple-500 bg-purple-50'
+                            : isLocked
+                            ? 'border-gray-200 bg-gray-100 cursor-not-allowed opacity-60'
+                            : 'border-gray-200 hover:border-purple-300'
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="relative">
+                            {video.thumbnail ? (
+                              <img
+                                src={video.thumbnail}
+                                alt={video.title}
+                                className="w-20 h-14 object-cover rounded"
+                              />
+                            ) : (
+                              <div className="w-20 h-14 bg-gray-200 rounded flex items-center justify-center">
+                                <span className="text-2xl">📹</span>
+                              </div>
+                            )}
+                            {isCompleted && (
+                              <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+                                ✓
+                              </div>
+                            )}
+                            {isLocked && (
+                              <div className="absolute inset-0 bg-black/50 rounded flex items-center justify-center">
+                                <span className="text-white text-xl">🔒</span>
+                              </div>
+                            )}
                           </div>
-                        )}
-                        <div className="flex-1">
-                          <p className="font-semibold text-gray-800 text-sm mb-1">
-                            {index + 1}. {video.title}
-                          </p>
-                          {video.duration && (
-                            <p className="text-xs text-gray-500">{video.duration}</p>
-                          )}
+                          <div className="flex-1">
+                            <p className={`font-semibold text-sm mb-1 ${
+                              isLocked ? 'text-gray-400' : 'text-gray-800'
+                            }`}>
+                              {index + 1}. {video.title}
+                            </p>
+                            {video.duration && (
+                              <p className="text-xs text-gray-500">{video.duration}</p>
+                            )}
+                            {isCompleted && (
+                              <p className="text-xs text-green-600 font-semibold mt-1">Completed</p>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    );
+                  })}
                   {videos.length === 0 && (
                     <p className="text-gray-500 text-center py-4">No videos added yet</p>
                   )}
@@ -350,32 +468,47 @@ import { getEmbedVideoUrl, getVideoProvider } from '../utils/videoUtils';
               {activeContentType === 'note' && (
                 <div className="space-y-3">
                   <h3 className="text-lg font-bold text-gray-800 mb-4">Course Notes</h3>
-                  {notes.map((note, index) => (
-                    <motion.div
-                      key={note._id}
-                      whileHover={{ scale: 1.02 }}
-                      onClick={() => handleNoteSelect(note)}
-                      className={`p-4 rounded-lg cursor-pointer transition border-2 ${
-                        currentNote?._id === note._id
-                          ? 'border-purple-500 bg-purple-50'
-                          : 'border-gray-200 hover:border-purple-300'
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="w-12 h-12 bg-red-100 rounded flex items-center justify-center">
-                          <span className="text-2xl">📄</span>
+                  {notes.map((note, index) => {
+                    const isCompleted = completedLessonIds.includes(note._id);
+                    const isCurrent = currentNote?._id === note._id;
+                    
+                    return (
+                      <motion.div
+                        key={note._id}
+                        whileHover={{ scale: 1.02 }}
+                        onClick={() => handleNoteSelect(note)}
+                        className={`p-4 rounded-lg cursor-pointer transition border-2 ${
+                          isCurrent
+                            ? 'border-purple-500 bg-purple-50'
+                            : 'border-gray-200 hover:border-purple-300'
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="relative">
+                            <div className="w-12 h-12 bg-red-100 rounded flex items-center justify-center">
+                              <span className="text-2xl">📄</span>
+                            </div>
+                            {isCompleted && (
+                              <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+                                ✓
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-semibold text-gray-800 text-sm mb-1">
+                              {note.title}
+                            </p>
+                            {note.description && (
+                              <p className="text-xs text-gray-500 line-clamp-2">{note.description}</p>
+                            )}
+                            {isCompleted && (
+                              <p className="text-xs text-green-600 font-semibold mt-1">Completed</p>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <p className="font-semibold text-gray-800 text-sm mb-1">
-                            {note.title}
-                          </p>
-                          {note.description && (
-                            <p className="text-xs text-gray-500 line-clamp-2">{note.description}</p>
-                          )}
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
+                      </motion.div>
+                    );
+                  })}
                   {notes.length === 0 && (
                     <p className="text-gray-500 text-center py-4">No notes added yet</p>
                   )}
