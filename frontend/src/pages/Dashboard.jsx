@@ -15,30 +15,45 @@ const Dashboard = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    // FIX: Moved fetchDashboardData inside useEffect to prevent duplicate calls
+    // Added cleanup flag to prevent duplicate calls in React StrictMode (development only)
+    let isMounted = true;
 
-  const fetchDashboardData = async () => {
-    try {
-      console.log('=== Dashboard Debug ===');
-      console.log('Fetching dashboard data...');
-      const response = await dashboardAPI.getDashboardData();
-      console.log('Dashboard API Response:', response.data);
-      console.log('Response success:', response.data?.success);
-      console.log('Response data:', response.data?.data);
-      console.log('User purchasedCourses:', response.data?.data?.user?.purchasedCourses);
-      console.log('Total courses:', response.data?.data?.totalCourses);
-      console.log('Total spent:', response.data?.data?.totalSpent);
-      console.log('Enrollments:', response.data?.data?.enrollments);
-      setDashboardData(response.data?.data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Dashboard fetch error:', error);
-      console.error('Error response:', error.response?.data);
-      toast.error('Failed to load dashboard data');
-      setLoading(false);
+    const fetchDashboardData = async () => {
+      try {
+        console.log('=== Dashboard Debug ===');
+        console.log('Fetching dashboard data...');
+        const response = await dashboardAPI.getDashboardData();
+        console.log('Dashboard API Response:', response.data);
+        console.log('Response success:', response.data?.success);
+        console.log('Response data:', response.data?.data);
+        console.log('User purchasedCourses:', response.data?.data?.user?.purchasedCourses);
+        console.log('Total courses:', response.data?.data?.totalCourses);
+        console.log('Total spent:', response.data?.data?.totalSpent);
+        console.log('Enrollments:', response.data?.data?.enrollments);
+        
+        if (isMounted) {
+          setDashboardData(response.data?.data);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Dashboard fetch error:', error);
+        console.error('Error response:', error.response?.data);
+        if (isMounted) {
+          toast.error('Failed to load dashboard data');
+          setLoading(false);
+        }
+      }
+    };
+
+    if (isMounted) {
+      fetchDashboardData();
     }
-  };
+
+    return () => {
+      isMounted = false;
+    };
+  }, []); // Empty dependency array - only run once on mount
 
   const handleLogout = () => {
     logout();

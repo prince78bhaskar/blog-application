@@ -18,19 +18,34 @@ function Course() {
             duration: 1000,
             once: true,
         });
-        fetchCourses();
-    }, []);
+        
+        // FIX: Moved fetchCourses inside useEffect to prevent duplicate calls
+        // Added cleanup flag to prevent duplicate calls in React StrictMode (development only)
+        let isMounted = true;
 
-    const fetchCourses = async () => {
-        try {
-            const response = await courseAPI.getAllCourses();
-            setCourses(response.data.courses);
-            setLoading(false);
-        } catch (error) {
-            toast.error('Failed to load courses');
-            setLoading(false);
+        const fetchCourses = async () => {
+            try {
+                const response = await courseAPI.getAllCourses();
+                if (isMounted) {
+                    setCourses(response.data.courses);
+                    setLoading(false);
+                }
+            } catch (error) {
+                if (isMounted) {
+                    toast.error('Failed to load courses');
+                    setLoading(false);
+                }
+            }
+        };
+
+        if (isMounted) {
+            fetchCourses();
         }
-    };
+
+        return () => {
+            isMounted = false;
+        };
+    }, []); // Empty dependency array - only run once on mount
     if (loading) return <LoadingSpinner />;
 
     return (

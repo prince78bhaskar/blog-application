@@ -19,6 +19,12 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // FIX: Check if already loading to prevent duplicate submissions on double-click
+    if (loading) {
+      console.log("Login already in progress, ignoring duplicate submission");
+      return;
+    }
+
     console.log("Handle Submit Called");
     setLoading(true);
     console.log("Username:", username);

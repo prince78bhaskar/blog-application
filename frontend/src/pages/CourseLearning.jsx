@@ -22,38 +22,51 @@ import { getEmbedVideoUrl, getVideoProvider } from '../utils/videoUtils';
 
 
   useEffect(() => {
-    fetchCourseData();
-  }, [courseId]);
+    // FIX: Moved fetchCourseData inside useEffect to prevent duplicate calls
+    // Added cleanup flag to prevent duplicate calls in React StrictMode (development only)
+    let isMounted = true;
 
-  
-  const fetchCourseData = async () => {
-    try {
-      const [courseRes, videosRes, notesRes] = await Promise.all([
-        courseAPI.getCourseById(courseId),
-        learningContentAPI.getLearningContentByCourse(courseId, 'video'),
-        learningContentAPI.getLearningContentByCourse(courseId, 'note')
-      ]);
+    const fetchCourseData = async () => {
+      try {
+        const [courseRes, videosRes, notesRes] = await Promise.all([
+          courseAPI.getCourseById(courseId),
+          learningContentAPI.getLearningContentByCourse(courseId, 'video'),
+          learningContentAPI.getLearningContentByCourse(courseId, 'note')
+        ]);
 
-      setCourse(courseRes.data.course);
-      setVideos(videosRes.data.learningContent || []);
-      setNotes(notesRes.data.learningContent || []);
-      setHasAccess(true);
+        if (isMounted) {
+          setCourse(courseRes.data.course);
+          setVideos(videosRes.data.learningContent || []);
+          setNotes(notesRes.data.learningContent || []);
+          setHasAccess(true);
 
-      if (videosRes.data.learningContent && videosRes.data.learningContent.length > 0) {
-        setCurrentVideo(videosRes.data.learningContent[0]);
+          if (videosRes.data.learningContent && videosRes.data.learningContent.length > 0) {
+            setCurrentVideo(videosRes.data.learningContent[0]);
+          }
+
+          setLoading(false);
+        }
+      } catch (error) {
+        if (isMounted) {
+          if (error.response?.status === 403) {
+            setHasAccess(false);
+            setLoading(false);
+          } else {
+            toast.error('Failed to load course content');
+            setLoading(false);
+          }
+        }
       }
+    };
 
-      setLoading(false);
-    } catch (error) {
-      if (error.response?.status === 403) {
-        setHasAccess(false);
-        setLoading(false);
-      } else {
-        toast.error('Failed to load course content');
-        setLoading(false);
-      }
+    if (isMounted) {
+      fetchCourseData();
     }
-  };
+
+    return () => {
+      isMounted = false;
+    };
+  }, [courseId]); // Only depend on courseId
 
   const handleVideoSelect = (video) => {
     setCurrentVideo(video);

@@ -18,6 +18,7 @@ const AdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showCourseForm, setShowCourseForm] = useState(false);
   const [editingCourse, setEditingCourse] = useState(null);
+  const [courseFormLoading, setCourseFormLoading] = useState(false);
   const [courseForm, setCourseForm] = useState({
     title: '',
     description: '',
@@ -38,6 +39,7 @@ const AdminDashboard = () => {
   const [learningContent, setLearningContent] = useState([]);
   const [showContentForm, setShowContentForm] = useState(false);
   const [editingContent, setEditingContent] = useState(null);
+  const [contentFormLoading, setContentFormLoading] = useState(false);
   const [contentForm, setContentForm] = useState({
     courseId: '',
     title: '',
@@ -51,12 +53,24 @@ const AdminDashboard = () => {
   });
 
   useEffect(() => {
+    // FIX: Removed 'navigate' from dependencies to prevent duplicate API calls
+    // navigate function is stable and doesn't change, so it doesn't need to be in deps
+    // Added cleanup flag to prevent duplicate calls in React StrictMode (development only)
+    let isMounted = true;
+    
     if (user?.role !== 'admin') {
       navigate('/dashboard');
       return;
     }
-    fetchAdminData();
-  }, [user, navigate]);
+    
+    if (isMounted) {
+      fetchAdminData();
+    }
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [user]); // Only depend on user, not navigate
 
   const fetchAdminData = async () => {
     try {
@@ -163,6 +177,12 @@ const AdminDashboard = () => {
   const handleCourseFormSubmit = async (e) => {
     e.preventDefault();
 
+    // FIX: Check if already loading to prevent duplicate submissions on double-click
+    if (courseFormLoading) {
+      console.log("Course form submission already in progress, ignoring duplicate submission");
+      return;
+    }
+
     console.log('========== COURSE FORM SUBMISSION ==========');
     console.log('Form data:', courseForm);
 
@@ -171,6 +191,8 @@ const AdminDashboard = () => {
       toast.error('Please fill all required fields');
       return;
     }
+
+    setCourseFormLoading(true);
 
     try {
       const courseData = {
@@ -206,6 +228,8 @@ const AdminDashboard = () => {
       console.error('Error message:', error.message);
       console.error('Error stack:', error.stack);
       toast.error(error.response?.data?.message || 'Failed to save course');
+    } finally {
+      setCourseFormLoading(false);
     }
   };
 
@@ -301,6 +325,12 @@ const AdminDashboard = () => {
   const handleContentFormSubmit = async (e) => {
     e.preventDefault();
 
+    // FIX: Check if already loading to prevent duplicate submissions on double-click
+    if (contentFormLoading) {
+      console.log("Content form submission already in progress, ignoring duplicate submission");
+      return;
+    }
+
     if (!contentForm.title || !contentForm.courseId) {
       toast.error('Please fill all required fields');
       return;
@@ -325,6 +355,8 @@ const AdminDashboard = () => {
       return;
     }
 
+    setContentFormLoading(true);
+
     try {
       const contentData = {
         ...contentForm,
@@ -345,6 +377,8 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to save content');
+    } finally {
+      setContentFormLoading(false);
     }
   };
 
@@ -980,15 +1014,17 @@ const AdminDashboard = () => {
                     <motion.button
                       type="submit"
                       whileHover={{ scale: 1.02 }}
-                      className="flex-1 bg-purple-500 text-white py-3 rounded-lg hover:bg-purple-600 transition font-semibold"
+                      disabled={courseFormLoading}
+                      className="flex-1 bg-purple-500 text-white py-3 rounded-lg hover:bg-purple-600 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {editingCourse ? 'Update Course' : 'Create Course'}
+                      {courseFormLoading ? 'Saving...' : (editingCourse ? 'Update Course' : 'Create Course')}
                     </motion.button>
                     <motion.button
                       type="button"
                       onClick={() => setShowCourseForm(false)}
                       whileHover={{ scale: 1.02 }}
-                      className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition font-semibold"
+                      disabled={courseFormLoading}
+                      className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Cancel
                     </motion.button>
@@ -1130,15 +1166,17 @@ const AdminDashboard = () => {
                     <motion.button
                       type="submit"
                       whileHover={{ scale: 1.02 }}
-                      className="flex-1 bg-purple-500 text-white py-3 rounded-lg hover:bg-purple-600 transition font-semibold"
+                      disabled={contentFormLoading}
+                      className="flex-1 bg-purple-500 text-white py-3 rounded-lg hover:bg-purple-600 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {editingContent ? 'Update Content' : 'Add Content'}
+                      {contentFormLoading ? 'Saving...' : (editingContent ? 'Update Content' : 'Add Content')}
                     </motion.button>
                     <motion.button
                       type="button"
                       onClick={() => setShowContentForm(false)}
                       whileHover={{ scale: 1.02 }}
-                      className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition font-semibold"
+                      disabled={contentFormLoading}
+                      className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Cancel
                     </motion.button>

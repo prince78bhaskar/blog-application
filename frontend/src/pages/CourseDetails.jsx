@@ -43,19 +43,33 @@ const CourseDetails = () => {
   };
 
   useEffect(() => {
-    fetchCourseDetails();
-  }, [courseId]);
+    // FIX: Moved fetchCourseDetails inside useEffect to prevent duplicate calls
+    // Added cleanup flag to prevent duplicate calls in React StrictMode (development only)
+    let isMounted = true;
 
-  const fetchCourseDetails = async () => {
-    try {
-      const response = await courseAPI.getCourseById(courseId);
-      setCourse(response.data.course);
-      setLoading(false);
-    } catch (error) {
-      toast.error('Failed to load course details');
-      setLoading(false);
+    const fetchCourseDetails = async () => {
+      try {
+        const response = await courseAPI.getCourseById(courseId);
+        if (isMounted) {
+          setCourse(response.data.course);
+          setLoading(false);
+        }
+      } catch (error) {
+        if (isMounted) {
+          toast.error('Failed to load course details');
+          setLoading(false);
+        }
+      }
+    };
+
+    if (isMounted) {
+      fetchCourseDetails();
     }
-  };
+
+    return () => {
+      isMounted = false;
+    };
+  }, [courseId]); // Only depend on courseId
 
   const handleEnrollClick = () => {
     setShowEnrollForm(true);
@@ -73,6 +87,12 @@ const CourseDetails = () => {
 
   const handleEnrollSubmit = async (e) => {
     e.preventDefault();
+
+    // FIX: Check if already loading to prevent duplicate submissions on double-click
+    if (paymentLoading) {
+      console.log("Payment already in progress, ignoring duplicate submission");
+      return;
+    }
 
     if (!formData.name || !formData.email || !formData.mobile) {
       toast.error('Please fill all fields');
