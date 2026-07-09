@@ -18,7 +18,7 @@ A full-featured Learning Management System built with MERN stack (MongoDB, Expre
   - Course enrollment tracking
 
 - **Payment Integration**
-  - Razorpay payment gateway integration
+  - CashFree payment gateway integration
   - Order creation and signature verification
   - Automatic student account creation after payment
   - Payment history tracking
