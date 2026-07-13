@@ -462,8 +462,8 @@ function About() {
               </p>
 
               <p className="text-sm text-gray-600 mt-3 leading-relaxed">
-                🟠 With over 13 years of experience in healthcare and wellness, Dr. Atul Kumar Singh is a Homeopathy Doctor and Wellness Practitioner dedicated to promoting holistic well-being. <br></br><br></br>
-                🟠 He believes that good health comes from maintaining balance between the body, mind, and spirit. Through Niramaya Yoga, he works to make authentic yoga education accessible to everyone.
+                With over 13 years of experience in healthcare and wellness, Dr. Atul Kumar Singh is a Homeopathy Doctor and Wellness Practitioner dedicated to promoting holistic well-being. <br></br>
+                 He believes that good health comes from maintaining balance between the body, mind, and spirit. Through Niramaya Yoga, he works to make authentic yoga education accessible to everyone.
                
               </p>
             </div>
@@ -493,9 +493,9 @@ function About() {
               
 
               <p className="text-sm text-gray-600 mt-3 leading-relaxed">
-               🟠 With a strong academic foundation, including a B.Tech from ABES Engineering College, Ghaziabad, and an MBA from IIM Indore, Anurag Yadav combines technical expertise with strategic leadership to build impactful learning experiences for students.<br></br><br></br>
+               With a strong academic foundation, including a B.Tech from ABES Engineering College, Ghaziabad, and an MBA from IIM Indore, Anurag Yadav combines technical expertise with strategic leadership to build impactful learning experiences for students.<br></br>
 
-🟠 As the Founder of DigiQuest, he is committed to bridging the gap between academic education and industry requirements by promoting practical, skill-based learning, career mentorship, and hands-on training programs.
+ As the Founder of DigiQuest, he is committed to bridging the gap between academic education and industry requirements by promoting practical, skill-based learning, career mentorship, and hands-on training programs.
 
               </p>
             </div>

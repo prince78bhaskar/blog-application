@@ -131,11 +131,31 @@ export const adminAPI = {
 };
 
 export const learningContentAPI = {
-  addLearningContent: (data) => api.post('/admin/course-content', data),
+  addLearningContent: (data) => {
+    // Handle FormData for file uploads
+    if (data instanceof FormData) {
+      return api.post('/admin/course-content', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+    }
+    return api.post('/admin/course-content', data);
+  },
   getLearningContentByCourse: (courseId, type) => 
     api.get(`/course-content/${courseId}${type ? `?type=${type}` : ''}`),
   getLearningContentById: (id) => api.get(`/course-content/content/${id}`),
-  updateLearningContent: (id, data) => api.put(`/admin/course-content/${id}`, data),
+  updateLearningContent: (id, data) => {
+    // Handle FormData for file uploads
+    if (data instanceof FormData) {
+      return api.put(`/admin/course-content/${id}`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+    }
+    return api.put(`/admin/course-content/${id}`, data);
+  },
   deleteLearningContent: (id) => api.delete(`/admin/course-content/${id}`),
   getAllLearningContent: (filters) => api.get('/course-content', { params: filters })
 };
@@ -164,16 +184,28 @@ export const testimonialAPI = {
   getTestimonialById: (id) => api.get(`/testimonials/${id}`),
   // Admin routes
   getAllTestimonialsAdmin: () => api.get('/testimonials/admin/all'),
-  createTestimonial: (data) => api.post('/testimonials/admin', data, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
+  createTestimonial: (data) => {
+    // Handle FormData for file uploads
+    if (data instanceof FormData) {
+      return api.post('/testimonials/admin', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
     }
-  }),
-  updateTestimonial: (id, data) => api.put(`/testimonials/admin/${id}`, data, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
+    return api.post('/testimonials/admin', data);
+  },
+  updateTestimonial: (id, data) => {
+    // Handle FormData for file uploads
+    if (data instanceof FormData) {
+      return api.put(`/testimonials/admin/${id}`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
     }
-  }),
+    return api.put(`/testimonials/admin/${id}`, data);
+  },
   deleteTestimonial: (id) => api.delete(`/testimonials/admin/${id}`)
 };
 

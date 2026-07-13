@@ -8,7 +8,7 @@ import {
   deleteTestimonial
 } from '../controller/testimonialController.js';
 import { adminAuth } from '../middleware/auth.js';
-import { uploadTestimonial } from '../middleware/upload.js';
+import { uploadTestimonialCloudinary } from '../middleware/uploadCloudinary.js';
 
 const router = express.Router();
 
@@ -18,8 +18,8 @@ router.get('/:id', getTestimonialById);
 
 // Admin routes
 router.get('/admin/all', adminAuth, getAllTestimonialsAdmin);
-router.post('/admin', adminAuth, uploadTestimonial, createTestimonial);
-router.put('/admin/:id', adminAuth, uploadTestimonial, updateTestimonial);
+router.post('/admin', adminAuth, uploadTestimonialCloudinary, createTestimonial);
+router.put('/admin/:id', adminAuth, uploadTestimonialCloudinary, updateTestimonial);
 router.delete('/admin/:id', adminAuth, deleteTestimonial);
 
 export default router;

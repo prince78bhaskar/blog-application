@@ -20,11 +20,23 @@ const learningContentSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  videoPublicId: {
+    type: String,
+    trim: true
+  },
   pdfUrl: {
     type: String,
     trim: true
   },
+  pdfPublicId: {
+    type: String,
+    trim: true
+  },
   thumbnail: {
+    type: String,
+    trim: true
+  },
+  thumbnailPublicId: {
     type: String,
     trim: true
   },

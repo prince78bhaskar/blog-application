@@ -246,6 +246,10 @@ function Home() {
 
         </section>
 
+           {/* Video Testimonials Section */}
+        <VideoTestimonials />
+
+
         {/* ===================== Commitment  Section ===================== */}
         <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-slate-950 text-white overflow-hidden relative">
 
@@ -459,9 +463,7 @@ function Home() {
 
         </section>
 
-        {/* Video Testimonials Section */}
-        <VideoTestimonials />
-
+     
       </main>
 
 

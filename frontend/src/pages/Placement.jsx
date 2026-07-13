@@ -455,7 +455,7 @@ function Placement() {
 
           <div>
             <h3 className="text-lg sm:text-xl font-bold text-gray-900">
-              Sagar Patel
+              Priya Singh
             </h3>
 
             <p className="text-blue-600 font-medium text-sm sm:text-base">

@@ -24,9 +24,12 @@ const AdminDashboard = () => {
     title: '',
     description: '',
     image: '',
+    imagePublicId: '',
     banner: '',
+    bannerPublicId: '',
     instructor: '',
     duration: '',
+    language: 'English',
     level: 'Beginner',
     price: '',
     category: '',
@@ -35,11 +38,24 @@ const AdminDashboard = () => {
     syllabus: [],
     faqs: [],
     demoVideo: '',
+    demoVideoPublicId: '',
+
+    // Mode selection (upload vs url)
+    thumbnailMode: 'upload',
+    bannerMode: 'upload',
+    previewVideoMode: 'upload',
+    notesMode: 'upload',
+
+    // URL inputs (used when mode === 'url')
+    thumbnailUrl: '',
+    bannerUrl: '',
+    previewVideoUrl: '',
+    notesUrlItems: [],
+
     // File upload fields
     thumbnailFile: null,
     bannerFile: null,
-    previewVideoFile: null,
-    courseFiles: []
+    previewVideoFile: null
   });
   const [selectedCourseForContent, setSelectedCourseForContent] = useState(null);
   const [learningContent, setLearningContent] = useState([]);
@@ -55,7 +71,17 @@ const AdminDashboard = () => {
     thumbnail: '',
     description: '',
     duration: '',
-    sequence: 0
+    sequence: 0,
+    
+    // Mode selection (upload vs url)
+    videoMode: 'upload',
+    pdfMode: 'upload',
+    thumbnailMode: 'upload',
+    
+    // File upload fields
+    videoFile: null,
+    pdfFile: null,
+    thumbnailFile: null
   });
 
   // Testimonial state
@@ -71,7 +97,15 @@ const AdminDashboard = () => {
     videoUrl: '',
     thumbnail: '',
     displayOrder: 0,
-    isActive: true
+    isActive: true,
+
+    // Mode selection (upload vs url)
+    videoMode: 'upload',
+    thumbnailMode: 'upload',
+
+    // File upload fields
+    videoFile: null,
+    thumbnailFile: null
   });
 
   useEffect(() => {
@@ -160,9 +194,12 @@ const AdminDashboard = () => {
       title: '',
       description: '',
       image: '',
+      imagePublicId: '',
       banner: '',
+      bannerPublicId: '',
       instructor: '',
       duration: '',
+      language: 'English',
       level: 'Beginner',
       price: '',
       category: '',
@@ -171,11 +208,24 @@ const AdminDashboard = () => {
       syllabus: [],
       faqs: [],
       demoVideo: '',
+      demoVideoPublicId: '',
+
+      // Mode selection (upload vs url)
+      thumbnailMode: 'upload',
+      bannerMode: 'upload',
+      previewVideoMode: 'upload',
+      notesMode: 'upload',
+
+      // URL inputs
+      thumbnailUrl: '',
+      bannerUrl: '',
+      previewVideoUrl: '',
+      notesUrlItems: [],
+
       // File upload fields
       thumbnailFile: null,
       bannerFile: null,
-      previewVideoFile: null,
-      courseFiles: []
+      previewVideoFile: null
     });
     setShowCourseForm(true);
   };
@@ -201,11 +251,21 @@ const AdminDashboard = () => {
       demoVideo: course.demoVideo || '',
       demoVideoPublicId: course.demoVideoPublicId || '',
       notes: course.notes || [],
+      
+      // Mode selection based on existing data
+      thumbnailMode: course.imagePublicId ? 'upload' : 'url',
+      bannerMode: course.bannerPublicId ? 'upload' : 'url',
+      previewVideoMode: course.demoVideoPublicId ? 'upload' : 'url',
+
+      // URL inputs
+      thumbnailUrl: course.imagePublicId ? '' : course.image,
+      bannerUrl: course.bannerPublicId ? '' : course.banner,
+      previewVideoUrl: course.demoVideoPublicId ? '' : course.demoVideo,
+
       // File upload fields
       thumbnailFile: null,
       bannerFile: null,
-      previewVideoFile: null,
-      courseFiles: []
+      previewVideoFile: null
     });
     setShowCourseForm(true);
   };
@@ -256,43 +316,57 @@ const AdminDashboard = () => {
       formData.append('category', courseForm.category);
       formData.append('isActive', courseForm.isActive);
       formData.append('language', courseForm.language || 'English');
-      formData.append('demoVideo', courseForm.demoVideo || '');
+
+      // Add mode fields
+      formData.append('thumbnailMode', courseForm.thumbnailMode);
+      formData.append('bannerMode', courseForm.bannerMode);
+      formData.append('previewVideoMode', courseForm.previewVideoMode);
 
       // Add JSON fields as strings
       formData.append('features', JSON.stringify(courseForm.features.filter(f => f.trim() !== '')));
       formData.append('syllabus', JSON.stringify(courseForm.syllabus.filter(s => s.module && s.module.trim() !== '')));
       formData.append('faqs', JSON.stringify(courseForm.faqs.filter(f => f.question && f.question.trim() !== '')));
 
-      // Add existing image/banner URLs if no new files are uploaded
-      if (!courseForm.thumbnailFile && courseForm.image) {
-        formData.append('thumbnail', courseForm.image);
-        formData.append('imagePublicId', courseForm.imagePublicId || '');
-      }
-      if (!courseForm.bannerFile && courseForm.banner) {
-        formData.append('banner', courseForm.banner);
-        formData.append('bannerPublicId', courseForm.bannerPublicId || '');
-      }
-      if (!courseForm.previewVideoFile && courseForm.demoVideo) {
-        formData.append('demoVideo', courseForm.demoVideo);
-        formData.append('demoVideoPublicId', courseForm.demoVideoPublicId || '');
-      }
-
-      // Add file uploads
-      if (courseForm.thumbnailFile) {
-        formData.append('thumbnail', courseForm.thumbnailFile);
-      }
-      if (courseForm.bannerFile) {
-        formData.append('banner', courseForm.bannerFile);
-      }
-      if (courseForm.previewVideoFile) {
-        formData.append('previewVideo', courseForm.previewVideoFile);
+      // Handle thumbnail
+      if (courseForm.thumbnailMode === 'upload') {
+        if (courseForm.thumbnailFile) {
+          formData.append('thumbnail', courseForm.thumbnailFile);
+        } else if (courseForm.image) {
+          formData.append('thumbnail', courseForm.image);
+          formData.append('imagePublicId', courseForm.imagePublicId || '');
+        }
+      } else {
+        // URL mode
+        formData.append('thumbnail', courseForm.thumbnailUrl || courseForm.image || '');
+        formData.append('imagePublicId', '');
       }
 
-      // Add course files (PDFs, ZIPs, DOCX)
-      if (courseForm.courseFiles && courseForm.courseFiles.length > 0) {
-        courseForm.courseFiles.forEach(file => {
-          formData.append('courseFiles', file);
-        });
+      // Handle banner
+      if (courseForm.bannerMode === 'upload') {
+        if (courseForm.bannerFile) {
+          formData.append('banner', courseForm.bannerFile);
+        } else if (courseForm.banner) {
+          formData.append('banner', courseForm.banner);
+          formData.append('bannerPublicId', courseForm.bannerPublicId || '');
+        }
+      } else {
+        // URL mode
+        formData.append('banner', courseForm.bannerUrl || courseForm.banner || '');
+        formData.append('bannerPublicId', '');
+      }
+
+      // Handle demo video
+      if (courseForm.previewVideoMode === 'upload') {
+        if (courseForm.previewVideoFile) {
+          formData.append('previewVideo', courseForm.previewVideoFile);
+        } else if (courseForm.demoVideo) {
+          formData.append('demoVideo', courseForm.demoVideo);
+          formData.append('demoVideoPublicId', courseForm.demoVideoPublicId || '');
+        }
+      } else {
+        // URL mode
+        formData.append('demoVideo', courseForm.previewVideoUrl || courseForm.demoVideo || '');
+        formData.append('demoVideoPublicId', '');
       }
 
       // Add existing notes if editing
@@ -354,21 +428,6 @@ const AdminDashboard = () => {
     });
   };
 
-  const handleCourseFilesChange = (files) => {
-    setCourseForm({
-      ...courseForm,
-      courseFiles: [...courseForm.courseFiles, ...Array.from(files)]
-    });
-  };
-
-  const removeCourseFile = (index) => {
-    const newFiles = courseForm.courseFiles.filter((_, i) => i !== index);
-    setCourseForm({
-      ...courseForm,
-      courseFiles: newFiles
-    });
-  };
-
   const addArrayField = (field) => {
     setCourseForm({
       ...courseForm,
@@ -406,7 +465,17 @@ const AdminDashboard = () => {
       thumbnail: '',
       description: '',
       duration: '',
-      sequence: learningContent.filter(c => c.type === 'video').length
+      sequence: learningContent.filter(c => c.type === 'video').length,
+      
+      // Mode selection
+      videoMode: 'upload',
+      pdfMode: 'upload',
+      thumbnailMode: 'upload',
+      
+      // File upload fields
+      videoFile: null,
+      pdfFile: null,
+      thumbnailFile: null
     });
     setShowContentForm(true);
   };
@@ -422,7 +491,17 @@ const AdminDashboard = () => {
       thumbnail: content.thumbnail || '',
       description: content.description || '',
       duration: content.duration || '',
-      sequence: content.sequence
+      sequence: content.sequence,
+      
+      // Mode selection based on existing data
+      videoMode: content.videoPublicId ? 'upload' : 'url',
+      pdfMode: content.pdfPublicId ? 'upload' : 'url',
+      thumbnailMode: content.thumbnailPublicId ? 'upload' : 'url',
+      
+      // File upload fields
+      videoFile: null,
+      pdfFile: null,
+      thumbnailFile: null
     });
     setShowContentForm(true);
   };
@@ -455,38 +534,70 @@ const AdminDashboard = () => {
       return;
     }
 
-    if (contentForm.type === 'video' && !contentForm.videoUrl) {
-      toast.error('Video URL is required for video content');
-      return;
-    }
-
-    // Validate video URL for YouTube and Google Drive
-    if (contentForm.type === 'video' && contentForm.videoUrl) {
-      const validationError = validateVideoUrl(contentForm.videoUrl);
-      if (validationError) {
-        toast.error(validationError);
-        return;
-      }
-    }
-
-    if (contentForm.type === 'note' && !contentForm.pdfUrl) {
-      toast.error('PDF URL is required for note content');
-      return;
-    }
-
     setContentFormLoading(true);
 
     try {
-      const contentData = {
-        ...contentForm,
-        sequence: Number(contentForm.sequence)
-      };
+      // Create FormData for file uploads
+      const formData = new FormData();
+
+      // Add basic fields
+      formData.append('courseId', contentForm.courseId);
+      formData.append('title', contentForm.title);
+      formData.append('type', contentForm.type);
+      formData.append('description', contentForm.description || '');
+      formData.append('duration', contentForm.duration || '');
+      formData.append('sequence', Number(contentForm.sequence));
+
+      // Add mode fields
+      formData.append('videoMode', contentForm.videoMode);
+      formData.append('pdfMode', contentForm.pdfMode);
+      formData.append('thumbnailMode', contentForm.thumbnailMode);
+
+      // Handle video
+      if (contentForm.type === 'video') {
+        if (contentForm.videoMode === 'upload') {
+          if (contentForm.videoFile) {
+            formData.append('video', contentForm.videoFile);
+          } else if (contentForm.videoUrl) {
+            formData.append('videoUrl', contentForm.videoUrl);
+          }
+        } else {
+          // URL mode
+          formData.append('videoUrl', contentForm.videoUrl || '');
+        }
+      }
+
+      // Handle PDF
+      if (contentForm.type === 'note') {
+        if (contentForm.pdfMode === 'upload') {
+          if (contentForm.pdfFile) {
+            formData.append('pdf', contentForm.pdfFile);
+          } else if (contentForm.pdfUrl) {
+            formData.append('pdfUrl', contentForm.pdfUrl);
+          }
+        } else {
+          // URL mode
+          formData.append('pdfUrl', contentForm.pdfUrl || '');
+        }
+      }
+
+      // Handle thumbnail
+      if (contentForm.thumbnailMode === 'upload') {
+        if (contentForm.thumbnailFile) {
+          formData.append('thumbnail', contentForm.thumbnailFile);
+        } else if (contentForm.thumbnail) {
+          formData.append('thumbnail', contentForm.thumbnail);
+        }
+      } else {
+        // URL mode
+        formData.append('thumbnail', contentForm.thumbnail || '');
+      }
 
       if (editingContent) {
-        await learningContentAPI.updateLearningContent(editingContent._id, contentData);
+        await learningContentAPI.updateLearningContent(editingContent._id, formData);
         toast.success('Content updated successfully');
       } else {
-        await learningContentAPI.addLearningContent(contentData);
+        await learningContentAPI.addLearningContent(formData);
         toast.success('Content added successfully');
       }
 
@@ -529,7 +640,15 @@ const AdminDashboard = () => {
       videoUrl: '',
       thumbnail: '',
       displayOrder: 0,
-      isActive: true
+      isActive: true,
+
+      // Mode selection
+      videoMode: 'upload',
+      thumbnailMode: 'upload',
+
+      // File upload fields
+      videoFile: null,
+      thumbnailFile: null
     });
     setShowTestimonialForm(true);
   };
@@ -544,7 +663,15 @@ const AdminDashboard = () => {
       videoUrl: testimonial.videoUrl,
       thumbnail: testimonial.thumbnail || '',
       displayOrder: testimonial.displayOrder || 0,
-      isActive: testimonial.isActive !== undefined ? testimonial.isActive : true
+      isActive: testimonial.isActive !== undefined ? testimonial.isActive : true,
+
+      // Mode selection based on existing data
+      videoMode: testimonial.videoPublicId ? 'upload' : 'url',
+      thumbnailMode: testimonial.thumbnailPublicId ? 'upload' : 'url',
+
+      // File upload fields
+      videoFile: null,
+      thumbnailFile: null
     });
     setShowTestimonialForm(true);
   };
@@ -568,7 +695,7 @@ const AdminDashboard = () => {
       return;
     }
 
-    if (!testimonialForm.studentName || !testimonialForm.courseName || !testimonialForm.videoUrl) {
+    if (!testimonialForm.studentName || !testimonialForm.courseName) {
       toast.error('Please fill all required fields');
       return;
     }
@@ -577,14 +704,42 @@ const AdminDashboard = () => {
 
     try {
       const formData = new FormData();
+
+      // Add basic fields
       formData.append('studentName', testimonialForm.studentName);
       formData.append('courseName', testimonialForm.courseName);
       formData.append('designation', testimonialForm.designation);
       formData.append('description', testimonialForm.description);
-      formData.append('videoUrl', testimonialForm.videoUrl);
-      formData.append('thumbnail', testimonialForm.thumbnail);
       formData.append('displayOrder', testimonialForm.displayOrder);
       formData.append('isActive', testimonialForm.isActive);
+
+      // Add mode fields
+      formData.append('videoMode', testimonialForm.videoMode);
+      formData.append('thumbnailMode', testimonialForm.thumbnailMode);
+
+      // Handle video
+      if (testimonialForm.videoMode === 'upload') {
+        if (testimonialForm.videoFile) {
+          formData.append('video', testimonialForm.videoFile);
+        } else if (testimonialForm.videoUrl) {
+          formData.append('videoUrl', testimonialForm.videoUrl);
+        }
+      } else {
+        // URL mode
+        formData.append('videoUrl', testimonialForm.videoUrl || '');
+      }
+
+      // Handle thumbnail
+      if (testimonialForm.thumbnailMode === 'upload') {
+        if (testimonialForm.thumbnailFile) {
+          formData.append('thumbnail', testimonialForm.thumbnailFile);
+        } else if (testimonialForm.thumbnail) {
+          formData.append('thumbnail', testimonialForm.thumbnail);
+        }
+      } else {
+        // URL mode
+        formData.append('thumbnail', testimonialForm.thumbnail || '');
+      }
 
       if (editingTestimonial) {
         await testimonialAPI.updateTestimonial(editingTestimonial._id, formData);
@@ -597,6 +752,7 @@ const AdminDashboard = () => {
       setShowTestimonialForm(false);
       fetchTestimonials();
     } catch (error) {
+      console.error('Testimonial save error:', error);
       toast.error(error.response?.data?.message || 'Failed to save testimonial');
     } finally {
       setTestimonialFormLoading(false);
@@ -1238,63 +1394,163 @@ const AdminDashboard = () => {
 
                     <div>
                       <label className="block text-gray-700 font-semibold mb-2">Thumbnail Image *</label>
-                      <input
-                        type="file"
-                        accept="image/jpeg,image/jpg,image/png,image/webp"
-                        onChange={(e) => handleFileChange('thumbnailFile', e.target.files[0])}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Max size: 5MB. Formats: JPG, PNG, WebP</p>
-                      {courseForm.thumbnailFile && (
-                        <div className="mt-2">
-                          <p className="text-sm text-green-600">Selected: {courseForm.thumbnailFile.name}</p>
-                          <img
-                            src={URL.createObjectURL(courseForm.thumbnailFile)}
-                            alt="Thumbnail preview"
-                            className="w-32 h-32 object-cover rounded mt-2"
+                      <div className="flex gap-4 mb-2">
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="thumbnailMode"
+                            value="upload"
+                            checked={courseForm.thumbnailMode === 'upload'}
+                            onChange={handleCourseFormChange}
+                            className="w-4 h-4 text-purple-600"
                           />
-                        </div>
-                      )}
-                      {!courseForm.thumbnailFile && courseForm.image && (
-                        <div className="mt-2">
-                          <p className="text-sm text-gray-600">Current: {courseForm.image}</p>
-                          <img
-                            src={courseForm.image}
-                            alt="Current thumbnail"
-                            className="w-32 h-32 object-cover rounded mt-2"
+                          <span className="text-sm text-gray-700">Upload from Computer</span>
+                        </label>
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="thumbnailMode"
+                            value="url"
+                            checked={courseForm.thumbnailMode === 'url'}
+                            onChange={handleCourseFormChange}
+                            className="w-4 h-4 text-purple-600"
                           />
-                        </div>
+                          <span className="text-sm text-gray-700">Use URL</span>
+                        </label>
+                      </div>
+                      {courseForm.thumbnailMode === 'upload' ? (
+                        <>
+                          <input
+                            type="file"
+                            accept="image/jpeg,image/jpg,image/png,image/webp"
+                            onChange={(e) => handleFileChange('thumbnailFile', e.target.files[0])}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          />
+                          <p className="text-xs text-gray-500 mt-1">Max size: 5MB. Formats: JPG, PNG, WebP</p>
+                          {courseForm.thumbnailFile && (
+                            <div className="mt-2">
+                              <p className="text-sm text-green-600">Selected: {courseForm.thumbnailFile.name}</p>
+                              <img
+                                src={URL.createObjectURL(courseForm.thumbnailFile)}
+                                alt="Thumbnail preview"
+                                className="w-32 h-32 object-cover rounded mt-2"
+                              />
+                            </div>
+                          )}
+                          {!courseForm.thumbnailFile && courseForm.image && (
+                            <div className="mt-2">
+                              <p className="text-sm text-gray-600">Current: {courseForm.image}</p>
+                              <img
+                                src={courseForm.image}
+                                alt="Current thumbnail"
+                                className="w-32 h-32 object-cover rounded mt-2"
+                              />
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <input
+                            type="url"
+                            name="thumbnailUrl"
+                            value={courseForm.thumbnailUrl}
+                            onChange={handleCourseFormChange}
+                            placeholder="https://example.com/image.jpg"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          />
+                          {courseForm.thumbnailUrl && (
+                            <div className="mt-2">
+                              <p className="text-sm text-gray-600">Preview:</p>
+                              <img
+                                src={courseForm.thumbnailUrl}
+                                alt="URL preview"
+                                className="w-32 h-32 object-cover rounded mt-2"
+                                onError={(e) => e.target.style.display = 'none'}
+                              />
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
 
                     <div>
                       <label className="block text-gray-700 font-semibold mb-2">Banner Image *</label>
-                      <input
-                        type="file"
-                        accept="image/jpeg,image/jpg,image/png,image/webp"
-                        onChange={(e) => handleFileChange('bannerFile', e.target.files[0])}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Max size: 5MB. Formats: JPG, PNG, WebP</p>
-                      {courseForm.bannerFile && (
-                        <div className="mt-2">
-                          <p className="text-sm text-green-600">Selected: {courseForm.bannerFile.name}</p>
-                          <img
-                            src={URL.createObjectURL(courseForm.bannerFile)}
-                            alt="Banner preview"
-                            className="w-48 h-24 object-cover rounded mt-2"
+                      <div className="flex gap-4 mb-2">
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="bannerMode"
+                            value="upload"
+                            checked={courseForm.bannerMode === 'upload'}
+                            onChange={handleCourseFormChange}
+                            className="w-4 h-4 text-purple-600"
                           />
-                        </div>
-                      )}
-                      {!courseForm.bannerFile && courseForm.banner && (
-                        <div className="mt-2">
-                          <p className="text-sm text-gray-600">Current: {courseForm.banner}</p>
-                          <img
-                            src={courseForm.banner}
-                            alt="Current banner"
-                            className="w-48 h-24 object-cover rounded mt-2"
+                          <span className="text-sm text-gray-700">Upload from Computer</span>
+                        </label>
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="bannerMode"
+                            value="url"
+                            checked={courseForm.bannerMode === 'url'}
+                            onChange={handleCourseFormChange}
+                            className="w-4 h-4 text-purple-600"
                           />
-                        </div>
+                          <span className="text-sm text-gray-700">Use URL</span>
+                        </label>
+                      </div>
+                      {courseForm.bannerMode === 'upload' ? (
+                        <>
+                          <input
+                            type="file"
+                            accept="image/jpeg,image/jpg,image/png,image/webp"
+                            onChange={(e) => handleFileChange('bannerFile', e.target.files[0])}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          />
+                          <p className="text-xs text-gray-500 mt-1">Max size: 5MB. Formats: JPG, PNG, WebP</p>
+                          {courseForm.bannerFile && (
+                            <div className="mt-2">
+                              <p className="text-sm text-green-600">Selected: {courseForm.bannerFile.name}</p>
+                              <img
+                                src={URL.createObjectURL(courseForm.bannerFile)}
+                                alt="Banner preview"
+                                className="w-48 h-24 object-cover rounded mt-2"
+                              />
+                            </div>
+                          )}
+                          {!courseForm.bannerFile && courseForm.banner && (
+                            <div className="mt-2">
+                              <p className="text-sm text-gray-600">Current: {courseForm.banner}</p>
+                              <img
+                                src={courseForm.banner}
+                                alt="Current banner"
+                                className="w-48 h-24 object-cover rounded mt-2"
+                              />
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <input
+                            type="url"
+                            name="bannerUrl"
+                            value={courseForm.bannerUrl}
+                            onChange={handleCourseFormChange}
+                            placeholder="https://example.com/banner.jpg"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          />
+                          {courseForm.bannerUrl && (
+                            <div className="mt-2">
+                              <p className="text-sm text-gray-600">Preview:</p>
+                              <img
+                                src={courseForm.bannerUrl}
+                                alt="URL preview"
+                                className="w-48 h-24 object-cover rounded mt-2"
+                                onError={(e) => e.target.style.display = 'none'}
+                              />
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
 
@@ -1312,60 +1568,79 @@ const AdminDashboard = () => {
 
                     <div className="md:col-span-2">
                       <label className="block text-gray-700 font-semibold mb-2">Demo Video</label>
-                      <input
-                        type="file"
-                        accept="video/mp4,video/quicktime,video/webm"
-                        onChange={(e) => handleFileChange('previewVideoFile', e.target.files[0])}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Max size: 100MB. Formats: MP4, MOV, WebM</p>
-                      {courseForm.previewVideoFile && (
-                        <div className="mt-2">
-                          <p className="text-sm text-green-600">Selected: {courseForm.previewVideoFile.name}</p>
-                          <video
-                            src={URL.createObjectURL(courseForm.previewVideoFile)}
-                            controls
-                            className="w-64 h-36 object-cover rounded mt-2"
+                      <div className="flex gap-4 mb-2">
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="previewVideoMode"
+                            value="upload"
+                            checked={courseForm.previewVideoMode === 'upload'}
+                            onChange={handleCourseFormChange}
+                            className="w-4 h-4 text-purple-600"
                           />
-                        </div>
-                      )}
-                      {!courseForm.previewVideoFile && courseForm.demoVideo && (
-                        <div className="mt-2">
-                          <p className="text-sm text-gray-600">Current: {courseForm.demoVideo}</p>
-                          <UniversalVideoPlayer
-                            videoUrl={courseForm.demoVideo}
-                            className="w-64 h-36 mt-2"
+                          <span className="text-sm text-gray-700">Upload from Computer</span>
+                        </label>
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="previewVideoMode"
+                            value="url"
+                            checked={courseForm.previewVideoMode === 'url'}
+                            onChange={handleCourseFormChange}
+                            className="w-4 h-4 text-purple-600"
                           />
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <label className="block text-gray-700 font-semibold mb-2">Course Files (PDF, ZIP, DOCX)</label>
-                      <input
-                        type="file"
-                        accept=".pdf,.zip,.docx"
-                        multiple
-                        onChange={(e) => handleCourseFilesChange(e.target.files)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Max size: PDF 20MB, ZIP 100MB, DOCX 10MB</p>
-                      {courseForm.courseFiles.length > 0 && (
-                        <div className="mt-2 space-y-2">
-                          <p className="text-sm font-semibold text-gray-700">Selected files:</p>
-                          {courseForm.courseFiles.map((file, index) => (
-                            <div key={index} className="flex items-center justify-between bg-gray-100 p-2 rounded">
-                              <span className="text-sm text-gray-700">{file.name}</span>
-                              <button
-                                type="button"
-                                onClick={() => removeCourseFile(index)}
-                                className="text-red-500 hover:text-red-700 text-sm"
-                              >
-                                Remove
-                              </button>
+                          <span className="text-sm text-gray-700">Use URL</span>
+                        </label>
+                      </div>
+                      {courseForm.previewVideoMode === 'upload' ? (
+                        <>
+                          <input
+                            type="file"
+                            accept="video/mp4,video/quicktime,video/webm"
+                            onChange={(e) => handleFileChange('previewVideoFile', e.target.files[0])}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          />
+                          <p className="text-xs text-gray-500 mt-1">Max size: 100MB. Formats: MP4, MOV, WebM</p>
+                          {courseForm.previewVideoFile && (
+                            <div className="mt-2">
+                              <p className="text-sm text-green-600">Selected: {courseForm.previewVideoFile.name}</p>
+                              <video
+                                src={URL.createObjectURL(courseForm.previewVideoFile)}
+                                controls
+                                className="w-64 h-36 object-cover rounded mt-2"
+                              />
                             </div>
-                          ))}
-                        </div>
+                          )}
+                          {!courseForm.previewVideoFile && courseForm.demoVideo && (
+                            <div className="mt-2">
+                              <p className="text-sm text-gray-600">Current: {courseForm.demoVideo}</p>
+                              <UniversalVideoPlayer
+                                videoUrl={courseForm.demoVideo}
+                                className="w-64 h-36 mt-2"
+                              />
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <input
+                            type="url"
+                            name="previewVideoUrl"
+                            value={courseForm.previewVideoUrl}
+                            onChange={handleCourseFormChange}
+                            placeholder="https://www.youtube.com/watch?v=... or https://example.com/video.mp4"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          />
+                          {courseForm.previewVideoUrl && (
+                            <div className="mt-2">
+                              <p className="text-sm text-gray-600">Preview:</p>
+                              <UniversalVideoPlayer
+                                videoUrl={courseForm.previewVideoUrl}
+                                className="w-64 h-36 mt-2"
+                              />
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
 
@@ -1485,29 +1760,164 @@ const AdminDashboard = () => {
                   {contentForm.type === 'video' && (
                     <>
                       <div>
-                        <label className="block text-gray-700 font-semibold mb-2">Video URL *</label>
-                        <input
-                          type="url"
-                          name="videoUrl"
-                          value={contentForm.videoUrl}
-                          onChange={handleContentFormChange}
-                          placeholder="https://www.youtube.com/watch?v=... or https://drive.google.com/file/d/..."
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          required
-                        />
-                        <p className="text-xs text-gray-500 mt-1">Supports YouTube and Google Drive video links</p>
+                        <label className="block text-gray-700 font-semibold mb-2">Video *</label>
+                        <div className="flex gap-4 mb-2">
+                          <label className="flex items-center gap-2">
+                            <input
+                              type="radio"
+                              name="videoMode"
+                              value="upload"
+                              checked={contentForm.videoMode === 'upload'}
+                              onChange={handleContentFormChange}
+                              className="w-4 h-4 text-purple-600"
+                            />
+                            <span className="text-sm text-gray-700">Upload from Computer</span>
+                          </label>
+                          <label className="flex items-center gap-2">
+                            <input
+                              type="radio"
+                              name="videoMode"
+                              value="url"
+                              checked={contentForm.videoMode === 'url'}
+                              onChange={handleContentFormChange}
+                              className="w-4 h-4 text-purple-600"
+                            />
+                            <span className="text-sm text-gray-700">Use URL</span>
+                          </label>
+                        </div>
+                        {contentForm.videoMode === 'upload' ? (
+                          <>
+                            <input
+                              type="file"
+                              accept="video/mp4,video/quicktime,video/webm"
+                              onChange={(e) => setContentForm({ ...contentForm, videoFile: e.target.files[0] })}
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Max size: 100MB. Formats: MP4, MOV, WebM</p>
+                            {contentForm.videoFile && (
+                              <div className="mt-2">
+                                <p className="text-sm text-green-600">Selected: {contentForm.videoFile.name}</p>
+                                <video
+                                  src={URL.createObjectURL(contentForm.videoFile)}
+                                  controls
+                                  className="w-64 h-36 object-cover rounded mt-2"
+                                />
+                              </div>
+                            )}
+                            {!contentForm.videoFile && contentForm.videoUrl && (
+                              <div className="mt-2">
+                                <p className="text-sm text-gray-600">Current: {contentForm.videoUrl}</p>
+                                <UniversalVideoPlayer
+                                  videoUrl={contentForm.videoUrl}
+                                  className="w-64 h-36 mt-2"
+                                />
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <input
+                              type="url"
+                              name="videoUrl"
+                              value={contentForm.videoUrl}
+                              onChange={handleContentFormChange}
+                              placeholder="https://www.youtube.com/watch?v=... or https://drive.google.com/file/d/..."
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              required
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Supports YouTube and Google Drive video links</p>
+                            {contentForm.videoUrl && (
+                              <div className="mt-2">
+                                <p className="text-sm text-gray-600">Preview:</p>
+                                <UniversalVideoPlayer
+                                  videoUrl={contentForm.videoUrl}
+                                  className="w-64 h-36 mt-2"
+                                />
+                              </div>
+                            )}
+                          </>
+                        )}
                       </div>
 
                       <div>
-                        <label className="block text-gray-700 font-semibold mb-2">Thumbnail URL</label>
-                        <input
-                          type="url"
-                          name="thumbnail"
-                          value={contentForm.thumbnail}
-                          onChange={handleContentFormChange}
-                          placeholder="Image URL for video thumbnail"
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        />
+                        <label className="block text-gray-700 font-semibold mb-2">Thumbnail</label>
+                        <div className="flex gap-4 mb-2">
+                          <label className="flex items-center gap-2">
+                            <input
+                              type="radio"
+                              name="thumbnailMode"
+                              value="upload"
+                              checked={contentForm.thumbnailMode === 'upload'}
+                              onChange={handleContentFormChange}
+                              className="w-4 h-4 text-purple-600"
+                            />
+                            <span className="text-sm text-gray-700">Upload from Computer</span>
+                          </label>
+                          <label className="flex items-center gap-2">
+                            <input
+                              type="radio"
+                              name="thumbnailMode"
+                              value="url"
+                              checked={contentForm.thumbnailMode === 'url'}
+                              onChange={handleContentFormChange}
+                              className="w-4 h-4 text-purple-600"
+                            />
+                            <span className="text-sm text-gray-700">Use URL</span>
+                          </label>
+                        </div>
+                        {contentForm.thumbnailMode === 'upload' ? (
+                          <>
+                            <input
+                              type="file"
+                              accept="image/jpeg,image/jpg,image/png,image/webp"
+                              onChange={(e) => setContentForm({ ...contentForm, thumbnailFile: e.target.files[0] })}
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">Max size: 5MB. Formats: JPG, PNG, WebP</p>
+                            {contentForm.thumbnailFile && (
+                              <div className="mt-2">
+                                <p className="text-sm text-green-600">Selected: {contentForm.thumbnailFile.name}</p>
+                                <img
+                                  src={URL.createObjectURL(contentForm.thumbnailFile)}
+                                  alt="Thumbnail preview"
+                                  className="w-32 h-32 object-cover rounded mt-2"
+                                />
+                              </div>
+                            )}
+                            {!contentForm.thumbnailFile && contentForm.thumbnail && (
+                              <div className="mt-2">
+                                <p className="text-sm text-gray-600">Current: {contentForm.thumbnail}</p>
+                                <img
+                                  src={contentForm.thumbnail}
+                                  alt="Current thumbnail"
+                                  className="w-32 h-32 object-cover rounded mt-2"
+                                />
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <input
+                              type="url"
+                              name="thumbnail"
+                              value={contentForm.thumbnail}
+                              onChange={handleContentFormChange}
+                              placeholder="Image URL for video thumbnail"
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            />
+                            {contentForm.thumbnail && (
+                              <div className="mt-2">
+                                <p className="text-sm text-gray-600">Preview:</p>
+                                <img
+                                  src={contentForm.thumbnail}
+                                  alt="URL preview"
+                                  className="w-32 h-32 object-cover rounded mt-2"
+                                  onError={(e) => e.target.style.display = 'none'}
+                                />
+                              </div>
+                            )}
+                          </>
+                        )}
                       </div>
 
                       <div>
@@ -1526,16 +1936,84 @@ const AdminDashboard = () => {
 
                   {contentForm.type === 'note' && (
                     <div>
-                      <label className="block text-gray-700 font-semibold mb-2">PDF URL *</label>
-                      <input
-                        type="url"
-                        name="pdfUrl"
-                        value={contentForm.pdfUrl}
-                        onChange={handleContentFormChange}
-                        placeholder="Link to PDF file"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        required
-                      />
+                      <label className="block text-gray-700 font-semibold mb-2">PDF *</label>
+                      <div className="flex gap-4 mb-2">
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="pdfMode"
+                            value="upload"
+                            checked={contentForm.pdfMode === 'upload'}
+                            onChange={handleContentFormChange}
+                            className="w-4 h-4 text-purple-600"
+                          />
+                          <span className="text-sm text-gray-700">Upload from Computer</span>
+                        </label>
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="radio"
+                            name="pdfMode"
+                            value="url"
+                            checked={contentForm.pdfMode === 'url'}
+                            onChange={handleContentFormChange}
+                            className="w-4 h-4 text-purple-600"
+                          />
+                          <span className="text-sm text-gray-700">Use URL</span>
+                        </label>
+                      </div>
+                      {contentForm.pdfMode === 'upload' ? (
+                        <>
+                          <input
+                            type="file"
+                            accept=".pdf"
+                            onChange={(e) => setContentForm({ ...contentForm, pdfFile: e.target.files[0] })}
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          />
+                          <p className="text-xs text-gray-500 mt-1">Max size: 20MB. Format: PDF</p>
+                          {contentForm.pdfFile && (
+                            <div className="mt-2">
+                              <p className="text-sm text-green-600">Selected: {contentForm.pdfFile.name}</p>
+                            </div>
+                          )}
+                          {!contentForm.pdfFile && contentForm.pdfUrl && (
+                            <div className="mt-2">
+                              <p className="text-sm text-gray-600">Current: {contentForm.pdfUrl}</p>
+                              <a
+                                href={contentForm.pdfUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-blue-500 hover:underline"
+                              >
+                                View PDF
+                              </a>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <input
+                            type="url"
+                            name="pdfUrl"
+                            value={contentForm.pdfUrl}
+                            onChange={handleContentFormChange}
+                            placeholder="Link to PDF file"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            required
+                          />
+                          {contentForm.pdfUrl && (
+                            <div className="mt-2">
+                              <a
+                                href={contentForm.pdfUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-blue-500 hover:underline"
+                              >
+                                View PDF
+                              </a>
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
                   )}
 
@@ -1671,175 +2149,109 @@ const AdminDashboard = () => {
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-gray-700 font-semibold mb-2">Video URL *</label>
-                    <input
-                      type="url"
-                      name="videoUrl"
-                      value={testimonialForm.videoUrl}
-                      onChange={handleTestimonialFormChange}
-                      placeholder="https://www.youtube.com/watch?v=... or direct video URL"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      required
-                    />
-                    <p className="text-xs text-gray-500 mt-1">Supports YouTube, Google Drive, or direct video URLs</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-gray-700 font-semibold mb-2">Thumbnail URL</label>
-                    <input
-                      type="url"
-                      name="thumbnail"
-                      value={testimonialForm.thumbnail}
-                      onChange={handleTestimonialFormChange}
-                      placeholder="Image URL for video thumbnail"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    />
-                  </div>
-
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      name="isActive"
-                      id="isActive"
-                      checked={testimonialForm.isActive}
-                      onChange={handleTestimonialFormChange}
-                      className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                    />
-                    <label htmlFor="isActive" className="ml-2 text-gray-700">Active (show on website)</label>
-                  </div>
-
-                  <div className="flex gap-4">
-                    <motion.button
-                      type="submit"
-                      whileHover={{ scale: 1.02 }}
-                      disabled={testimonialFormLoading}
-                      className="flex-1 bg-purple-500 text-white py-3 rounded-lg hover:bg-purple-600 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {testimonialFormLoading ? 'Saving...' : (editingTestimonial ? 'Update Testimonial' : 'Add Testimonial')}
-                    </motion.button>
-                    <motion.button
-                      type="button"
-                      onClick={() => setShowTestimonialForm(false)}
-                      whileHover={{ scale: 1.02 }}
-                      disabled={testimonialFormLoading}
-                      className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      Cancel
-                    </motion.button>
-                  </div>
-                </form>
-              </motion.div>
-            </div>
-          )}
-
-          {showTestimonialForm && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="bg-white rounded-xl p-8 max-w-2xl w-full mx-4 my-8 max-h-[90vh] overflow-y-auto"
-              >
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-800">
-                    {editingTestimonial ? 'Edit Testimonial' : 'Add New Testimonial'}
-                  </h2>
-                  <button
-                    onClick={() => setShowTestimonialForm(false)}
-                    className="text-2xl text-gray-500 hover:text-gray-700"
-                  >
-                    &times;
-                  </button>
-                </div>
-
-                <form onSubmit={handleTestimonialFormSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-gray-700 font-semibold mb-2">Student Name *</label>
-                      <input
-                        type="text"
-                        name="studentName"
-                        value={testimonialForm.studentName}
-                        onChange={handleTestimonialFormChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        required
-                      />
+                  {/* Video Section */}
+                  <div className="space-y-3">
+                    <div className="flex gap-4">
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name="videoMode"
+                          value="upload"
+                          checked={testimonialForm.videoMode === 'upload'}
+                          onChange={handleTestimonialFormChange}
+                          className="text-purple-600"
+                        />
+                        <span className="text-gray-700 font-semibold">Upload Video</span>
+                      </label>
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name="videoMode"
+                          value="url"
+                          checked={testimonialForm.videoMode === 'url'}
+                          onChange={handleTestimonialFormChange}
+                          className="text-purple-600"
+                        />
+                        <span className="text-gray-700 font-semibold">Video URL</span>
+                      </label>
                     </div>
 
-                    <div>
-                      <label className="block text-gray-700 font-semibold mb-2">Course Name *</label>
-                      <input
-                        type="text"
-                        name="courseName"
-                        value={testimonialForm.courseName}
-                        onChange={handleTestimonialFormChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-gray-700 font-semibold mb-2">Designation</label>
-                      <input
-                        type="text"
-                        name="designation"
-                        value={testimonialForm.designation}
-                        onChange={handleTestimonialFormChange}
-                        placeholder="e.g., Software Engineer at Google"
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-gray-700 font-semibold mb-2">Display Order</label>
-                      <input
-                        type="number"
-                        name="displayOrder"
-                        value={testimonialForm.displayOrder}
-                        onChange={handleTestimonialFormChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        min="0"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">Lower numbers appear first</p>
-                    </div>
+                    {testimonialForm.videoMode === 'upload' ? (
+                      <div>
+                        <input
+                          type="file"
+                          name="videoFile"
+                          accept="video/*"
+                          onChange={handleTestimonialFileChange}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Upload video file (MP4, WebM, etc.)</p>
+                      </div>
+                    ) : (
+                      <div>
+                        <input
+                          type="url"
+                          name="videoUrl"
+                          value={testimonialForm.videoUrl}
+                          onChange={handleTestimonialFormChange}
+                          placeholder="https://www.youtube.com/watch?v=... or direct video URL"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Supports YouTube, Google Drive, or direct video URLs</p>
+                      </div>
+                    )}
                   </div>
 
-                  <div>
-                    <label className="block text-gray-700 font-semibold mb-2">Description</label>
-                    <textarea
-                      name="description"
-                      value={testimonialForm.description}
-                      onChange={handleTestimonialFormChange}
-                      rows="3"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      placeholder="Brief description or testimonial text"
-                    />
-                  </div>
+                  {/* Thumbnail Section */}
+                  <div className="space-y-3">
+                    <div className="flex gap-4">
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name="thumbnailMode"
+                          value="upload"
+                          checked={testimonialForm.thumbnailMode === 'upload'}
+                          onChange={handleTestimonialFormChange}
+                          className="text-purple-600"
+                        />
+                        <span className="text-gray-700 font-semibold">Upload Thumbnail</span>
+                      </label>
+                      <label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name="thumbnailMode"
+                          value="url"
+                          checked={testimonialForm.thumbnailMode === 'url'}
+                          onChange={handleTestimonialFormChange}
+                          className="text-purple-600"
+                        />
+                        <span className="text-gray-700 font-semibold">Thumbnail URL</span>
+                      </label>
+                    </div>
 
-                  <div>
-                    <label className="block text-gray-700 font-semibold mb-2">Video URL *</label>
-                    <input
-                      type="url"
-                      name="videoUrl"
-                      value={testimonialForm.videoUrl}
-                      onChange={handleTestimonialFormChange}
-                      placeholder="https://www.youtube.com/watch?v=... or direct video URL"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      required
-                    />
-                    <p className="text-xs text-gray-500 mt-1">Supports YouTube, Google Drive, or direct video URLs</p>
-                  </div>
-
-                  <div>
-                    <label className="block text-gray-700 font-semibold mb-2">Thumbnail URL</label>
-                    <input
-                      type="url"
-                      name="thumbnail"
-                      value={testimonialForm.thumbnail}
-                      onChange={handleTestimonialFormChange}
-                      placeholder="Image URL for video thumbnail"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    />
+                    {testimonialForm.thumbnailMode === 'upload' ? (
+                      <div>
+                        <input
+                          type="file"
+                          name="thumbnailFile"
+                          accept="image/*"
+                          onChange={handleTestimonialFileChange}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Upload thumbnail image (JPG, PNG, WebP)</p>
+                      </div>
+                    ) : (
+                      <div>
+                        <input
+                          type="url"
+                          name="thumbnail"
+                          value={testimonialForm.thumbnail}
+                          onChange={handleTestimonialFormChange}
+                          placeholder="Image URL for video thumbnail"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex items-center">

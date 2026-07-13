@@ -9,12 +9,13 @@ import {
 } from '../controller/learningContentController.js';
 import { auth, adminAuth } from '../middleware/auth.js';
 import { checkEnrollment } from '../middleware/enrollmentCheck.js';
+import { uploadLearningContentCloudinary } from '../middleware/uploadCloudinary.js';
 
 const router = express.Router();
 
-// Admin routes - protected
-router.post('/admin/course-content', adminAuth, addLearningContent);
-router.put('/admin/course-content/:id', adminAuth, updateLearningContent);
+// Admin routes - protected with file upload support
+router.post('/admin/course-content', adminAuth, uploadLearningContentCloudinary, addLearningContent);
+router.put('/admin/course-content/:id', adminAuth, uploadLearningContentCloudinary, updateLearningContent);
 router.delete('/admin/course-content/:id', adminAuth, deleteLearningContent);
 
 // Public/Student routes - protected with auth and enrollment check

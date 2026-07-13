@@ -23,8 +23,16 @@ const testimonialSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  videoPublicId: {
+    type: String,
+    default: ''
+  },
   thumbnail: {
     type: String
+  },
+  thumbnailPublicId: {
+    type: String,
+    default: ''
   },
   displayOrder: {
     type: Number,

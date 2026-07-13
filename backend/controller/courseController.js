@@ -82,10 +82,12 @@ export const createCourse = async (req, res) => {
     const parsedFaqs = typeof faqs === 'string' ? JSON.parse(faqs) : faqs;
     const parsedStudentBenefits = typeof studentBenefits === 'string' ? JSON.parse(studentBenefits) : studentBenefits;
 
-    // Upload thumbnail to Cloudinary
+    // Upload thumbnail to Cloudinary OR accept URL (backward compatible)
+    const thumbnailMode = req.body.thumbnailMode || (req.files?.thumbnail ? 'upload' : 'url');
+
     let imagePublicId = null;
     let imageUrl = '';
-    if (req.files && req.files.thumbnail && req.files.thumbnail[0]) {
+    if (thumbnailMode === 'upload' && req.files?.thumbnail?.[0]) {
       const thumbnailUpload = await uploadToCloudinary(
         req.files.thumbnail[0].buffer,
         req.files.thumbnail[0].mimetype,
@@ -93,16 +95,16 @@ export const createCourse = async (req, res) => {
       );
       imageUrl = thumbnailUpload.secure_url;
       imagePublicId = thumbnailUpload.public_id;
-    } else if (req.body.thumbnail) {
-      // If thumbnail URL is provided directly (for backward compatibility)
-      imageUrl = req.body.thumbnail;
+    } else {
+      imageUrl = req.body.thumbnail || '';
       imagePublicId = req.body.imagePublicId || '';
     }
 
-    // Upload banner to Cloudinary
+    // Upload banner to Cloudinary OR accept URL (backward compatible)
+    const bannerMode = req.body.bannerMode || (req.files?.banner ? 'upload' : 'url');
     let bannerPublicId = null;
     let bannerUrl = '';
-    if (req.files && req.files.banner && req.files.banner[0]) {
+    if (bannerMode === 'upload' && req.files?.banner?.[0]) {
       const bannerUpload = await uploadToCloudinary(
         req.files.banner[0].buffer,
         req.files.banner[0].mimetype,
@@ -110,30 +112,33 @@ export const createCourse = async (req, res) => {
       );
       bannerUrl = bannerUpload.secure_url;
       bannerPublicId = bannerUpload.public_id;
-    } else if (req.body.banner) {
-      bannerUrl = req.body.banner;
+    } else {
+      bannerUrl = req.body.banner || '';
       bannerPublicId = req.body.bannerPublicId || '';
     }
 
-    // Upload demo video to Cloudinary
+    // Upload demo video to Cloudinary OR accept URL (backward compatible)
+    const previewVideoMode = req.body.previewVideoMode || (req.files?.previewVideo ? 'upload' : 'url');
     let demoVideoPublicId = null;
-    let demoVideoUrl = '';
-    if (req.files && req.files.previewVideo && req.files.previewVideo[0]) {
+    let demoVideoUrlFinal = '';
+    if (previewVideoMode === 'upload' && req.files?.previewVideo?.[0]) {
       const demoVideoUpload = await uploadToCloudinary(
         req.files.previewVideo[0].buffer,
         req.files.previewVideo[0].mimetype,
         'DigiQuest/Courses/DemoVideos'
       );
-      demoVideoUrl = demoVideoUpload.secure_url;
+      demoVideoUrlFinal = demoVideoUpload.secure_url;
       demoVideoPublicId = demoVideoUpload.public_id;
-    } else if (req.body.demoVideo) {
-      demoVideoUrl = req.body.demoVideo;
+    } else {
+      demoVideoUrlFinal = req.body.demoVideo || '';
       demoVideoPublicId = req.body.demoVideoPublicId || '';
     }
 
-    // Upload course files (PDFs, ZIPs, DOCX) and add to notes
+    // Notes/files: upload to Cloudinary OR accept URLs (via `notes` JSON payload)
+    const notesMode = req.body.notesMode || (req.files?.courseFiles?.length ? 'upload' : 'url');
+
     let courseNotes = parsedNotes || [];
-    if (req.files && req.files.courseFiles && req.files.courseFiles.length > 0) {
+    if (notesMode === 'upload' && req.files?.courseFiles?.length > 0) {
       const uploadedFiles = await uploadCourseFiles(
         req.files.courseFiles.map(file => ({
           buffer: file.buffer,
@@ -144,7 +149,6 @@ export const createCourse = async (req, res) => {
         'DigiQuest/Courses/Files'
       );
 
-      // Add uploaded files to notes
       courseNotes = [
         ...courseNotes,
         ...uploadedFiles.map(file => ({
@@ -157,7 +161,6 @@ export const createCourse = async (req, res) => {
       ];
     }
 
-    // Create course with Cloudinary URLs
     const course = await Course.create({
       title,
       description,
@@ -176,7 +179,7 @@ export const createCourse = async (req, res) => {
       notes: courseNotes,
       numberOfVideos: numberOfVideos || 0,
       numberOfProjects: numberOfProjects || 0,
-      demoVideo: demoVideoUrl,
+      demoVideo: demoVideoUrlFinal,
       demoVideoPublicId,
       faqs: parsedFaqs || [],
       studentBenefits: parsedStudentBenefits || [],
@@ -213,12 +216,16 @@ export const createCourse = async (req, res) => {
   }
 };
 
+
 export const updateCourse = async (req, res) => {
   try {
     console.log('========== UPDATE COURSE REQUEST ==========');
     console.log('Request params:', req.params);
     console.log('Request body:', req.body);
     console.log('Request files:', req.files);
+
+    // Safe req.body handling
+    const body = req.body || {};
 
     // Find existing course
     const existingCourse = await Course.findById(req.params.id);
@@ -230,7 +237,7 @@ export const updateCourse = async (req, res) => {
       });
     }
 
-    const updateData = { ...req.body };
+    const updateData = { ...body };
 
     // Parse JSON fields if they're strings
     if (updateData.syllabus && typeof updateData.syllabus === 'string') {
@@ -252,9 +259,10 @@ export const updateCourse = async (req, res) => {
       updateData.studentBenefits = JSON.parse(updateData.studentBenefits);
     }
 
-    // Handle thumbnail replacement
-    if (req.files && req.files.thumbnail && req.files.thumbnail[0]) {
-      // Delete old thumbnail from Cloudinary
+// Handle thumbnail replacement / URL switching
+    const thumbnailMode = req.body.thumbnailMode || (req.files?.thumbnail?.length ? 'upload' : 'url');
+    if (thumbnailMode === 'upload' && req.files?.thumbnail?.[0]) {
+      // If switching from URL -> upload, no deletion required. If switching from upload -> upload, delete previous.
       if (existingCourse.imagePublicId) {
         try {
           await deleteFromCloudinary(existingCourse.imagePublicId, 'image');
@@ -263,7 +271,6 @@ export const updateCourse = async (req, res) => {
         }
       }
 
-      // Upload new thumbnail
       const thumbnailUpload = await uploadToCloudinary(
         req.files.thumbnail[0].buffer,
         req.files.thumbnail[0].mimetype,
@@ -271,11 +278,22 @@ export const updateCourse = async (req, res) => {
       );
       updateData.image = thumbnailUpload.secure_url;
       updateData.imagePublicId = thumbnailUpload.public_id;
+    } else if (thumbnailMode === 'url') {
+      // Switching upload -> url: delete old Cloudinary asset if present.
+      if (existingCourse.imagePublicId) {
+        try {
+          await deleteFromCloudinary(existingCourse.imagePublicId, 'image');
+        } catch (error) {
+          console.error('Error deleting old thumbnail:', error);
+        }
+      }
+      updateData.image = req.body.thumbnail || updateData.image;
+      updateData.imagePublicId = req.body.imagePublicId || '';
     }
 
-    // Handle banner replacement
-    if (req.files && req.files.banner && req.files.banner[0]) {
-      // Delete old banner from Cloudinary
+    // Handle banner replacement / URL switching
+    const bannerMode = req.body.bannerMode || (req.files?.banner?.length ? 'upload' : 'url');
+    if (bannerMode === 'upload' && req.files?.banner?.[0]) {
       if (existingCourse.bannerPublicId) {
         try {
           await deleteFromCloudinary(existingCourse.bannerPublicId, 'image');
@@ -284,7 +302,6 @@ export const updateCourse = async (req, res) => {
         }
       }
 
-      // Upload new banner
       const bannerUpload = await uploadToCloudinary(
         req.files.banner[0].buffer,
         req.files.banner[0].mimetype,
@@ -292,11 +309,21 @@ export const updateCourse = async (req, res) => {
       );
       updateData.banner = bannerUpload.secure_url;
       updateData.bannerPublicId = bannerUpload.public_id;
+    } else if (bannerMode === 'url') {
+      if (existingCourse.bannerPublicId) {
+        try {
+          await deleteFromCloudinary(existingCourse.bannerPublicId, 'image');
+        } catch (error) {
+          console.error('Error deleting old banner:', error);
+        }
+      }
+      updateData.banner = req.body.banner || updateData.banner;
+      updateData.bannerPublicId = req.body.bannerPublicId || '';
     }
 
-    // Handle demo video replacement
-    if (req.files && req.files.previewVideo && req.files.previewVideo[0]) {
-      // Delete old demo video from Cloudinary
+    // Handle demo video replacement / URL switching
+    const previewVideoMode = req.body.previewVideoMode || (req.files?.previewVideo?.length ? 'upload' : 'url');
+    if (previewVideoMode === 'upload' && req.files?.previewVideo?.[0]) {
       if (existingCourse.demoVideoPublicId) {
         try {
           await deleteFromCloudinary(existingCourse.demoVideoPublicId, 'video');
@@ -305,7 +332,6 @@ export const updateCourse = async (req, res) => {
         }
       }
 
-      // Upload new demo video
       const demoVideoUpload = await uploadToCloudinary(
         req.files.previewVideo[0].buffer,
         req.files.previewVideo[0].mimetype,
@@ -313,10 +339,21 @@ export const updateCourse = async (req, res) => {
       );
       updateData.demoVideo = demoVideoUpload.secure_url;
       updateData.demoVideoPublicId = demoVideoUpload.public_id;
+    } else if (previewVideoMode === 'url') {
+      if (existingCourse.demoVideoPublicId) {
+        try {
+          await deleteFromCloudinary(existingCourse.demoVideoPublicId, 'video');
+        } catch (error) {
+          console.error('Error deleting old demo video:', error);
+        }
+      }
+      updateData.demoVideo = req.body.demoVideo || updateData.demoVideo;
+      updateData.demoVideoPublicId = req.body.demoVideoPublicId || '';
     }
 
-    // Handle course files (PDFs, ZIPs, DOCX)
-    if (req.files && req.files.courseFiles && req.files.courseFiles.length > 0) {
+    // Handle course files (PDFs, ZIPs, DOCX) - notes switching
+    const notesMode = req.body.notesMode || (req.files?.courseFiles?.length ? 'upload' : 'url');
+    if (notesMode === 'upload' && req.files?.courseFiles?.length > 0) {
       const uploadedFiles = await uploadCourseFiles(
         req.files.courseFiles.map(file => ({
           buffer: file.buffer,
@@ -327,7 +364,6 @@ export const updateCourse = async (req, res) => {
         'DigiQuest/Courses/Files'
       );
 
-      // Add uploaded files to existing notes
       const existingNotes = updateData.notes || existingCourse.notes || [];
       updateData.notes = [
         ...existingNotes,
@@ -339,6 +375,16 @@ export const updateCourse = async (req, res) => {
           fileType: file.fileType
         }))
       ];
+    } else if (notesMode === 'url') {
+      // Switching upload -> url: delete old Cloudinary note files that have publicId.
+      if (existingCourse.notes && existingCourse.notes.length > 0) {
+        const deletions = existingCourse.notes
+          .filter(n => n.publicId)
+          .map(n => deleteFromCloudinary(n.publicId, n.resourceType || 'raw'));
+        await Promise.allSettled(deletions);
+      }
+      updateData.notes = updateData.notes || existingCourse.notes || [];
+      // For URL mode, frontend should send `notes` array with {title,fileUrl,publicId:'',resourceType:'raw',fileType:...}
     }
 
     // Update course
