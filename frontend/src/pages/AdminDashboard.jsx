@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import { adminAPI, courseAPI, learningContentAPI, testimonialAPI } from '../services/api';
 import { validateVideoUrl, getEmbedVideoUrl, getVideoProvider } from '../utils/videoUtils';
+import UniversalVideoPlayer from '../components/UniversalVideoPlayer';
 import {Link} from "react-router-dom";
 
 const AdminDashboard = () => {
@@ -33,7 +34,12 @@ const AdminDashboard = () => {
     features: [],
     syllabus: [],
     faqs: [],
-    demoVideo: ''
+    demoVideo: '',
+    // File upload fields
+    thumbnailFile: null,
+    bannerFile: null,
+    previewVideoFile: null,
+    courseFiles: []
   });
   const [selectedCourseForContent, setSelectedCourseForContent] = useState(null);
   const [learningContent, setLearningContent] = useState([]);
@@ -87,6 +93,12 @@ const AdminDashboard = () => {
       isMounted = false;
     };
   }, [user]); // Only depend on user, not navigate
+
+  useEffect(() => {
+    if (activeTab === 'testimonials') {
+      fetchTestimonials();
+    }
+  }, [activeTab]);
 
   useEffect(() => {
     if (activeTab === 'testimonials') {
@@ -158,7 +170,12 @@ const AdminDashboard = () => {
       features: [],
       syllabus: [],
       faqs: [],
-      demoVideo: ''
+      demoVideo: '',
+      // File upload fields
+      thumbnailFile: null,
+      bannerFile: null,
+      previewVideoFile: null,
+      courseFiles: []
     });
     setShowCourseForm(true);
   };
@@ -169,7 +186,9 @@ const AdminDashboard = () => {
       title: course.title,
       description: course.description,
       image: course.image,
+      imagePublicId: course.imagePublicId || '',
       banner: course.banner,
+      bannerPublicId: course.bannerPublicId || '',
       instructor: course.instructor,
       duration: course.duration,
       level: course.level,
@@ -179,7 +198,14 @@ const AdminDashboard = () => {
       features: course.features || [],
       syllabus: course.syllabus || [],
       faqs: course.faqs || [],
-      demoVideo: course.demoVideo || ''
+      demoVideo: course.demoVideo || '',
+      demoVideoPublicId: course.demoVideoPublicId || '',
+      notes: course.notes || [],
+      // File upload fields
+      thumbnailFile: null,
+      bannerFile: null,
+      previewVideoFile: null,
+      courseFiles: []
     });
     setShowCourseForm(true);
   };
@@ -217,25 +243,73 @@ const AdminDashboard = () => {
     setCourseFormLoading(true);
 
     try {
-      const courseData = {
-        ...courseForm,
-        price: Number(courseForm.price),
-        language: courseForm.language || 'English',
-        features: courseForm.features.filter(f => f.trim() !== ''),
-        syllabus: courseForm.syllabus.filter(s => s.module && s.module.trim() !== ''),
-        faqs: courseForm.faqs.filter(f => f.question && f.question.trim() !== '')
-      };
+      // Create FormData for file uploads
+      const formData = new FormData();
 
-      console.log('Course data to be sent:', JSON.stringify(courseData, null, 2));
+      // Add basic course fields
+      formData.append('title', courseForm.title);
+      formData.append('description', courseForm.description);
+      formData.append('instructor', courseForm.instructor);
+      formData.append('duration', courseForm.duration);
+      formData.append('level', courseForm.level);
+      formData.append('price', Number(courseForm.price));
+      formData.append('category', courseForm.category);
+      formData.append('isActive', courseForm.isActive);
+      formData.append('language', courseForm.language || 'English');
+      formData.append('demoVideo', courseForm.demoVideo || '');
+
+      // Add JSON fields as strings
+      formData.append('features', JSON.stringify(courseForm.features.filter(f => f.trim() !== '')));
+      formData.append('syllabus', JSON.stringify(courseForm.syllabus.filter(s => s.module && s.module.trim() !== '')));
+      formData.append('faqs', JSON.stringify(courseForm.faqs.filter(f => f.question && f.question.trim() !== '')));
+
+      // Add existing image/banner URLs if no new files are uploaded
+      if (!courseForm.thumbnailFile && courseForm.image) {
+        formData.append('thumbnail', courseForm.image);
+        formData.append('imagePublicId', courseForm.imagePublicId || '');
+      }
+      if (!courseForm.bannerFile && courseForm.banner) {
+        formData.append('banner', courseForm.banner);
+        formData.append('bannerPublicId', courseForm.bannerPublicId || '');
+      }
+      if (!courseForm.previewVideoFile && courseForm.demoVideo) {
+        formData.append('demoVideo', courseForm.demoVideo);
+        formData.append('demoVideoPublicId', courseForm.demoVideoPublicId || '');
+      }
+
+      // Add file uploads
+      if (courseForm.thumbnailFile) {
+        formData.append('thumbnail', courseForm.thumbnailFile);
+      }
+      if (courseForm.bannerFile) {
+        formData.append('banner', courseForm.bannerFile);
+      }
+      if (courseForm.previewVideoFile) {
+        formData.append('previewVideo', courseForm.previewVideoFile);
+      }
+
+      // Add course files (PDFs, ZIPs, DOCX)
+      if (courseForm.courseFiles && courseForm.courseFiles.length > 0) {
+        courseForm.courseFiles.forEach(file => {
+          formData.append('courseFiles', file);
+        });
+      }
+
+      // Add existing notes if editing
+      if (editingCourse && courseForm.notes) {
+        formData.append('notes', JSON.stringify(courseForm.notes));
+      }
+
+      console.log('FormData prepared for upload');
 
       if (editingCourse) {
         console.log('Updating course with ID:', editingCourse._id);
-        const response = await courseAPI.updateCourse(editingCourse._id, courseData);
+        const response = await courseAPI.updateCourse(editingCourse._id, formData);
         console.log('Update response:', response.data);
         toast.success('Course updated successfully');
       } else {
         console.log('Creating new course');
-        const response = await courseAPI.createCourse(courseData);
+        const response = await courseAPI.createCourse(formData);
         console.log('Create response:', response.data);
         toast.success('Course created successfully');
       }
@@ -269,6 +343,29 @@ const AdminDashboard = () => {
     setCourseForm({
       ...courseForm,
       [field]: newArray
+    });
+  };
+
+  // File upload handlers
+  const handleFileChange = (fieldName, file) => {
+    setCourseForm({
+      ...courseForm,
+      [fieldName]: file
+    });
+  };
+
+  const handleCourseFilesChange = (files) => {
+    setCourseForm({
+      ...courseForm,
+      courseFiles: [...courseForm.courseFiles, ...Array.from(files)]
+    });
+  };
+
+  const removeCourseFile = (index) => {
+    const newFiles = courseForm.courseFiles.filter((_, i) => i !== index);
+    setCourseForm({
+      ...courseForm,
+      courseFiles: newFiles
     });
   };
 
@@ -1041,6 +1138,7 @@ const AdminDashboard = () => {
             </motion.div>
           )}
 
+      
           {showCourseForm && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
               <motion.div
@@ -1139,27 +1237,65 @@ const AdminDashboard = () => {
                     </div>
 
                     <div>
-                      <label className="block text-gray-700 font-semibold mb-2">Image URL *</label>
+                      <label className="block text-gray-700 font-semibold mb-2">Thumbnail Image *</label>
                       <input
-                        type="url"
-                        name="image"
-                        value={courseForm.image}
-                        onChange={handleCourseFormChange}
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/webp"
+                        onChange={(e) => handleFileChange('thumbnailFile', e.target.files[0])}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        required
                       />
+                      <p className="text-xs text-gray-500 mt-1">Max size: 5MB. Formats: JPG, PNG, WebP</p>
+                      {courseForm.thumbnailFile && (
+                        <div className="mt-2">
+                          <p className="text-sm text-green-600">Selected: {courseForm.thumbnailFile.name}</p>
+                          <img
+                            src={URL.createObjectURL(courseForm.thumbnailFile)}
+                            alt="Thumbnail preview"
+                            className="w-32 h-32 object-cover rounded mt-2"
+                          />
+                        </div>
+                      )}
+                      {!courseForm.thumbnailFile && courseForm.image && (
+                        <div className="mt-2">
+                          <p className="text-sm text-gray-600">Current: {courseForm.image}</p>
+                          <img
+                            src={courseForm.image}
+                            alt="Current thumbnail"
+                            className="w-32 h-32 object-cover rounded mt-2"
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <div>
-                      <label className="block text-gray-700 font-semibold mb-2">Banner URL *</label>
+                      <label className="block text-gray-700 font-semibold mb-2">Banner Image *</label>
                       <input
-                        type="url"
-                        name="banner"
-                        value={courseForm.banner}
-                        onChange={handleCourseFormChange}
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/webp"
+                        onChange={(e) => handleFileChange('bannerFile', e.target.files[0])}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        required
                       />
+                      <p className="text-xs text-gray-500 mt-1">Max size: 5MB. Formats: JPG, PNG, WebP</p>
+                      {courseForm.bannerFile && (
+                        <div className="mt-2">
+                          <p className="text-sm text-green-600">Selected: {courseForm.bannerFile.name}</p>
+                          <img
+                            src={URL.createObjectURL(courseForm.bannerFile)}
+                            alt="Banner preview"
+                            className="w-48 h-24 object-cover rounded mt-2"
+                          />
+                        </div>
+                      )}
+                      {!courseForm.bannerFile && courseForm.banner && (
+                        <div className="mt-2">
+                          <p className="text-sm text-gray-600">Current: {courseForm.banner}</p>
+                          <img
+                            src={courseForm.banner}
+                            alt="Current banner"
+                            className="w-48 h-24 object-cover rounded mt-2"
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <div className="md:col-span-2">
@@ -1175,14 +1311,62 @@ const AdminDashboard = () => {
                     </div>
 
                     <div className="md:col-span-2">
-                      <label className="block text-gray-700 font-semibold mb-2">Demo Video URL</label>
+                      <label className="block text-gray-700 font-semibold mb-2">Demo Video</label>
                       <input
-                        type="url"
-                        name="demoVideo"
-                        value={courseForm.demoVideo}
-                        onChange={handleCourseFormChange}
+                        type="file"
+                        accept="video/mp4,video/quicktime,video/webm"
+                        onChange={(e) => handleFileChange('previewVideoFile', e.target.files[0])}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                       />
+                      <p className="text-xs text-gray-500 mt-1">Max size: 100MB. Formats: MP4, MOV, WebM</p>
+                      {courseForm.previewVideoFile && (
+                        <div className="mt-2">
+                          <p className="text-sm text-green-600">Selected: {courseForm.previewVideoFile.name}</p>
+                          <video
+                            src={URL.createObjectURL(courseForm.previewVideoFile)}
+                            controls
+                            className="w-64 h-36 object-cover rounded mt-2"
+                          />
+                        </div>
+                      )}
+                      {!courseForm.previewVideoFile && courseForm.demoVideo && (
+                        <div className="mt-2">
+                          <p className="text-sm text-gray-600">Current: {courseForm.demoVideo}</p>
+                          <UniversalVideoPlayer
+                            videoUrl={courseForm.demoVideo}
+                            className="w-64 h-36 mt-2"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-gray-700 font-semibold mb-2">Course Files (PDF, ZIP, DOCX)</label>
+                      <input
+                        type="file"
+                        accept=".pdf,.zip,.docx"
+                        multiple
+                        onChange={(e) => handleCourseFilesChange(e.target.files)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Max size: PDF 20MB, ZIP 100MB, DOCX 10MB</p>
+                      {courseForm.courseFiles.length > 0 && (
+                        <div className="mt-2 space-y-2">
+                          <p className="text-sm font-semibold text-gray-700">Selected files:</p>
+                          {courseForm.courseFiles.map((file, index) => (
+                            <div key={index} className="flex items-center justify-between bg-gray-100 p-2 rounded">
+                              <span className="text-sm text-gray-700">{file.name}</span>
+                              <button
+                                type="button"
+                                onClick={() => removeCourseFile(index)}
+                                className="text-red-500 hover:text-red-700 text-sm"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     <div className="md:col-span-2">
@@ -1394,6 +1578,151 @@ const AdminDashboard = () => {
                       onClick={() => setShowContentForm(false)}
                       whileHover={{ scale: 1.02 }}
                       disabled={contentFormLoading}
+                      className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Cancel
+                    </motion.button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          )}
+
+          {showTestimonialForm && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="bg-white rounded-xl p-8 max-w-2xl w-full mx-4 my-8 max-h-[90vh] overflow-y-auto"
+              >
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    {editingTestimonial ? 'Edit Testimonial' : 'Add New Testimonial'}
+                  </h2>
+                  <button
+                    onClick={() => setShowTestimonialForm(false)}
+                    className="text-2xl text-gray-500 hover:text-gray-700"
+                  >
+                    &times;
+                  </button>
+                </div>
+
+                <form onSubmit={handleTestimonialFormSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">Student Name *</label>
+                      <input
+                        type="text"
+                        name="studentName"
+                        value={testimonialForm.studentName}
+                        onChange={handleTestimonialFormChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">Course Name *</label>
+                      <input
+                        type="text"
+                        name="courseName"
+                        value={testimonialForm.courseName}
+                        onChange={handleTestimonialFormChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">Designation</label>
+                      <input
+                        type="text"
+                        name="designation"
+                        value={testimonialForm.designation}
+                        onChange={handleTestimonialFormChange}
+                        placeholder="e.g., Software Engineer at Google"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">Display Order</label>
+                      <input
+                        type="number"
+                        name="displayOrder"
+                        value={testimonialForm.displayOrder}
+                        onChange={handleTestimonialFormChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        min="0"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Lower numbers appear first</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2">Description</label>
+                    <textarea
+                      name="description"
+                      value={testimonialForm.description}
+                      onChange={handleTestimonialFormChange}
+                      rows="3"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      placeholder="Brief description or testimonial text"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2">Video URL *</label>
+                    <input
+                      type="url"
+                      name="videoUrl"
+                      value={testimonialForm.videoUrl}
+                      onChange={handleTestimonialFormChange}
+                      placeholder="https://www.youtube.com/watch?v=... or direct video URL"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      required
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Supports YouTube, Google Drive, or direct video URLs</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2">Thumbnail URL</label>
+                    <input
+                      type="url"
+                      name="thumbnail"
+                      value={testimonialForm.thumbnail}
+                      onChange={handleTestimonialFormChange}
+                      placeholder="Image URL for video thumbnail"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="isActive"
+                      id="isActive"
+                      checked={testimonialForm.isActive}
+                      onChange={handleTestimonialFormChange}
+                      className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                    />
+                    <label htmlFor="isActive" className="ml-2 text-gray-700">Active (show on website)</label>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <motion.button
+                      type="submit"
+                      whileHover={{ scale: 1.02 }}
+                      disabled={testimonialFormLoading}
+                      className="flex-1 bg-purple-500 text-white py-3 rounded-lg hover:bg-purple-600 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {testimonialFormLoading ? 'Saving...' : (editingTestimonial ? 'Update Testimonial' : 'Add Testimonial')}
+                    </motion.button>
+                    <motion.button
+                      type="button"
+                      onClick={() => setShowTestimonialForm(false)}
+                      whileHover={{ scale: 1.02 }}
+                      disabled={testimonialFormLoading}
                       className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Cancel

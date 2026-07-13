@@ -13,6 +13,14 @@ const videoSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  publicId: {
+    type: String,
+    required: true
+  },
+  resourceType: {
+    type: String,
+    default: 'video'
+  },
   duration: {
     type: String,
     required: true
@@ -21,7 +29,8 @@ const videoSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  thumbnail: String
+  thumbnail: String,
+  thumbnailPublicId: String
 });
 
 const noteSchema = new mongoose.Schema({
@@ -33,9 +42,17 @@ const noteSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  publicId: {
+    type: String,
+    required: true
+  },
+  resourceType: {
+    type: String,
+    default: 'raw'
+  },
   fileType: {
     type: String,
-    enum: ['pdf', 'zip', 'doc'],
+    enum: ['pdf', 'zip', 'doc', 'docx'],
     required: true
   }
 });
@@ -54,7 +71,15 @@ const courseSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  imagePublicId: {
+    type: String,
+    required: true
+  },
   banner: {
+    type: String,
+    required: true
+  },
+  bannerPublicId: {
     type: String,
     required: true
   },
@@ -96,6 +121,7 @@ const courseSchema = new mongoose.Schema({
     default: 0
   },
   demoVideo: String,
+  demoVideoPublicId: String,
   faqs: [{
     question: String,
     answer: String

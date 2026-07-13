@@ -84,10 +84,26 @@ export const courseAPI = {
   getCourseNotes: (id) => api.get(`/courses/${id}/notes`),
   createCourse: (data) => {
     console.log('courseAPI.createCourse called with:', data);
+    // Handle FormData for file uploads
+    if (data instanceof FormData) {
+      return api.post('/courses', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+    }
     return api.post('/courses', data);
   },
   updateCourse: (id, data) => {
     console.log('courseAPI.updateCourse called with ID:', id, 'data:', data);
+    // Handle FormData for file uploads
+    if (data instanceof FormData) {
+      return api.put(`/courses/${id}`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+    }
     return api.put(`/courses/${id}`, data);
   },
   deleteCourse: (id) => {
