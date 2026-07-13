@@ -27,8 +27,8 @@ const Login = () => {
 
     console.log("Handle Submit Called");
     setLoading(true);
-    console.log("Username:", username);
-    console.log("Password:", password);
+    // console.log("Username:", username);
+    // console.log("Password:", password);
     const result = await login(username, password);
 
     if (result.success) {

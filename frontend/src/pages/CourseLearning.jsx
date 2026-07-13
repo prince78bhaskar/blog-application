@@ -266,7 +266,9 @@ import { getEmbedVideoUrl, getVideoProvider } from '../utils/videoUtils';
                     <h2 className="text-2xl font-bold text-gray-800">{currentVideo.title}</h2>
                     <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
                       {getVideoProvider(currentVideo.videoUrl) === 'youtube' ? 'YouTube' : 
-                       getVideoProvider(currentVideo.videoUrl) === 'drive' ? 'Google Drive' : 'Video'}
+                       getVideoProvider(currentVideo.videoUrl) === 'vimeo' ? 'Vimeo' :
+                       getVideoProvider(currentVideo.videoUrl) === 'drive' ? 'Google Drive' : 
+                       getVideoProvider(currentVideo.videoUrl) === 'dropbox' ? 'Dropbox' : 'Video'}
                     </span>
                   </div>
                   {currentVideo.description && (

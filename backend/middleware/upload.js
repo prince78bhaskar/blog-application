@@ -70,5 +70,9 @@ export const uploadLearningContent = upload.fields([
   { name: 'pdf', maxCount: 1 },
   { name: 'thumbnail', maxCount: 1 }
 ]);
+export const uploadTestimonial = upload.fields([
+  { name: 'video', maxCount: 1 },
+  { name: 'thumbnail', maxCount: 1 }
+]);
 
 export default upload;

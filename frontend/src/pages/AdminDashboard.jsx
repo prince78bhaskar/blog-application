@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
-import { adminAPI, courseAPI, learningContentAPI } from '../services/api';
+import { adminAPI, courseAPI, learningContentAPI, testimonialAPI } from '../services/api';
 import { validateVideoUrl, getEmbedVideoUrl, getVideoProvider } from '../utils/videoUtils';
 import {Link} from "react-router-dom";
 
@@ -52,25 +52,47 @@ const AdminDashboard = () => {
     sequence: 0
   });
 
+  // Testimonial state
+  const [testimonials, setTestimonials] = useState([]);
+  const [showTestimonialForm, setShowTestimonialForm] = useState(false);
+  const [editingTestimonial, setEditingTestimonial] = useState(null);
+  const [testimonialFormLoading, setTestimonialFormLoading] = useState(false);
+  const [testimonialForm, setTestimonialForm] = useState({
+    studentName: '',
+    courseName: '',
+    designation: '',
+    description: '',
+    videoUrl: '',
+    thumbnail: '',
+    displayOrder: 0,
+    isActive: true
+  });
+
   useEffect(() => {
     // FIX: Removed 'navigate' from dependencies to prevent duplicate API calls
     // navigate function is stable and doesn't change, so it doesn't need to be in deps
     // Added cleanup flag to prevent duplicate calls in React StrictMode (development only)
     let isMounted = true;
-    
+
     if (user?.role !== 'admin') {
       navigate('/dashboard');
       return;
     }
-    
+
     if (isMounted) {
       fetchAdminData();
     }
-    
+
     return () => {
       isMounted = false;
     };
   }, [user]); // Only depend on user, not navigate
+
+  useEffect(() => {
+    if (activeTab === 'testimonials') {
+      fetchTestimonials();
+    }
+  }, [activeTab]);
 
   const fetchAdminData = async () => {
     try {
@@ -390,6 +412,118 @@ const AdminDashboard = () => {
     });
   };
 
+  // Testimonial functions
+  const fetchTestimonials = async () => {
+    try {
+      const response = await testimonialAPI.getAllTestimonialsAdmin();
+      setTestimonials(response.data.testimonials);
+    } catch (error) {
+      toast.error('Failed to load testimonials');
+    }
+  };
+
+  const handleAddTestimonial = () => {
+    setEditingTestimonial(null);
+    setTestimonialForm({
+      studentName: '',
+      courseName: '',
+      designation: '',
+      description: '',
+      videoUrl: '',
+      thumbnail: '',
+      displayOrder: 0,
+      isActive: true
+    });
+    setShowTestimonialForm(true);
+  };
+
+  const handleEditTestimonial = (testimonial) => {
+    setEditingTestimonial(testimonial);
+    setTestimonialForm({
+      studentName: testimonial.studentName,
+      courseName: testimonial.courseName,
+      designation: testimonial.designation || '',
+      description: testimonial.description || '',
+      videoUrl: testimonial.videoUrl,
+      thumbnail: testimonial.thumbnail || '',
+      displayOrder: testimonial.displayOrder || 0,
+      isActive: testimonial.isActive !== undefined ? testimonial.isActive : true
+    });
+    setShowTestimonialForm(true);
+  };
+
+  const handleDeleteTestimonial = async (testimonialId) => {
+    if (!window.confirm('Are you sure you want to delete this testimonial?')) return;
+
+    try {
+      await testimonialAPI.deleteTestimonial(testimonialId);
+      toast.success('Testimonial deleted successfully');
+      fetchTestimonials();
+    } catch (error) {
+      toast.error('Failed to delete testimonial');
+    }
+  };
+
+  const handleTestimonialFormSubmit = async (e) => {
+    e.preventDefault();
+
+    if (testimonialFormLoading) {
+      return;
+    }
+
+    if (!testimonialForm.studentName || !testimonialForm.courseName || !testimonialForm.videoUrl) {
+      toast.error('Please fill all required fields');
+      return;
+    }
+
+    setTestimonialFormLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('studentName', testimonialForm.studentName);
+      formData.append('courseName', testimonialForm.courseName);
+      formData.append('designation', testimonialForm.designation);
+      formData.append('description', testimonialForm.description);
+      formData.append('videoUrl', testimonialForm.videoUrl);
+      formData.append('thumbnail', testimonialForm.thumbnail);
+      formData.append('displayOrder', testimonialForm.displayOrder);
+      formData.append('isActive', testimonialForm.isActive);
+
+      if (editingTestimonial) {
+        await testimonialAPI.updateTestimonial(editingTestimonial._id, formData);
+        toast.success('Testimonial updated successfully');
+      } else {
+        await testimonialAPI.createTestimonial(formData);
+        toast.success('Testimonial created successfully');
+      }
+
+      setShowTestimonialForm(false);
+      fetchTestimonials();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to save testimonial');
+    } finally {
+      setTestimonialFormLoading(false);
+    }
+  };
+
+  const handleTestimonialFormChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setTestimonialForm({
+      ...testimonialForm,
+      [name]: type === 'checkbox' ? checked : (type === 'number' ? Number(value) : value)
+    });
+  };
+
+  const handleTestimonialFileChange = (e) => {
+    const { name, files } = e.target;
+    if (files && files[0]) {
+      setTestimonialForm({
+        ...testimonialForm,
+        [name]: files[0]
+      });
+    }
+  };
+
 
   if (loading) {
     return (
@@ -403,7 +537,8 @@ const AdminDashboard = () => {
     { id: 'overview', label: 'Overview', icon: '📊' },
     { id: 'students', label: 'Students', icon: '👥' },
     { id: 'courses', label: 'Courses', icon: '📚' },
-    { id: 'course-content', label: 'Course Content', icon: '📖' }
+    { id: 'course-content', label: 'Course Content', icon: '📖' },
+    { id: 'testimonials', label: 'Testimonials', icon: '🎥' }
   ];
 
   return (
@@ -744,7 +879,9 @@ const AdminDashboard = () => {
                             )}
                             <p className="text-xs text-gray-500 mb-3 truncate">
                               {getVideoProvider(content.videoUrl) === 'youtube' ? 'YouTube' : 
-                               getVideoProvider(content.videoUrl) === 'drive' ? 'Google Drive' : 'Video'}: {content.videoUrl}
+                               getVideoProvider(content.videoUrl) === 'vimeo' ? 'Vimeo' :
+                               getVideoProvider(content.videoUrl) === 'drive' ? 'Google Drive' : 
+                               getVideoProvider(content.videoUrl) === 'dropbox' ? 'Dropbox' : 'Video'}: {content.videoUrl}
                             </p>
                             <div className="flex gap-2">
                               <motion.button
@@ -820,6 +957,87 @@ const AdminDashboard = () => {
                   </div>
                 </div>
               )}
+            </motion.div>
+          )}
+
+          {activeTab === 'testimonials' && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-2xl font-bold text-gray-800">Video Testimonials</h2>
+                  <motion.button
+                    onClick={handleAddTestimonial}
+                    whileHover={{ scale: 1.02 }}
+                    className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition"
+                  >
+                    + Add Testimonial
+                  </motion.button>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Designation</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {testimonials.map((testimonial) => (
+                      <tr key={testimonial._id}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="font-semibold text-gray-800">{testimonial.studentName}</div>
+                          {testimonial.description && (
+                            <div className="text-sm text-gray-500 truncate max-w-xs">{testimonial.description}</div>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-600">{testimonial.courseName}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-600">{testimonial.designation || '-'}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-600">{testimonial.displayOrder}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-2 py-1 rounded text-xs ${testimonial.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                            {testimonial.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex gap-2">
+                            <motion.button
+                              onClick={() => handleEditTestimonial(testimonial)}
+                              whileHover={{ scale: 1.05 }}
+                              className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition text-sm"
+                            >
+                              Edit
+                            </motion.button>
+                            <motion.button
+                              onClick={() => handleDeleteTestimonial(testimonial._id)}
+                              whileHover={{ scale: 1.05 }}
+                              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition text-sm"
+                            >
+                              Delete
+                            </motion.button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                    {testimonials.length === 0 && (
+                      <tr>
+                        <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
+                          No testimonials added yet. Click "Add Testimonial" to create one.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </motion.div>
           )}
 
@@ -1176,6 +1394,151 @@ const AdminDashboard = () => {
                       onClick={() => setShowContentForm(false)}
                       whileHover={{ scale: 1.02 }}
                       disabled={contentFormLoading}
+                      className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Cancel
+                    </motion.button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          )}
+
+          {showTestimonialForm && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="bg-white rounded-xl p-8 max-w-2xl w-full mx-4 my-8 max-h-[90vh] overflow-y-auto"
+              >
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    {editingTestimonial ? 'Edit Testimonial' : 'Add New Testimonial'}
+                  </h2>
+                  <button
+                    onClick={() => setShowTestimonialForm(false)}
+                    className="text-2xl text-gray-500 hover:text-gray-700"
+                  >
+                    &times;
+                  </button>
+                </div>
+
+                <form onSubmit={handleTestimonialFormSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">Student Name *</label>
+                      <input
+                        type="text"
+                        name="studentName"
+                        value={testimonialForm.studentName}
+                        onChange={handleTestimonialFormChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">Course Name *</label>
+                      <input
+                        type="text"
+                        name="courseName"
+                        value={testimonialForm.courseName}
+                        onChange={handleTestimonialFormChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">Designation</label>
+                      <input
+                        type="text"
+                        name="designation"
+                        value={testimonialForm.designation}
+                        onChange={handleTestimonialFormChange}
+                        placeholder="e.g., Software Engineer at Google"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-gray-700 font-semibold mb-2">Display Order</label>
+                      <input
+                        type="number"
+                        name="displayOrder"
+                        value={testimonialForm.displayOrder}
+                        onChange={handleTestimonialFormChange}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        min="0"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Lower numbers appear first</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2">Description</label>
+                    <textarea
+                      name="description"
+                      value={testimonialForm.description}
+                      onChange={handleTestimonialFormChange}
+                      rows="3"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      placeholder="Brief description or testimonial text"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2">Video URL *</label>
+                    <input
+                      type="url"
+                      name="videoUrl"
+                      value={testimonialForm.videoUrl}
+                      onChange={handleTestimonialFormChange}
+                      placeholder="https://www.youtube.com/watch?v=... or direct video URL"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      required
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Supports YouTube, Google Drive, or direct video URLs</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-semibold mb-2">Thumbnail URL</label>
+                    <input
+                      type="url"
+                      name="thumbnail"
+                      value={testimonialForm.thumbnail}
+                      onChange={handleTestimonialFormChange}
+                      placeholder="Image URL for video thumbnail"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="isActive"
+                      id="isActive"
+                      checked={testimonialForm.isActive}
+                      onChange={handleTestimonialFormChange}
+                      className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                    />
+                    <label htmlFor="isActive" className="ml-2 text-gray-700">Active (show on website)</label>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <motion.button
+                      type="submit"
+                      whileHover={{ scale: 1.02 }}
+                      disabled={testimonialFormLoading}
+                      className="flex-1 bg-purple-500 text-white py-3 rounded-lg hover:bg-purple-600 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {testimonialFormLoading ? 'Saving...' : (editingTestimonial ? 'Update Testimonial' : 'Add Testimonial')}
+                    </motion.button>
+                    <motion.button
+                      type="button"
+                      onClick={() => setShowTestimonialForm(false)}
+                      whileHover={{ scale: 1.02 }}
+                      disabled={testimonialFormLoading}
                       className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-400 transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Cancel

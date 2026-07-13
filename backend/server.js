@@ -19,6 +19,7 @@ import dashboardRoutes from './routes/dashboard.js';
 import adminRoutes from './routes/admin.js';
 import learningContentRoutes from './routes/learningContent.js';
 import lessonProgressRoutes from './routes/lessonProgress.js';
+import testimonialRoutes from './routes/testimonials.js';
 
 console.log('=== ROUTES LOADED ===');
 console.log('lessonProgressRoutes loaded:', !!lessonProgressRoutes);
@@ -81,6 +82,10 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api', learningContentRoutes);
 app.use('/api/lesson-progress', lessonProgressRoutes);
+app.use('/api/testimonials', testimonialRoutes);
+
+// Serve static files for uploads
+app.use('/uploads', express.static('uploads'));
 
 console.log('=== ROUTES REGISTERED ===');
 console.log('/api/lesson-progress -> lessonProgressRoutes');

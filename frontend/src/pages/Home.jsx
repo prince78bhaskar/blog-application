@@ -4,6 +4,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import VideoTestimonials from '../components/VideoTestimonials';
 
 
 function Home() {
@@ -457,6 +458,9 @@ function Home() {
           </div>
 
         </section>
+
+        {/* Video Testimonials Section */}
+        <VideoTestimonials />
 
       </main>
 

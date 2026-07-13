@@ -70,7 +70,7 @@ api.interceptors.response.use(
 
 export const authAPI = {
     login: (data) => {
-      console.log('authAPI.login data:', data);
+      // console.log('authAPI.login data:', data);
       return api.post('/auth/login', data);
     },
   getProfile: () => api.get('/auth/profile'),
@@ -140,6 +140,25 @@ export const lessonProgressAPI = {
     console.log('lessonProgressAPI.checkLessonComplete called for lessonId:', lessonId);
     return api.get(`/lesson-progress/check/${lessonId}`);
   }
+};
+
+export const testimonialAPI = {
+  // Public routes
+  getAllTestimonials: () => api.get('/testimonials'),
+  getTestimonialById: (id) => api.get(`/testimonials/${id}`),
+  // Admin routes
+  getAllTestimonialsAdmin: () => api.get('/testimonials/admin/all'),
+  createTestimonial: (data) => api.post('/testimonials/admin', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  }),
+  updateTestimonial: (id, data) => api.put(`/testimonials/admin/${id}`, data, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  }),
+  deleteTestimonial: (id) => api.delete(`/testimonials/admin/${id}`)
 };
 
 export default api;

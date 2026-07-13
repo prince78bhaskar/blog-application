@@ -11,6 +11,7 @@ import Anurag from '../assets/anurag.webp'
 import CoDirector from '../assets/coDirector.png'
 import ceo from '../assets/shailesh.webp'
 import {Link} from "react-router-dom";
+import VideoTestimonials from '../components/VideoTestimonials';
 
 function About() {
 
@@ -707,6 +708,10 @@ function About() {
         </div>
 
       </section>
+
+      {/* Video Testimonials Section */}
+      <VideoTestimonials />
+
       <footer className="bg-slate-900 text-white">
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 md:gap-12 py-12 sm:py-14 md:py-16 px-4 sm:px-6">
